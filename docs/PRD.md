@@ -25,6 +25,7 @@ Chrome Slam · Fuzzy Grass · Liquid Glass · Aero Bubble · Ben-Day Pop · Holo
 1. Still (FLUX, depth/canny) → composite with alpha → PNG
 2. Animated (LTX-2 + Depth IC-LoRA) → Spell-Lock → MP4 (hero)
 3. Rig only (no AI) — safety net
+4. Vector (optional): rig → SVG (open); Recraft vectorize for AI-painted stills (API, separate workflow, named in the demo video)
 
 ## UI (Glyph Bench 2.0 + ComfyUI preview widget)
 Clean, modern, dark default with an equally designed light theme (tokens, follows system). Stage centre, layers/fonts rail left, inspector right (Type · 3D · Shadow · Motion · Audio), timeline docked bottom. Dashed type guides (baseline, x-height, cap, ascender, descender), scrubbable numbers, preset chips that render your own word.
