@@ -27,8 +27,8 @@ Full PRD: https://claude.ai/artifact/2qzTkJzmj6nwPUjcdNAad4 (summary in docs/PRD
 - [x] P2: Style Preset node (prompts in docs/PRD.md), Magnet (polarity attract/repel, strength, range, lag, spring, squash/stretch), sphere/cube/ticker wraps, Spell-Lock, preview widget in `web/` (dark default + light theme)
 - [x] P2: SVG export from the rig (faces, sides, textured shadow as shapes) — open, no API
 - [ ] Build night (GPU on Comfy Cloud / Runpod; validate structure here, run the TitleRig half on CPU):
-  - [x] `workflows/titlerig_ltx2_animated.json`: Animate / Audio React → rig depth (+ edges) frames → LTX-2 + Depth Control IC-LoRA (strength 1.0) + Style Preset prompt → Spell-Lock → video
-  - [x] `workflows/titlerig_flux_still.json`: rig depth / edges → FLUX.2-dev or FLUX.1 Depth [dev] → composite with alpha → PNG
+  - [x] `example_workflows/titlerig_ltx2_animated.json`: Animate / Audio React → rig depth (+ edges) frames → LTX-2 + Depth Control IC-LoRA (strength 1.0) + Style Preset prompt → Spell-Lock → video
+  - [x] `example_workflows/titlerig_flux_still.json`: rig depth / edges → FLUX.2-dev or FLUX.1 Depth [dev] → composite with alpha → PNG
   - [x] `workflows/README.md`: exact model files, Hugging Face links, target folders, licences, custom node packs (e.g. ComfyUI-LTXVideo)
   - [x] Bonus API workflows, built but never run: `workflows/bonus/titlerig_flux3.json`, `workflows/bonus/titlerig_recraft_vector.json`
   - [x] Demo assets in `docs/media/`: Chrome Slam flip-in, Ben-Day Pop halftone on the beat, ticker on a spinning sphere, Magnet repel-and-snap-back, preview widget dark + light

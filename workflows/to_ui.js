@@ -1,4 +1,4 @@
-// Turn workflows/api/*.json into drag-and-drop UI workflows (workflows/*.json) using the real ComfyUI frontend,
+// Turn workflows/api/*.json into drag-and-drop UI workflows (example_workflows/*.json) using the real ComfyUI frontend,
 // so widget order and links are exactly what ComfyUI itself saves.
 // Needs a running ComfyUI with TitleRig installed and Playwright (Node). Run: node workflows/to_ui.js [server_url]
 // --verify: also load each saved UI file back, let the frontend build the prompt, queue it and wait for success.
@@ -9,7 +9,10 @@ const { chromium } = require("playwright");
 
 const HERE = __dirname;
 const RUNNABLE = ["titlerig_rig_only", "titlerig_audio_react", "titlerig_cutout"];
-const DIRS = [["api", "."], [path.join("api", "bonus"), "bonus"]];
+// UI files ComfyUI should offer as templates go to ../example_workflows (it serves templates from the first of
+// example_workflows / example / examples / workflow / workflows it finds, so they must not sit in workflows/).
+// The paid API bonus workflows stay in workflows/bonus, out of the Templates menu.
+const DIRS = [["api", path.join("..", "example_workflows")], [path.join("api", "bonus"), "bonus"]];
 const args = process.argv.slice(2);
 const VERIFY = args.includes("--verify");
 const URL = args.find((a) => !a.startsWith("--")) || "http://127.0.0.1:8188";

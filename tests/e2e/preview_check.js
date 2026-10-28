@@ -6,7 +6,7 @@ const { chromium } = require("playwright");
 
 const URL = process.argv[2] || "http://127.0.0.1:8188";
 const OUT = process.argv[3] || path.join(__dirname, "..", "..", "examples", "out");
-const WF = path.join(__dirname, "..", "..", "workflows", "titlerig_rig_only.json");
+const WF = path.join(__dirname, "..", "..", "example_workflows", "titlerig_rig_only.json");
 
 function fail(msg) { console.error("FAIL:", msg); process.exit(1); }
 

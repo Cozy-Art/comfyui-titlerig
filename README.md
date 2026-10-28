@@ -110,16 +110,16 @@ python -m pytest -q
 
 | Workflow | Kind | What it makes |
 | --- | --- | --- |
-| `workflows/titlerig_rig_only.json` | open, no models (CPU) | rig stills and passes |
-| `workflows/titlerig_audio_react.json` | open, no models (CPU) | an audio-reactive title clip with sound |
-| `workflows/titlerig_cutout.json` | open, no models (CPU) | letters pop in with an image inside and a colour outside (swap either for Load Video) |
-| `workflows/titlerig_ltx2_animated.json` | **open weights** | Audio React → rig depth frames → LTX-2 + Depth Control IC-LoRA → Spell-Lock → MP4 with your track |
-| `workflows/titlerig_flux_still.json` | **open weights** | rig depth → FLUX.1 Depth [dev] → Spell-Lock → PNG + alpha cutout |
-| `workflows/titlerig_flux2_still.json` | **open weights** | rig depth as a reference → FLUX.2-dev → Spell-Lock → PNG + alpha cutout |
+| `example_workflows/titlerig_rig_only.json` | open, no models (CPU) | rig stills and passes |
+| `example_workflows/titlerig_audio_react.json` | open, no models (CPU) | an audio-reactive title clip with sound |
+| `example_workflows/titlerig_cutout.json` | open, no models (CPU) | letters pop in with an image inside and a colour outside (swap either for Load Video) |
+| `example_workflows/titlerig_ltx2_animated.json` | **open weights** | Audio React → rig depth frames → LTX-2 + Depth Control IC-LoRA → Spell-Lock → MP4 with your track |
+| `example_workflows/titlerig_flux_still.json` | **open weights** | rig depth → FLUX.1 Depth [dev] → Spell-Lock → PNG + alpha cutout |
+| `example_workflows/titlerig_flux2_still.json` | **open weights** | rig depth as a reference → FLUX.2-dev → Spell-Lock → PNG + alpha cutout |
 | `workflows/bonus/titlerig_flux3.json` | API (paid) | rig beauty as image 1 → FLUX 3 → Spell-Lock |
 | `workflows/bonus/titlerig_recraft_vector.json` | API (paid) | Recraft vectorize + Recraft V4 vector, next to TitleRig's free SVG export |
 
-The open-weights workflows are the contest entry. The `bonus/` API workflows are kept apart and are never part of it. `workflows/README.md` lists every model file with its Hugging Face link, target folder and licence. The AI workflows use only core ComfyUI nodes plus TitleRig (ComfyUI 0.43+).
+**Open them from ComfyUI's Templates menu → Extensions → comfyui-titlerig**, or drag a `.json` onto the canvas. The open-weights workflows are the contest entry. The `bonus/` API workflows are kept apart and are never part of it. `workflows/README.md` lists every model file with its Hugging Face link, target folder and licence. The AI workflows use only core ComfyUI nodes plus TitleRig (ComfyUI 0.43+).
 
 ## Demos (rig only, rendered on CPU)
 
