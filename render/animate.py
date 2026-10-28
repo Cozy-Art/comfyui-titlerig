@@ -20,7 +20,7 @@ LETTER_EFFECTS = ("flip_x", "spin_y", "roll_z", "pop", "drop", "slide", "squash"
                   "skew_x", "skew_y", "taper_x", "taper_y", "corner_pin")
 SHADOW_EFFECTS = ("shadow_length", "shadow_angle", "shadow_opacity", "shadow_softness")
 LOOK_EFFECTS = ("extrude", "light")
-LAYOUT_EFFECTS = ("wave", "tilt_x", "tilt_y", "bend")
+LAYOUT_EFFECTS = ("wave", "tilt_x", "tilt_y", "bend", "wrap_spin")
 EFFECTS = LETTER_EFFECTS + LAYOUT_EFFECTS + SHADOW_EFFECTS + LOOK_EFFECTS
 EASINGS = ("linear", "in", "out", "in_out", "sine", "expo", "back", "elastic", "bounce", "spring", "steps")
 RESPONSES = ("follow", "trigger")
@@ -35,7 +35,7 @@ DEFAULT_AMOUNT = {"flip_x": 90.0, "spin_y": 360.0, "roll_z": 180.0, "pop": 100.0
                   "wave": 360.0, "shadow_length": 60.0, "shadow_angle": 45.0, "shadow_opacity": 100.0,
                   "shadow_softness": 12.0, "squash": 35.0, "shake": 12.0, "extrude": 30.0, "light": 90.0,
                   "tilt_x": 30.0, "tilt_y": 30.0, "bend": 50.0, "skew_x": 20.0, "skew_y": 12.0,
-                  "taper_x": 50.0, "taper_y": 40.0, "corner_pin": 100.0}
+                  "taper_x": 50.0, "taper_y": 40.0, "corner_pin": 100.0, "wrap_spin": 360.0}
 # squash: % squash (negative = stretch tall), shake: px jitter, extrude: px depth, light: deg of key-light sweep,
 # tilt_x/tilt_y: deg, bend: % of full arc bend, skew_x/skew_y: deg, taper_x/taper_y: % (negative flares),
 # corner_pin: % of the track's `corners` offsets ([[dx,dy] x4], TL TR BR BL, px)
@@ -306,6 +306,8 @@ def _apply(d: dict, effect: str, amount: float, v: float, corners=None) -> None:
         d.tilt_x += amount * v
     elif effect == "tilt_y":
         d.tilt_y += amount * v
+    elif effect == "wrap_spin":
+        d.wrap_phase += amount * v
     elif effect == "bend":
         d.bend = float(np.clip(d.bend + amount / 100.0 * v, -1, 1))
     else:

@@ -48,7 +48,7 @@ def test_in_settles_to_rest_and_stagger_delays():
 @pytest.mark.parametrize("effect", LETTER_EFFECTS + LAYOUT_EFFECTS)
 def test_every_effect_moves_letters_then_rests(effect):
     g = Glyphs(text="AB", size=80)
-    lay = Layout(flag_amp=10) if effect == "wave" else Layout()
+    lay = Layout(flag_amp=10) if effect == "wave" else Layout(mode="ticker") if effect == "wrap_spin" else Layout()
     if effect == "shake":
         lay = Layout()
     anim = Anim([Track(effect=effect, duration=0.25, stagger=0.1, easing="in_out")], fps=12, hold=0.2)
@@ -56,7 +56,7 @@ def test_every_effect_moves_letters_then_rests(effect):
     assert fr.shape[1:] == (160, 320)
     rest = render_frames(Anim([], fps=12), g, lay=lay, passes=("face",), **FAST)["face"][0]
     assert any(not np.array_equal(f, rest) for f in fr)  # the effect moves the letters ...
-    if effect not in ("wave", "shake"):  # ... and the last frame is back at rest (shake at v=0 is still)
+    if effect not in ("wave", "shake", "wrap_spin"):  # ... and the last frame is back at rest
         assert np.array_equal(fr[-1], rest)
 
 

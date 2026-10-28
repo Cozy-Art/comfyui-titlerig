@@ -6,7 +6,8 @@ from dataclasses import dataclass
 
 import numpy as np
 
-LAYOUT_MODES = ("flat", "arc")
+LAYOUT_MODES = ("flat", "arc", "ticker", "sphere", "cube")
+WRAP_MODES = ("ticker", "sphere", "cube")
 
 
 @dataclass
@@ -26,6 +27,11 @@ class Layout:
     flag_wavelength: float = 420.0     # px
     flag_phase: float = 0.0            # degrees, animate this to make the flag ripple
     flag_shade: float = 0.5            # 0..1, fabric light/dark along the wave
+    wrap_radius: float = 0.32          # ticker / cube: fraction of canvas width; sphere: fraction of canvas height
+    wrap_phase: float = 0.0            # degrees the wrap is turned (animate with the wrap_spin effect)
+    wrap_tilt: float = 15.0            # sphere: degrees the globe leans toward the viewer
+    wrap_repeat: bool = True           # ticker / cube: repeat the text around the band
+    wrap_shade: float = 0.6            # 0..1, darken toward the silhouette so the form reads
 
 
 # ---------------------------------------------------------------------------------------------- bezier
@@ -144,3 +150,75 @@ def flag_shading(W: int, lay: Layout) -> np.ndarray:
     x = np.arange(W, dtype=np.float32)
     slope = np.cos(2 * math.pi * x / max(lay.flag_wavelength, 1.0) + math.radians(lay.flag_phase))
     return (1.0 + 0.35 * lay.flag_shade * slope).astype(np.float32)
+
+
+# ---------------------------------------------------------------------------------------------- wraps
+def wrap_maps(W: int, H: int, lay: Layout, text_width: float, cx: float, cy: float, gap: float):
+    """cv2.remap maps that wrap the flat title (centred on cx, cy) onto a ticker cylinder, sphere or cube band.
+
+    Returns (map_x, map_y, shade) where shade is a per-pixel brightness multiplier (0 outside the surface)."""
+    xs = np.arange(W, dtype=np.float64)
+    ys = np.arange(H, dtype=np.float64)
+    phase = math.radians(lay.wrap_phase)
+    period = text_width + gap
+    k = float(np.clip(lay.wrap_shade, 0, 1))
+
+    def tile(u):
+        if lay.wrap_repeat:
+            return ((u + period / 2) % period) - period / 2
+        return u
+
+    if lay.mode == "sphere":
+        R = max(lay.wrap_radius * H, 2.0)
+        X = (xs[None, :] - W / 2) / R
+        Y = (ys[:, None] - cy) / R
+        r2 = X ** 2 + Y ** 2
+        inside = r2 < 1.0
+        Z = np.sqrt(np.clip(1.0 - r2, 0, 1))
+        t = math.radians(lay.wrap_tilt)
+        Y2 = Y * math.cos(t) - Z * math.sin(t)  # lean the globe's top toward the viewer
+        Z2 = Y * math.sin(t) + Z * math.cos(t)
+        lon = np.arctan2(X, Z2) + phase
+        lat = np.arcsin(np.clip(Y2, -1, 1))
+        u = (((lon + math.pi) % (2 * math.pi)) - math.pi) * R
+        mx = cx + (u if not lay.wrap_repeat else tile(u))
+        my = cy + lat * R
+        shade = np.where(inside, (1 - k) + k * Z, 0.0)
+        mx = np.where(inside, mx, -1.0)
+        return mx.astype(np.float32), my.astype(np.float32), shade.astype(np.float32)
+
+    R = max(lay.wrap_radius * W, 2.0)
+    X = (xs - W / 2) / R
+    band = 2 * math.pi * R if lay.mode == "ticker" else 8 * R / math.sqrt(2)
+    if lay.wrap_repeat:  # whole copies around the closed band, so a full spin has no seam
+        period = band / max(1, round(band / max(period, 1.0)))
+    if lay.mode == "ticker":
+        inside = np.abs(X) < 1.0
+        theta = np.arcsin(np.clip(X, -1, 1))
+        u = tile(theta * R - phase * R)
+        col_shade = np.where(inside, (1 - k) + k * np.cos(theta), 0.0)
+    else:  # cube band: four faces of side 2a, a = R / sqrt(2) so the band's corners touch the radius
+        a = R / math.sqrt(2)
+        u = np.full(W, np.nan)
+        col_shade = np.zeros(W)
+        best = np.full(W, -1.0)
+        for face in range(4):
+            al = phase + face * math.pi / 2
+            beta = (al + math.pi) % (2 * math.pi) - math.pi  # this face's angle to the camera, -pi..pi
+            c = math.cos(beta)
+            if c <= 1e-3:
+                continue
+            sx = (xs - W / 2 - a * math.sin(beta)) / c  # local coordinate along this face
+            on = np.abs(sx) <= a
+            take = on & (c > best)
+            u = np.where(take, beta / (math.pi / 2) * 2 * a + sx, u)  # continuous across neighbouring faces
+            col_shade = np.where(take, (1 - k) + k * c, col_shade)
+            best = np.where(take, c, best)
+        inside = ~np.isnan(u)
+        u = np.where(inside, u, 0.0) - phase / (math.pi / 2) * 2 * a  # material coordinate turns with the cube
+        u = tile(u)
+    mx = np.where(inside, cx + u, -1.0)
+    map_x = np.tile(mx[None, :], (H, 1)).astype(np.float32)
+    map_y = np.tile(ys[:, None], (1, W)).astype(np.float32)
+    shade = np.tile(col_shade[None, :], (H, 1)).astype(np.float32)
+    return map_x, map_y, shade

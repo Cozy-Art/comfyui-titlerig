@@ -126,15 +126,25 @@ class TitleRigLayout:
             "flag_phase": ("FLOAT", {"default": 0.0, "min": -3600, "max": 3600, "step": 1}),
             "flag_shade": ("FLOAT", {"default": 0.5, "min": 0, "max": 1, "step": 0.05}),
         }, "optional": {
+            "wrap_radius": ("FLOAT", {"default": 0.32, "min": 0.02, "max": 3, "step": 0.01,
+                                      "tooltip": "ticker / cube: x canvas width · sphere: x canvas height"}),
+            "wrap_phase": ("FLOAT", {"default": 0.0, "min": -36000, "max": 36000, "step": 1,
+                                     "tooltip": "degrees the wrap is turned (animate with wrap_spin)"}),
+            "wrap_tilt": ("FLOAT", {"default": 15.0, "min": -89, "max": 89, "step": 1, "tooltip": "sphere lean"}),
+            "wrap_repeat": ("BOOLEAN", {"default": True, "tooltip": "repeat the text around the band"}),
+            "wrap_shade": ("FLOAT", {"default": 0.6, "min": 0, "max": 1, "step": 0.05}),
             "curve_json": ("STRING", {"default": "", "tooltip": "arc: custom cubic bezier [[x,y]x4] in 0..1 canvas coords"}),
         }}
 
     def build(self, mode, bend, align, bulge, tilt_x, tilt_y, fov, vanish, vp_x, vp_y,
-              flag_amp, flag_wavelength, flag_phase, flag_shade, curve_json=""):
+              flag_amp, flag_wavelength, flag_phase, flag_shade, wrap_radius=0.32, wrap_phase=0.0, wrap_tilt=15.0,
+              wrap_repeat=True, wrap_shade=0.6, curve_json=""):
         curve = tuple(map(tuple, json.loads(curve_json))) if curve_json.strip() else None
         return (Layout(mode=mode, bend=bend, curve=curve, align=align, bulge=bulge, tilt_x=tilt_x, tilt_y=tilt_y,
                        fov=fov, vanish=vanish, vp_x=vp_x, vp_y=vp_y, flag_amp=flag_amp,
-                       flag_wavelength=flag_wavelength, flag_phase=flag_phase, flag_shade=flag_shade),)
+                       flag_wavelength=flag_wavelength, flag_phase=flag_phase, flag_shade=flag_shade,
+                       wrap_radius=wrap_radius, wrap_phase=wrap_phase, wrap_tilt=wrap_tilt, wrap_repeat=wrap_repeat,
+                       wrap_shade=wrap_shade),)
 
 
 class TitleRigStylePreset:

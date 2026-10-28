@@ -17,8 +17,8 @@ import numpy as np
 from PIL import Image, ImageDraw, ImageFont
 from scipy import ndimage
 
-from .geometry import (ArcPath, Layout, bend_curve, bulge_scale, flag_maps, flag_shading,
-                       tilt_homography)
+from .geometry import (WRAP_MODES, ArcPath, Layout, bend_curve, bulge_scale, flag_maps, flag_shading,
+                       tilt_homography, wrap_maps)
 
 FONT_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "fonts")
 GUIDE_LINES = ("ascender", "cap", "x-height", "mid", "baseline", "descender")
@@ -323,6 +323,12 @@ def render_title(g: Glyphs, look: Look3D | None = None, shadow: Shadow | None = 
     lay = lay or Layout()
     W, H = width, height
     face, ids, m, geo, chars = _letter_layers(g, W, H, lay)
+    wrap = None
+    if lay.mode in WRAP_MODES:  # wrap the flat title onto a ticker cylinder, sphere or cube band
+        wx, wy, wshade = wrap_maps(W, H, lay, m["width"], W / 2, geo["mid_y"], 0.6 * g.size)
+        face = cv2.remap(face, wx, wy, cv2.INTER_LINEAR, borderValue=0)
+        ids = cv2.remap(ids.astype(np.float32), wx, wy, cv2.INTER_NEAREST, borderValue=0).astype(np.int32)
+        wrap = (wx, wy, wshade)
     if lay.flag_amp:
         mx, my = flag_maps(W, H, lay)
         face = cv2.remap(face, mx, my, cv2.INTER_LINEAR, borderValue=0)
@@ -389,6 +395,10 @@ def render_title(g: Glyphs, look: Look3D | None = None, shadow: Shadow | None = 
 
     sc = _rgb(look.side)
     side_rgb = sc[None, None] * (0.55 + 0.45 * side_depth[..., None])
+    if wrap is not None and lay.wrap_shade:
+        ws = wrap[2][y0:y1, x0:x1, None]
+        face_rgb = np.clip(face_rgb * ws, 0, 1)
+        side_rgb = np.clip(side_rgb * np.maximum(ws, 1 - lay.wrap_shade), 0, 1)
     if lay.flag_amp and lay.flag_shade:
         shade = flag_shading(FW, lay)[None, x0:x1, None]
         face_rgb = np.clip(face_rgb * shade, 0, 1)
@@ -432,6 +442,8 @@ def render_title(g: Glyphs, look: Look3D | None = None, shadow: Shadow | None = 
     W, H = FW, FH
     guides = (draw_guides(W, H, geo["ox"], geo["baseline"], m, path=geo["path"], s_centre=geo["s_centre"],
                           mid_y=geo["mid_y"], show=show) if show else np.zeros((H, W, 4), np.float32))
+    if wrap is not None and show:
+        guides = cv2.remap(guides, wrap[0], wrap[1], cv2.INTER_LINEAR, borderValue=0)
     if lay.flag_amp and show:
         guides = cv2.remap(guides, mx, my, cv2.INTER_LINEAR, borderValue=0)
 
