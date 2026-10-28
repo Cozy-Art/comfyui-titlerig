@@ -419,23 +419,25 @@ def composite(under: dict, over: dict) -> dict:
     return out
 
 
+def render_frame(anim: Anim, g: Glyphs, look: Look3D | None, shadow: Shadow | None, width: int, height: int,
+                 lay: Layout, f: int, passes=ANIM_PASSES) -> dict[str, np.ndarray]:
+    """One animation frame: posed rig + any magnet words composited on top."""
+    gf, lf, sf, kf = pose(anim, g, lay, f, shadow, look, size=(width, height))
+    p = render_title(gf, kf, sf, width, height, lf, guides="all" if "guides" in passes else "none")
+    for mg in anim.magnets:  # a magnet word is drawn on top, where the magnet is
+        if mg.text.strip():
+            mx, my = mg.position(f / anim.fps, width, height)
+            mw = Glyphs(text=mg.text, font=mg.font, size=mg.size, word={"dx": mx - width / 2, "dy": my - height / 2})
+            p = composite(p, render_title(mw, MAGNET_LOOK, Shadow(on=False), width, height, Layout(), guides="none"))
+    return {k: p[k] for k in passes}
+
+
 def render_frames(anim: Anim, g: Glyphs, look: Look3D | None = None, shadow: Shadow | None = None,
                   width: int = 1280, height: int = 720, lay: Layout | None = None,
                   passes=ANIM_PASSES, workers: int = 4) -> dict[str, np.ndarray]:
     """Render every frame; returns {pass: (N, H, W[, C]) float32}. Frames render in parallel threads."""
     lay = lay or Layout()
     n = anim.n_frames(sum(1 for c in g.text if c.strip()))
-
-    def one(f):
-        gf, lf, sf, kf = pose(anim, g, lay, f, shadow, look, size=(width, height))
-        p = render_title(gf, kf, sf, width, height, lf, guides="all" if "guides" in passes else "none")
-        for mg in anim.magnets:  # a magnet word is drawn on top, where the magnet is
-            if mg.text.strip():
-                mx, my = mg.position(f / anim.fps, width, height)
-                mw = Glyphs(text=mg.text, font=mg.font, size=mg.size, word={"dx": mx - width / 2, "dy": my - height / 2})
-                p = composite(p, render_title(mw, MAGNET_LOOK, Shadow(on=False), width, height, Layout(), guides="none"))
-        return {k: p[k] for k in passes}
-
     with ThreadPoolExecutor(max_workers=max(1, workers)) as ex:
-        frames = list(ex.map(one, range(n)))
+        frames = list(ex.map(lambda f: render_frame(anim, g, look, shadow, width, height, lay, f, passes), range(n)))
     return {k: np.stack([fr[k] for fr in frames]) for k in passes}
