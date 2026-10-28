@@ -108,3 +108,15 @@ def test_svg_export_node_writes_file(pack, tmp_path, monkeypatch):
     res = m["TitleRigSVGExport"]().export(g, 200, 120, "titlerig/t", 1, 3, "")
     svg, path = res["result"]
     assert svg.startswith("<svg") and os.path.isfile(path) and open(path).read() == svg
+
+
+def test_spell_lock_node(pack):
+    torch = pytest.importorskip("torch")
+    import numpy as np
+    m = pack.NODE_CLASS_MAPPINGS
+    (g,) = m["TitleRigText"]().build(text="AB", font="Anton", size=60, tracking=0)
+    out = m["TitleRigRender"]().render(g, 200, 120)
+    imgs = out[0].repeat(2, 1, 1, 1)
+    res = m["TitleRigSpellLock"]().lock(imgs, out[1], 1.0, 2, 24, out[3])
+    assert res[0].shape == imgs.shape and res[1].shape == (2, 120, 200) and 0 <= res[2] <= 1
+    assert len(__import__("json").loads(res[3])["drift_after"]) == 2

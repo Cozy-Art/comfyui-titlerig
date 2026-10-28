@@ -13,11 +13,15 @@ TitleRig is an open-source ComfyUI node pack that renders exact, animated 3D tit
 | **TitleRig Text** | text, font, size, tracking, per-pair kerning, per-letter overrides |
 | **TitleRig Look 3D** | face colour/gradient, extrusion, bevel, key light, gloss, rim |
 | **TitleRig Shadow** | angle, length, softness, textures: solid · halftone · stripes · checker · noise · pixel · gradient |
-| **TitleRig Layout** | flat or **arc** (bend or custom bezier, align), **bulge**, perspective **tilt X/Y** + fov, **vanishing-point** extrusion, **flag** wave |
+| **TitleRig Layout** | flat, **arc** (bend or custom bezier), **ticker** / **sphere** / **cube** wraps, **bulge**, perspective **tilt X/Y** + fov, **vanishing-point** extrusion, **flag** wave |
 | **TitleRig Render** | one frame, every pass below; `guide_lines` = all · none · e.g. `baseline,mid` |
 | **TitleRig Animate** | one track; chain several. Effects below, per letter or whole word, stagger + order, easing |
 | **TitleRig Audio React** | AUDIO → beats / loudness / spectrum curve for Animate's `drive` input |
 | **TitleRig Render Animation** | frames → IMAGE batches (beauty, alpha, depth, edges, letter_ids) + frame_count + fps |
+| **TitleRig Style Preset** | 13 bright presets → prompts for FLUX.2-dev / FLUX 3 / LTX-2.3 (per the super-skills), a matching Look + Shadow, and settings JSON |
+| **TitleRig Magnet** | a moving magnet (or second word) that attracts / repels letters: strength, range, lag, spring, squash & stretch, audio drive |
+| **TitleRig SVG Export** | the rig traced to a layered SVG: shadow shapes, extrusion tones, one path per letter |
+| **TitleRig Spell-Lock** | snaps AI frames back to the rig's exact silhouette (warp-snap + spill / hole repair, no OCR) and reports drift |
 
 ### Animate
 

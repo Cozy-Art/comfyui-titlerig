@@ -8,6 +8,7 @@ import numpy as np
 from ..render.presets import AUDIO_MODES as PRESET_AUDIO, FORMATS, PRESET_NAMES, ltx23_settings, TARGETS as PROMPT_TARGETS, build_prompt, flux2_settings, flux3_settings, suggested_look
 from ..render.magnet import PATHS as MAGNET_PATHS, POLARITIES, Magnet
 from ..render.svg import rig_svg
+from ..render.spell_lock import spell_lock_batch
 from ..render.audio import AUDIO_MODES, BANDS, audio_curve, curve_preview
 from ..render.animate import DIRECTIONS, EASINGS, EFFECTS, ORDERS, RESPONSES, RETRIGGERS, TARGETS, Anim, Track, render_frames
 from ..render import LAYOUT_MODES, SHADOW_TEXTURES, Glyphs, Layout, Look3D, Shadow, bundled_fonts, render_title
@@ -391,6 +392,38 @@ class TitleRigSVGExport:
         return {"ui": {"text": [os.path.join(sub, fname)]}, "result": (svg, path)}
 
 
+class TitleRigSpellLock:
+    """Spell-Lock v1: restore AI frames to the rig's exact silhouette (mask-based, no OCR)."""
+    CATEGORY = CAT
+    RETURN_TYPES = ("IMAGE", "MASK", "FLOAT", "STRING")
+    RETURN_NAMES = ("images", "fix_mask", "drift", "report")
+    FUNCTION = "lock"
+
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {"required": {
+            "images": ("IMAGE", {"tooltip": "AI frames (FLUX / LTX output)"}),
+            "alpha": ("MASK", {"tooltip": "TitleRig alpha (one frame or one per frame)"}),
+            "strength": ("FLOAT", {"default": 1.0, "min": 0, "max": 1, "step": 0.05}),
+            "tolerance": ("INT", {"default": 2, "min": 0, "max": 32, "tooltip": "px slack at the rig edge (rig res)"}),
+            "ring": ("INT", {"default": 24, "min": 2, "max": 256, "tooltip": "px band around the title that is checked"}),
+        }, "optional": {
+            "edges": ("IMAGE", {"tooltip": "optional TitleRig edges (accepted; drift is measured on silhouettes)"}),
+            "shadow": ("MASK", {"tooltip": "TitleRig shadow: intended shadow never counts as spill"}),
+        }}
+
+    def lock(self, images, alpha, strength, tolerance, ring, edges=None, shadow=None):
+        import torch
+
+        np_ = lambda t: None if t is None else t.detach().cpu().numpy()  # noqa: E731
+        r = spell_lock_batch(np_(images), np_(alpha), np_(edges), strength, tolerance, ring, np_(shadow))
+        drift = float(np.mean(r["drift_after"])) if r["drift_after"] else -1.0
+        report = json.dumps({"drift_before": [round(x, 4) for x in r["drift_before"]],
+                             "drift_after": [round(x, 4) for x in r["drift_after"]],
+                             "fixed_px": [int(m.sum()) for m in r["fix_masks"]]})
+        return (torch.from_numpy(r["frames"]), torch.from_numpy(r["fix_masks"]), drift, report)
+
+
 class TitleRigRenderAnimation:
     CATEGORY = CAT
     RETURN_TYPES = ("IMAGE", "MASK", "IMAGE", "IMAGE", "IMAGE", "INT", "FLOAT")
@@ -432,6 +465,7 @@ NODE_CLASS_MAPPINGS = {
     "TitleRigStylePreset": TitleRigStylePreset,
     "TitleRigMagnet": TitleRigMagnet,
     "TitleRigSVGExport": TitleRigSVGExport,
+    "TitleRigSpellLock": TitleRigSpellLock,
 }
 NODE_DISPLAY_NAME_MAPPINGS = {
     "TitleRigText": "TitleRig Text",
@@ -445,4 +479,5 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "TitleRigStylePreset": "TitleRig Style Preset",
     "TitleRigMagnet": "TitleRig Magnet",
     "TitleRigSVGExport": "TitleRig SVG Export",
+    "TitleRigSpellLock": "TitleRig Spell-Lock",
 }
