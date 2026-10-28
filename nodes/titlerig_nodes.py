@@ -3,6 +3,9 @@ from __future__ import annotations
 
 import json
 
+import numpy as np
+
+from ..render.animate import DIRECTIONS, EASINGS, EFFECTS, ORDERS, TARGETS, Anim, Track, render_frames
 from ..render import LAYOUT_MODES, SHADOW_TEXTURES, Glyphs, Layout, Look3D, Shadow, bundled_fonts, render_title
 
 CAT = "TitleRig"
@@ -144,14 +147,85 @@ class TitleRigRender:
             "look": ("TITLERIG_LOOK",),
             "shadow": ("TITLERIG_SHADOW",),
             "layout": ("TITLERIG_LAYOUT",),
+            "guide_lines": ("STRING", {"default": "all", "tooltip": "all, none, or a comma list of: "
+                                       "ascender, cap, x-height, mid, baseline, descender"}),
         }}
 
-    def render(self, glyphs, width, height, look=None, shadow=None, layout=None):
-        p = render_title(glyphs, look, shadow, width, height, layout)
+    def render(self, glyphs, width, height, look=None, shadow=None, layout=None, guide_lines="all"):
+        p = render_title(glyphs, look, shadow, width, height, layout, guides=guide_lines)
         b = p["beauty"]
         return (_t(b[..., :3]), _t(p["alpha"], True), _t(p["depth"]), _t(p["edges"]), _t(p["normals"]),
                 _t(p["face"], True), _t(p["sides"], True), _t(p["highlight"], True), _t(p["shadow"], True),
                 _t(p["letter_ids"]), _t(p["guides"][..., :3]))
+
+
+class TitleRigAnimate:
+    """One animation track. Chain several by feeding one node's anim into the next."""
+    CATEGORY = CAT
+    RETURN_TYPES = ("TITLERIG_ANIM",)
+    RETURN_NAMES = ("anim",)
+    FUNCTION = "build"
+
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {"required": {
+            "effect": (list(EFFECTS), {"default": "pop"}),
+            "target": (list(TARGETS), {"default": "letters"}),
+            "direction": (list(DIRECTIONS), {"default": "in"}),
+            "easing": (list(EASINGS), {"default": "back"}),
+            "duration": ("FLOAT", {"default": 0.6, "min": 0.02, "max": 30, "step": 0.01, "tooltip": "seconds per letter"}),
+            "stagger": ("FLOAT", {"default": 0.06, "min": 0, "max": 5, "step": 0.005, "tooltip": "seconds between letters"}),
+            "order": (list(ORDERS), {"default": "forward"}),
+            "amount": ("FLOAT", {"default": 0.0, "min": -5000, "max": 5000, "step": 1,
+                                 "tooltip": "0 = effect default. deg for flip/spin/roll/wave, % shrink for pop "
+                                            "(negative grows), px for drop/slide"}),
+            "start": ("FLOAT", {"default": 0.0, "min": 0, "max": 600, "step": 0.01}),
+            "fps": ("FLOAT", {"default": 24.0, "min": 1, "max": 120, "step": 1}),
+            "hold": ("FLOAT", {"default": 0.6, "min": 0, "max": 60, "step": 0.05, "tooltip": "seconds of rest at the end"}),
+            "seed": ("INT", {"default": 0, "min": 0, "max": 2 ** 31 - 1}),
+        }, "optional": {
+            "anim": ("TITLERIG_ANIM", {"tooltip": "chain: tracks from an earlier Animate node"}),
+            "drive": ("TITLERIG_CURVE", {"tooltip": "per-frame 0..1 curve (e.g. TitleRig Audio React) replaces time + easing"}),
+        }}
+
+    def build(self, effect, target, direction, easing, duration, stagger, order, amount, start, fps, hold, seed,
+              anim=None, drive=None):
+        tr = Track(effect=effect, target=target, direction=direction, easing=easing, duration=duration,
+                   stagger=stagger, order=order, amount=amount or None, start=start, seed=seed,
+                   drive=None if drive is None else drive["values"])
+        if drive is not None:
+            fps = drive["fps"]
+        tracks = list(anim.tracks) if anim is not None else []
+        return (Anim(tracks + [tr], fps=fps, hold=hold),)
+
+
+class TitleRigRenderAnimation:
+    CATEGORY = CAT
+    RETURN_TYPES = ("IMAGE", "MASK", "IMAGE", "IMAGE", "IMAGE", "INT", "FLOAT")
+    RETURN_NAMES = ("beauty", "alpha", "depth", "edges", "letter_ids", "frame_count", "fps")
+    FUNCTION = "render"
+
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {"required": {
+            "glyphs": ("TITLERIG_GLYPHS",),
+            "anim": ("TITLERIG_ANIM",),
+            "width": ("INT", {"default": 1280, "min": 64, "max": 4096, "step": 8}),
+            "height": ("INT", {"default": 720, "min": 64, "max": 4096, "step": 8}),
+        }, "optional": {
+            "look": ("TITLERIG_LOOK",),
+            "shadow": ("TITLERIG_SHADOW",),
+            "layout": ("TITLERIG_LAYOUT",),
+        }}
+
+    def render(self, glyphs, anim, width, height, look=None, shadow=None, layout=None):
+        p = render_frames(anim, glyphs, look, shadow, width, height, layout,
+                          passes=("beauty", "alpha", "depth", "edges", "letter_ids"))
+        import torch
+
+        t = lambda a: torch.from_numpy(np.ascontiguousarray(a)).float()  # noqa: E731
+        return (t(p["beauty"][..., :3]), t(p["alpha"]), t(p["depth"]), t(p["edges"]), t(p["letter_ids"]),
+                int(p["beauty"].shape[0]), float(anim.fps))
 
 
 NODE_CLASS_MAPPINGS = {
@@ -160,6 +234,8 @@ NODE_CLASS_MAPPINGS = {
     "TitleRigShadow": TitleRigShadow,
     "TitleRigLayout": TitleRigLayout,
     "TitleRigRender": TitleRigRender,
+    "TitleRigAnimate": TitleRigAnimate,
+    "TitleRigRenderAnimation": TitleRigRenderAnimation,
 }
 NODE_DISPLAY_NAME_MAPPINGS = {
     "TitleRigText": "TitleRig Text",
@@ -167,4 +243,6 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "TitleRigShadow": "TitleRig Shadow",
     "TitleRigLayout": "TitleRig Layout",
     "TitleRigRender": "TitleRig Render",
+    "TitleRigAnimate": "TitleRig Animate",
+    "TitleRigRenderAnimation": "TitleRig Render Animation",
 }

@@ -21,6 +21,7 @@ from .geometry import (ArcPath, Layout, bend_curve, bulge_scale, flag_maps, flag
                        tilt_homography)
 
 FONT_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "fonts")
+GUIDE_LINES = ("ascender", "cap", "x-height", "mid", "baseline", "descender")
 SHADOW_TEXTURES = ("solid", "halftone", "stripes", "checker", "noise", "pixel", "gradient")
 
 
@@ -214,7 +215,9 @@ def _texture(kind: str, H: int, W: int, scale: float, angle: float, intensity: n
 
 
 def render_title(g: Glyphs, look: Look3D | None = None, shadow: Shadow | None = None,
-                 width: int = 1280, height: int = 720, lay: Layout | None = None) -> dict[str, np.ndarray]:
+                 width: int = 1280, height: int = 720, lay: Layout | None = None,
+                 guides="all") -> dict[str, np.ndarray]:
+    """guides: "all", "none"/"" or an iterable / comma string of GUIDE_LINES to draw in the guides pass."""
     look = look or Look3D()
     shadow = shadow or Shadow()
     lay = lay or Layout()
@@ -310,8 +313,10 @@ def render_title(g: Glyphs, look: Look3D | None = None, shadow: Shadow | None = 
     palette[0] = 0
     letter_ids = palette[ids]
 
-    guides = draw_guides(W, H, geo["ox"], geo["baseline"], m, path=geo["path"], s_centre=geo["s_centre"], mid_y=geo["mid_y"])
-    if lay.flag_amp:
+    show = parse_guides(guides)
+    guides = (draw_guides(W, H, geo["ox"], geo["baseline"], m, path=geo["path"], s_centre=geo["s_centre"],
+                          mid_y=geo["mid_y"], show=show) if show else np.zeros((H, W, 4), np.float32))
+    if lay.flag_amp and show:
         guides = cv2.remap(guides, mx, my, cv2.INTER_LINEAR, borderValue=0)
 
     out = {
@@ -335,6 +340,21 @@ def render_title(g: Glyphs, look: Look3D | None = None, shadow: Shadow | None = 
     return out
 
 
+def parse_guides(spec) -> tuple[str, ...]:
+    """'all' | 'none' | 'baseline,mid' | iterable -> the guide lines to draw, in canonical order."""
+    if spec is None or spec is True or (isinstance(spec, str) and spec.strip().lower() == "all"):
+        return GUIDE_LINES
+    if spec is False:
+        return ()
+    if isinstance(spec, str):
+        spec = [] if spec.strip().lower() in ("", "none", "off") else spec.split(",")
+    want = {s.strip().lower() for s in spec}
+    bad = want - set(GUIDE_LINES)
+    if bad:
+        raise ValueError(f"unknown guide lines: {sorted(bad)}; choose from {GUIDE_LINES}")
+    return tuple(n for n in GUIDE_LINES if n in want)
+
+
 def _dashed(d: ImageDraw.ImageDraw, pts: np.ndarray, dash: float, gap: float, fill, width=2):
     """Dashed polyline: walk the points, toggling pen every dash/gap px of arc length."""
     on, left = True, dash
@@ -355,7 +375,8 @@ def _dashed(d: ImageDraw.ImageDraw, pts: np.ndarray, dash: float, gap: float, fi
 
 
 def draw_guides(W: int, H: int, ox: float, baseline: float, m: dict, color=(0.56, 0.57, 1.0),
-                path: ArcPath | None = None, s_centre: float = 0.0, mid_y: float = 0.0) -> np.ndarray:
+                path: ArcPath | None = None, s_centre: float = 0.0, mid_y: float = 0.0,
+                show=GUIDE_LINES) -> np.ndarray:
     """Dashed type guides (RGBA): ascender, cap line, x-height, mid (cap midline), baseline (long dashes), descender.
 
     With an arc path the guides follow the curve, offset along its normal."""
@@ -373,6 +394,8 @@ def draw_guides(W: int, H: int, ox: float, baseline: float, m: dict, color=(0.56
     c = tuple(int(v * 255) for v in color)
     x0, x1 = max(0, int(ox - 40)), min(W, int(ox + m["width"] + 40))
     for name, y in lines.items():
+        if name not in show:
+            continue
         dash = {"baseline": 40, "mid": 5}.get(name, 14)
         fill = c + (230 if name == "baseline" else 150,)
         if path is not None:
