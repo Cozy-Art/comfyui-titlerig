@@ -1,0 +1,14 @@
+[project]
+name = "comfyui-titlerig"
+description = "Exact, animated 3D title text for ComfyUI. Renders depth, edges, masks and textured-shadow passes to drive Flux and LTX — AI can't spell, so we gave it a rig."
+version = "0.1.0"
+license = { file = "LICENSE" }
+dependencies = ["numpy", "pillow>=10.1", "scipy", "opencv-python-headless"]
+
+[project.urls]
+Repository = "https://github.com/Cozy-Art/comfyui-titlerig"
+
+[tool.comfy]
+PublisherId = "cozy-art"
+DisplayName = "TitleRig"
+Icon = ""

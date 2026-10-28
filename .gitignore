@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+.pytest_cache/
+examples/out/
+*.mp4
+*.webm
+.DS_Store

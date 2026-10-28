@@ -1,0 +1,4 @@
+numpy
+pillow>=10.1
+scipy
+opencv-python-headless
