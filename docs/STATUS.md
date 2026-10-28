@@ -19,6 +19,7 @@ this file says where things stand and what a fresh session should know before to
 | Canvas preview (P2) | live preview widget on Render / Render Animation: pass chips, guides, frame scrubber, dark + light palettes | `web/titlerig_preview.js`, `nodes/preview.py` |
 | Workflows (P1c) | rig-only and audio-react example workflows (no models, CPU) | `workflows/` |
 | AI workflows (build night) | LTX-2 depth IC-LoRA video, FLUX.1 Depth still, FLUX.2-dev still; bonus API FLUX 3 + Recraft (never run). Validated structurally, by ComfyUI's own validator (placeholder model files) and by CPU dry runs of the rig half | `workflows/`, `workflows/README.md` |
+| Demo media | four hero clips (MP4 + GIF), 2×2 `hero.gif`, preview widget dark + light screenshots | `docs/media/`, `examples/hero_clips.py` |
 | ComfyUI | 12 nodes load in a CPU ComfyUI; both workflows run headless and round-trip through the frontend | see "Environment" |
 
 Nodes (all under **TitleRig**): Text, Look 3D, Shadow, Layout, Render, Animate, Audio React, Render Animation,
@@ -48,7 +49,7 @@ Style Preset, Magnet, SVG Export, Spell-Lock.
   - The `edges` input is accepted but unused (drift is measured on silhouettes).
 - **Flip X / spin Y:** a letter turning edge-on keeps its extrusion, so it reads as a flat bar for a frame or two.
 - **SVG export:** faces carry their gradient, not the raster bevel lighting (Chrome Slam's emboss highlights are lost).
-- **Wraps:** front faces only (no back-side letters); cube is a band (no top or bottom face); sphere text is not
+- **Wraps:** the globe in `sphere_ticker` is drawn by the demo script, not the rig (the rig renders only the letters). Front faces only (no back-side letters); cube is a band (no top or bottom face); sphere text is not
   designed for the poles.
 - **Magnet:** the magnet word always draws in front of the title, in Anton, with a fixed look (`MAGNET_LOOK`).
 - **Audio:**
@@ -93,16 +94,8 @@ Style Preset, Magnet, SVG Export, Spell-Lock.
 
 ## Next
 
-Build night is tracked in the CLAUDE.md backlog ("Build night"). In order:
+Build night is tracked in the CLAUDE.md backlog ("Build night"). Workflows, demo media and the README are done. Still to do:
 
-1. **AI workflows for the entry:**
-   - (a) `titlerig_ltx2_animated.json`: rig depth / edges → LTX-2 + Depth IC-LoRA → Spell-Lock → MP4. This is the hero.
-   - (b) `titlerig_flux_still.json`: rig depth / edges → FLUX → composite → PNG.
-   - (c) the model and custom-node list in `workflows/README.md`.
-
-   This sandbox has no GPU and no Hugging Face access, so the JSON and node wiring are validated here. The TitleRig half runs on CPU, and the first real run happens on build night (Comfy Cloud / Runpod).
-2. **Bonus API workflows** (FLUX 3, Recraft vector): built, never run, clearly marked API.
-3. **Demo assets** in `docs/media/` for the submission video.
-4. **README polish.**
-5. **Cutout text node** (queued by the user): one image or video inside the letters, another outside.
-6. **After build night (nice to have):** P3 Recraft.
+1. **First real GPU run** of `titlerig_ltx2_animated.json` and `titlerig_flux_still.json` (by the user, on Comfy Cloud or Runpod). Try Spell-Lock on the real output. Tune `max_shift` and the LTX settings if needed.
+2. **Cutout text node** (queued by the user): one image or video inside the letters, another outside.
+3. **After build night (nice to have):** P3 Recraft.

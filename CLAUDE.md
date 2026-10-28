@@ -31,8 +31,8 @@ Full PRD: https://claude.ai/artifact/2qzTkJzmj6nwPUjcdNAad4 (summary in docs/PRD
   - [x] `workflows/titlerig_flux_still.json`: rig depth / edges → FLUX.2-dev or FLUX.1 Depth [dev] → composite with alpha → PNG
   - [x] `workflows/README.md`: exact model files, Hugging Face links, target folders, licences, custom node packs (e.g. ComfyUI-LTXVideo)
   - [x] Bonus API workflows, built but never run: `workflows/bonus/titlerig_flux3.json`, `workflows/bonus/titlerig_recraft_vector.json`
-  - [ ] Demo assets in `docs/media/`: Chrome Slam flip-in, Ben-Day Pop halftone on the beat, ticker on a spinning sphere, Magnet repel-and-snap-back, preview widget dark + light
-  - [ ] README polish: hero GIF, pitch, node list, install, workflows table (open vs API), credits
+  - [x] Demo assets in `docs/media/`: Chrome Slam flip-in, Ben-Day Pop halftone on the beat, ticker on a spinning sphere, Magnet repel-and-snap-back, preview widget dark + light
+  - [x] README polish: hero GIF, pitch, node list, install, workflows table (open vs API), credits
   - [ ] First real GPU run of both AI workflows (by the user on build night); try Spell-Lock on real output
 - [ ] Cutout text node: an `inside` image / video masked to the letters (rig alpha, per frame), an `outside` image / video everywhere else; mask from faces / faces + extrusion / silhouette + shadow; fit cover / contain / stretch; feather; optional outline stroke; optional rig shading on top
 - [ ] Nice to have, after build night — P3 (optional, separate workflow, API — never in the open-weights entry): Recraft vectorize / vector generation via ComfyUI's Recraft partner nodes

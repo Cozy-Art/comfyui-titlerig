@@ -1,5 +1,7 @@
 # TitleRig
 
+![TitleRig: Chrome Slam flip-in, Ben-Day Pop on the beat, a ticker on a spinning globe, Magnet repel and snap back](docs/media/hero.gif)
+
 **AI can't spell. So we gave it a rig.**
 
 TitleRig is an open-source ComfyUI node pack that renders exact, animated 3D title text — extrusion, bevel, lighting and *textured shadows* (halftone, stripes, checker, noise, pixel, gradient) — and outputs every layer as its own connector. Feed the depth and edge passes to Flux or LTX-2 and the AI paints the material while the letters stay spelled right.
@@ -63,7 +65,7 @@ cd ComfyUI/custom_nodes
 git clone https://github.com/Cozy-Art/comfyui-titlerig
 pip install -r comfyui-titlerig/requirements.txt
 ```
-Restart ComfyUI; the nodes appear under **TitleRig**. The renderer is CPU-only — no GPU needed for the rig itself.
+Restart ComfyUI; the nodes appear under **TitleRig**, and the live preview widget loads from `web/`. The renderer is CPU-only — no GPU needed for the rig itself.
 
 ## Try it without ComfyUI
 
@@ -73,23 +75,56 @@ python examples/contact_sheet.py   # stills + layout sheet → examples/out/*.pn
 python examples/animate_demo.py    # effect grid → examples/out/animate_grid.gif
 python examples/audio_demo.py      # audio-reactive clips (+ MP4 with sound if ffmpeg is installed)
 python examples/free_transform_demo.py  # skew / taper / corner pin sheet + sound-driven clip
+python examples/hero_clips.py      # the four demo clips + hero.gif → docs/media/
 python -m pytest -q
 ```
 
-## Models used in the example workflows
+## Workflows
 
-- **LTX-2** + Depth / Canny IC-LoRAs (Lightricks, open weights) — animated titles
-- **FLUX** (Black Forest Labs) depth-conditioned — stills
+| Workflow | Kind | What it makes |
+| --- | --- | --- |
+| `workflows/titlerig_rig_only.json` | open, no models (CPU) | rig stills and passes |
+| `workflows/titlerig_audio_react.json` | open, no models (CPU) | an audio-reactive title clip with sound |
+| `workflows/titlerig_ltx2_animated.json` | **open weights** | Audio React → rig depth frames → LTX-2 + Depth Control IC-LoRA → Spell-Lock → MP4 with your track |
+| `workflows/titlerig_flux_still.json` | **open weights** | rig depth → FLUX.1 Depth [dev] → Spell-Lock → PNG + alpha cutout |
+| `workflows/titlerig_flux2_still.json` | **open weights** | rig depth as a reference → FLUX.2-dev → Spell-Lock → PNG + alpha cutout |
+| `workflows/bonus/titlerig_flux3.json` | API (paid) | rig beauty as image 1 → FLUX 3 → Spell-Lock |
+| `workflows/bonus/titlerig_recraft_vector.json` | API (paid) | Recraft vectorize + Recraft V4 vector, next to TitleRig's free SVG export |
 
-Rig-only workflows (no models, CPU): `workflows/titlerig_rig_only.json` and `workflows/titlerig_audio_react.json`. See `workflows/README.md`.
+The open-weights workflows are the contest entry. The `bonus/` API workflows are kept apart and are never part of it. `workflows/README.md` lists every model file with its Hugging Face link, target folder and licence. The AI workflows use only core ComfyUI nodes plus TitleRig (ComfyUI 0.43+).
 
-![TitleRig rig-only workflow output](docs/media/rig_only_workflow.gif)
+## Demos (rig only, rendered on CPU)
 
-Prompts are written with the open-source [super-skills](https://github.com/Cozy-Art/super-skills) prompting skills (FLUX.2, FLUX 3, Recraft V4) — see `docs/MODEL-SKILLS.md`. Optional API workflows (FLUX 3, Recraft vector) are kept separate from the open-weights workflows.
+`python examples/hero_clips.py` renders these into `docs/media/`. Each one is also saved as an MP4; the Ben-Day clip has sound.
+
+| | |
+| --- | --- |
+| ![Chrome Slam flip-in](docs/media/chrome_slam_flip_in.gif) | ![Ben-Day Pop on the beat](docs/media/ben_day_beat.gif) |
+| **Chrome Slam:** letters flip in one after another and land with a back-ease | **Ben-Day Pop:** kicks pop the letters and throw the halftone shadow; hats make them hop |
+| ![Ticker on a spinning globe](docs/media/sphere_ticker.gif) | ![Magnet repel and snap back](docs/media/magnet_snap_back.gif) |
+| **Sphere wrap:** a ticker on a spinning, tilted globe (seamless loop) | **Magnet:** a magnet word sweeps through; the letters repel, squash and spring back |
+
+### Live preview on the canvas
+
+Render and Render Animation get a preview widget: pass chips, guides and a frame scrubber. It follows ComfyUI's dark and light palettes.
+
+| Dark | Light |
+| --- | --- |
+| ![Preview widget, dark palette](docs/media/preview_widget_dark.png) | ![Preview widget, light palette](docs/media/preview_widget_light.png) |
 
 ## Fonts
 
 Only SIL Open Font License fonts are bundled (`fonts/`, licences alongside). Bring your own `.ttf`/`.otf` by path.
+
+## Credits
+
+- **LTX-2** and the Depth Control IC-LoRA by [Lightricks](https://huggingface.co/Lightricks) (open weights, LTX-2 Community License).
+- **FLUX.1 Depth [dev]** and **FLUX.2 [dev]** by [Black Forest Labs](https://huggingface.co/black-forest-labs) (FLUX.1 [dev] and FLUX.2 [dev] Non-Commercial Licenses).
+- **Gemma 3** text encoder by Google, as used by LTX-2. **Mistral Small** text encoder for FLUX.2.
+- **FLUX 3** (BFL) and **Recraft V4** (Recraft) are paid APIs, used only by the bonus workflows through ComfyUI's partner nodes.
+- **ComfyUI** and its official templates, the source of the LTX-2 and FLUX wiring and sampler settings.
+- Prompts follow the **[super-skills](https://github.com/Cozy-Art/super-skills)** prompting skills by Jason Cozy (flux-2-prompts, flux-3-image-prompts, ltx-2-3-prompts, recraft-v4-prompts).
+- Fonts: **Anton** (Vernon Adams) and **Shrikhand** (Jonny Pinhorn), SIL Open Font License.
 
 ## License
 

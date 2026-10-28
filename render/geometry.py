@@ -170,6 +170,8 @@ def wrap_maps(W: int, H: int, lay: Layout, text_width: float, cx: float, cy: flo
 
     if lay.mode == "sphere":
         R = max(lay.wrap_radius * H, 2.0)
+        if lay.wrap_repeat:  # whole copies around the equator, so a full spin has no seam
+            period = 2 * math.pi * R / max(1, round(2 * math.pi * R / max(period, 1.0)))
         X = (xs[None, :] - W / 2) / R
         Y = (ys[:, None] - cy) / R
         r2 = X ** 2 + Y ** 2

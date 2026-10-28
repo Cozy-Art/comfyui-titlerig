@@ -5,3 +5,4 @@ examples/out/
 *.mp4
 *.webm
 .DS_Store
+!docs/media/*.mp4
