@@ -26,6 +26,10 @@ for name in PRESET_NAMES:
     d = ImageDraw.Draw(im)
     d.rounded_rectangle((10, 10, 18 + 7 * len(name), 30), 9, fill=(255, 255, 255))
     d.text((16, 14), name, fill=(20, 20, 28))
+    tag = (f"extrude {look.extrude}" if look.extrude else "no extrusion") + " · " + \
+          (f"{shadow.texture} shadow" if shadow.on else "no shadow") + (" · embossed" if look.bevel else "")
+    d.rounded_rectangle((10, TH - 30, 18 + 6 * len(tag), TH - 10), 9, fill=(16, 16, 20))
+    d.text((16, TH - 26), tag, fill=(230, 230, 240))
     for k, hx in enumerate(PRESETS[name].palette):
         d.ellipse((TW - 24 - 20 * k, 12, TW - 10 - 20 * k, 26), fill=hx, outline=(255, 255, 255))
     tiles.append(im)

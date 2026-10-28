@@ -5,7 +5,7 @@ import json
 
 import numpy as np
 
-from ..render.presets import FORMATS, PRESET_NAMES, TARGETS as PROMPT_TARGETS, build_prompt, flux2_settings, flux3_settings, suggested_look
+from ..render.presets import AUDIO_MODES as PRESET_AUDIO, FORMATS, PRESET_NAMES, ltx23_settings, TARGETS as PROMPT_TARGETS, build_prompt, flux2_settings, flux3_settings, suggested_look
 from ..render.audio import AUDIO_MODES, BANDS, audio_curve, curve_preview
 from ..render.animate import DIRECTIONS, EASINGS, EFFECTS, ORDERS, RESPONSES, RETRIGGERS, TARGETS, Anim, Track, render_frames
 from ..render import LAYOUT_MODES, SHADOW_TEXTURES, Glyphs, Layout, Look3D, Shadow, bundled_fonts, render_title
@@ -148,22 +148,27 @@ class TitleRigStylePreset:
         return {"required": {
             "preset": (list(PRESET_NAMES), {"default": "Chrome Slam"}),
             "target": (list(PROMPT_TARGETS), {"default": "flux2_dev", "tooltip": "flux2_dev: open-weights still "
-                       "(depth/canny) · flux3: API bonus, rig beauty = image 1 · ltx2_video: animated"}),
+                       "(rig render = image 1) · flux3: API bonus, rig beauty = image 1 · ltx23_video: LTX-2.3 with rig depth"}),
             "colour_words": ("STRING", {"default": "", "tooltip": "optional, e.g. 'teal and hot pink' (replaces the "
                              "preset's palette words)"}),
             "text": ("STRING", {"default": "TITLE", "tooltip": "used when no glyphs are connected"}),
             "format": (list(FORMATS), {"default": "prose", "tooltip": "flux2_dev: prose, or a JSON structured prompt "
                        "(pasted into the prompt string, per the flux-v2 skill)"}),
+            "audio": (list(PRESET_AUDIO), {"default": "own_track", "tooltip": "ltx23_video: own_track = your music "
+                      "is muxed in (generate_audio false) · generate = LTX writes the sound from the prompt"}),
         }, "optional": {
             "glyphs": ("TITLERIG_GLYPHS", {"tooltip": "take the exact text from the rig"}),
+            "frame_count": ("INT", {"default": 121, "min": 1, "max": 2000, "tooltip": "ltx23_video: rig frames "
+                            "(snapped up to 8n+1 in settings)"}),
         }}
 
-    def build(self, preset, target, colour_words, text, format="prose", glyphs=None):
+    def build(self, preset, target, colour_words, text, format="prose", audio="own_track", glyphs=None,
+              frame_count=121):
         word = glyphs.text if glyphs is not None else text
-        pos, neg = build_prompt(preset, word, colour_words, target, format)
+        pos, neg = build_prompt(preset, word, colour_words, target, format, audio)
         look, shadow = suggested_look(preset)
         settings = json.dumps(flux2_settings(word) if target == "flux2_dev" else
-                              flux3_settings() if target == "flux3" else {"target": target, "status": "provisional"})
+                              flux3_settings() if target == "flux3" else ltx23_settings(frame_count, audio=audio, preset=preset))
         return (pos, neg, look, shadow, settings)
 
 

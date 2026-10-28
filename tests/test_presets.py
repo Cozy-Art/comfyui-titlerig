@@ -8,7 +8,7 @@ import pytest
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, ROOT)
 from render import Glyphs, render_title  # noqa: E402
-from render.presets import (FLUX3_FIELDS, flux3_settings, EMBOSSED, PRESET_NAMES, PRESETS, TARGETS, build_prompt, flux2_settings,  # noqa: E402
+from render.presets import (FLUX3_FIELDS, LTX_LOCAL_NEGATIVE, ltx_negative, flux3_settings, ltx23_settings, ltx_frames, EMBOSSED, PRESET_NAMES, PRESETS, TARGETS, build_prompt, flux2_settings,  # noqa: E402
                             flux2_structured, suggested_look)
 
 PRD = ["Chrome Slam", "Fuzzy Grass", "Liquid Glass", "Aero Bubble", "Ben-Day Pop", "Holo Foil", "ChromaDepth",
@@ -47,6 +47,7 @@ def test_flux2_prompt_follows_skill(name):
     assert "image 1" in pos
     look, _ = suggested_look(name)
     assert f"Letter faces {look.face.upper()}" in pos      # hex bound to objects, not the scene
+    assert ("extrusion" in pos) == (look.extrude > 0)      # flat presets never mention extrusion
 
 
 @pytest.mark.parametrize("name", PRD)
@@ -55,7 +56,7 @@ def test_every_target_quotes_text_and_says_what_is_there(name, target):
     pos, neg = build_prompt(name, 'BADD "ASS"', target=target)
     assert "BADD" in pos and "ASS" in pos
     assert not NEGATION.search(pos), pos
-    assert (neg == "") == (target != "ltx2_video")
+    assert (neg == "") == (target != "ltx23_video")
 
 
 def test_colour_words_replace_hex():
@@ -119,3 +120,47 @@ def test_flux3_settings_only_valid_native_fields():
         assert set(s) <= set(FLUX3_FIELDS)
         assert not set(s) & {"seed", "guidance", "steps", "width", "height", "negative_prompt", "mode"}
     assert flux3_settings()["aspect_ratio"] == "auto" and flux3_settings(False)["resolution"] == "1k"
+
+
+@pytest.mark.parametrize("name", PRD)
+@pytest.mark.parametrize("audio", ("own_track", "generate"))
+def test_ltx23_prompt_follows_skill(name, audio):
+    pos, neg = build_prompt(name, "BADD ASS", target="ltx23_video", audio=audio)
+    assert "\n" not in pos and 60 <= len(pos.split()) <= 180          # one paragraph, sweet-spot length
+    assert '"BADD ASS"' in pos and "control video" in pos
+    assert "camera stays locked" in pos                                 # prose agrees with camera_motion: static
+    for setting in ("fps", "1080", "720p", "4K", "seconds", "dolly", "duration"):
+        assert setting not in pos, setting                              # settings never in the prose
+    assert (PRESETS[name].sound in pos) == (audio == "generate")
+    assert neg == ltx_negative(name)                                    # the shipped default, not a pile-on
+    assert neg == LTX_LOCAL_NEGATIVE or "cartoon" not in neg            # cartoon looks drop the contradiction
+
+
+def test_ltx23_settings_and_frames():
+    assert [ltx_frames(n) for n in (1, 2, 9, 10, 121, 192)] == [1, 9, 9, 17, 121, 193]
+    s = ltx23_settings(192, 24, "own_track")
+    assert s["local"]["frames"] == 193 and s["local"]["width"] % 32 == 0 and s["local"]["height"] % 32 == 0
+    assert s["local"]["cfg_scale"] == 1.0 and s["local"]["steps"] == 8
+    assert s["api"]["generate_audio"] is False and s["api"]["camera_motion"] == "static"
+    assert s["api"]["duration"] in (6, 8, 10) and s["api"]["fps"] in (24, 25, 48, 50)
+    assert not set(s["api"]) & {"negative_prompt", "seed", "aspect_ratio", "cfg_scale", "steps"}
+    assert ltx23_settings(audio="generate")["api"]["generate_audio"] is True
+
+
+def test_cartoon_presets_do_not_negate_their_own_style():
+    assert "cartoon" not in ltx_negative("Cel Toon") and "cartoon" not in ltx_negative("Ben-Day Pop")
+    assert ltx_negative("Chrome Slam") == LTX_LOCAL_NEGATIVE
+    assert "cartoon" not in ltx23_settings(preset="Cel Toon")["local"]["negative_prompt"]
+
+
+def test_presets_show_structural_variety():
+    looks = {n: suggested_look(n) for n in PRD}
+    flat_no_shadow = [n for n, (lk, sh) in looks.items() if lk.extrude == 0 and not sh.on]
+    assert len(flat_no_shadow) >= 1
+    assert any(lk.extrude == 0 and sh.on for lk, sh in looks.values())      # flat with a shadow
+    assert any(lk.extrude > 0 and not sh.on for lk, sh in looks.values())   # extruded, no shadow
+    assert len({lk.extrude for lk, _ in looks.values()}) >= 6               # many depths
+    assert len({lk.extrude_angle for lk, _ in looks.values() if lk.extrude}) >= 4  # several directions
+    for n in flat_no_shadow:
+        p = render_title(Glyphs(text="AB", size=80), *looks[n], 300, 160)
+        assert p["sides"].sum() == 0 and p["shadow"].sum() == 0

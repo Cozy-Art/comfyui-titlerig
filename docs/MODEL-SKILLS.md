@@ -15,7 +15,7 @@ prompts for that model — don't guess syntax from older versions.
 - `flux2_dev` follows **flux-2-prompts v1.0.0** (`skills/image/flux-v2`); its schema is vendored in
   `docs/skills/flux-v2/schema.json` and the node's `settings` output is tested against it.
 - `flux3` follows **flux-3-image-prompts** (`skills/image/flux-v3`); rules in `docs/skills/flux-v3/README.md`.
-- `ltx2_video` is provisional until an LTX-2 skill is added here.
+- `ltx23_video` follows **ltx-2-3-prompts v1.0** (2026-10-18); rules in `docs/skills/ltx-2-3/README.md`.
 
 Anything marked "no (API)" lives in its own workflow, is named in the demo video, and never appears in the
 open-weights entry.
