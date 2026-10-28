@@ -19,10 +19,11 @@ TitleRig is an open-source ComfyUI node pack that renders exact, animated 3D tit
 | **TitleRig Render** | one frame, every pass below; `guide_lines` = all · none · e.g. `baseline,mid` |
 | **TitleRig Animate** | one track; chain several. Effects below, per letter or whole word, stagger + order, easing |
 | **TitleRig Audio React** | AUDIO → beats / loudness / spectrum curve for Animate's `drive` input |
-| **TitleRig Render Animation** | frames → IMAGE batches (beauty, alpha, depth, edges, letter_ids) + frame_count + fps |
+| **TitleRig Render Animation** | frames → IMAGE batches (beauty, alpha, depth, edges, letter_ids) + frame_count + fps + face / shadow masks |
 | **TitleRig Style Preset** | 13 bright presets → prompts for FLUX.2-dev / FLUX 3 / LTX-2.3 (per the super-skills), a matching Look + Shadow, and settings JSON |
 | **TitleRig Magnet** | a moving magnet (or second word) that attracts / repels letters: strength, range, lag, spring, squash & stretch, audio drive |
 | **TitleRig SVG Export** | the rig traced to a layered SVG: shadow shapes, extrusion tones, one path per letter |
+| **TitleRig Cutout** | an image or video **inside** the letters and another **outside**, masked by the rig per frame: mask from faces · faces + extrusion · silhouette + shadow; fit cover / contain / stretch; grow, feather, outline stroke, the rig's shading on top |
 | **TitleRig Spell-Lock** | snaps AI frames back to the rig's exact silhouette (warp-snap + spill / hole repair, no OCR) and reports drift |
 
 ### Animate
@@ -111,6 +112,7 @@ python -m pytest -q
 | --- | --- | --- |
 | `workflows/titlerig_rig_only.json` | open, no models (CPU) | rig stills and passes |
 | `workflows/titlerig_audio_react.json` | open, no models (CPU) | an audio-reactive title clip with sound |
+| `workflows/titlerig_cutout.json` | open, no models (CPU) | letters pop in with an image inside and a colour outside (swap either for Load Video) |
 | `workflows/titlerig_ltx2_animated.json` | **open weights** | Audio React → rig depth frames → LTX-2 + Depth Control IC-LoRA → Spell-Lock → MP4 with your track |
 | `workflows/titlerig_flux_still.json` | **open weights** | rig depth → FLUX.1 Depth [dev] → Spell-Lock → PNG + alpha cutout |
 | `workflows/titlerig_flux2_still.json` | **open weights** | rig depth as a reference → FLUX.2-dev → Spell-Lock → PNG + alpha cutout |
@@ -129,6 +131,12 @@ The open-weights workflows are the contest entry. The `bonus/` API workflows are
 | **Chrome Slam:** letters flip in one after another and land with a back-ease | **Ben-Day Pop:** kicks pop the letters and throw the halftone shadow; hats make them hop |
 | ![Ticker on a spinning globe](docs/media/sphere_ticker.gif) | ![Magnet repel and snap back](docs/media/magnet_snap_back.gif) |
 | **Sphere wrap:** a ticker on a spinning, tilted globe (seamless loop) | **Magnet:** a magnet word sweeps through; the letters repel, squash and spring back |
+
+### Cutout text
+
+`python examples/cutout_demo.py`
+
+![Cutout: a video inside WILD with a sky outside; plasma inside POP! lit by the rig; a transparent cutout with its halftone shadow](docs/media/cutout.gif)
 
 ### Live preview on the canvas
 

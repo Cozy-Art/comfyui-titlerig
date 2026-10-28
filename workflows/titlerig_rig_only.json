@@ -1,5 +1,5 @@
 {
-  "id": "77b1ec7b-47d0-487e-89ac-fce8f32730eb",
+  "id": "ef341929-66d3-48dc-b5ed-373890aac377",
   "revision": 0,
   "last_node_id": 13,
   "last_link_id": 15,
@@ -1433,7 +1433,7 @@
       ],
       "size": [
         400,
-        536
+        576
       ],
       "flags": {},
       "order": 10,
@@ -1546,6 +1546,18 @@
           "localized_name": "fps",
           "name": "fps",
           "type": "FLOAT",
+          "links": null
+        },
+        {
+          "localized_name": "face",
+          "name": "face",
+          "type": "MASK",
+          "links": null
+        },
+        {
+          "localized_name": "shadow",
+          "name": "shadow",
+          "type": "MASK",
           "links": null
         }
       ],

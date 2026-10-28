@@ -19,17 +19,18 @@ this file says where things stand and what a fresh session should know before to
 | Canvas preview (P2) | live preview widget on Render / Render Animation: pass chips, guides, frame scrubber, dark + light palettes | `web/titlerig_preview.js`, `nodes/preview.py` |
 | Workflows (P1c) | rig-only and audio-react example workflows (no models, CPU) | `workflows/` |
 | AI workflows (build night) | LTX-2 depth IC-LoRA video, FLUX.1 Depth still, FLUX.2-dev still; bonus API FLUX 3 + Recraft (never run). Validated structurally, by ComfyUI's own validator (placeholder model files) and by CPU dry runs of the rig half | `workflows/`, `workflows/README.md` |
+| Cutout text | image / video inside the letters, another outside; mask from faces, faces + extrusion or silhouette + shadow; fit, loop / hold / ping-pong, grow, feather, stroke, rig shading | `render/cutout.py`, `workflows/titlerig_cutout.json` |
 | Demo media | four hero clips (MP4 + GIF), 2×2 `hero.gif`, preview widget dark + light screenshots | `docs/media/`, `examples/hero_clips.py` |
-| ComfyUI | 12 nodes load in a CPU ComfyUI; both workflows run headless and round-trip through the frontend | see "Environment" |
+| ComfyUI | 13 nodes load in a CPU ComfyUI; the three model-free workflows run headless and round-trip through the frontend | see "Environment" |
 
 Nodes (all under **TitleRig**): Text, Look 3D, Shadow, Layout, Render, Animate, Audio React, Render Animation,
-Style Preset, Magnet, SVG Export, Spell-Lock.
+Style Preset, Magnet, SVG Export, Spell-Lock, Cutout.
 
 ## Verified vs not
 
 - **Verified:**
   - Pure-Python tests: 241 pass and 3 skip (the skips need torch) under the system Python; all pass under the ComfyUI env.
-  - All 12 nodes register in ComfyUI.
+  - All 13 nodes register in ComfyUI.
   - `workflows/run_headless.py` runs both workflows to success.
   - `workflows/to_ui.js --verify` loads each UI file in the real frontend, builds the prompt and runs it.
   - `tests/e2e/preview_check.js` checks the preview widget: it appears, updates on widget changes, the chips toggle, the scrubber works, and both palettes render.
@@ -56,7 +57,7 @@ Style Preset, Magnet, SVG Export, Spell-Lock.
   - Tuned on the synthesised loop in `examples/assets/titlerig_beat.wav`.
   - On real music, `mids` can pick up hats. Lower `sensitivity` or use `spectrum`.
 - **Render Animation:**
-  - Outputs only beauty, alpha, depth, edges and letter_ids. All 11 passes × N frames would be several GB at 720p.
+  - Outputs beauty, alpha, depth, edges, letter_ids, face and shadow (face / shadow were added for Cutout, after the existing outputs so saved links keep working). All 11 passes × N frames would be several GB at 720p.
   - `pad_ltx` holds the last frame up to LTX's `8n + 1` frame count (off by default).
   - Memory: about 10 GB RAM for 121 frames at 1280×720 (all passes are preallocated). Keep LTX clips to about 5 s on small machines.
 - **Speed:** about 0.5 s per 720p frame on CPU (4 threads in Render Animation). The canvas preview "plays" at render speed.
@@ -65,6 +66,8 @@ Style Preset, Magnet, SVG Export, Spell-Lock.
   - The widget polls its upstream graph every 400 ms.
 - **Arc:** the brief said "port Glyph Bench's bezier + bulge", but Glyph Bench's source was never available, so the arc is a fresh implementation.
 - **LTX settings:** per the LTX skill's build notes, the ComfyUI two-stage template sizes and the default local negative are from research and unverified. The settings output says so.
+
+- **Cutout:** the output is as long as the animated mask, or as long as the longest source when the mask is a still. Every source is fitted to the mask's size. `example.png` in the example workflow ships with git installs of ComfyUI; pick any image if yours lacks it.
 
 ## For a fresh session
 
@@ -98,5 +101,4 @@ Style Preset, Magnet, SVG Export, Spell-Lock.
 Build night is tracked in the CLAUDE.md backlog ("Build night"). Workflows, demo media and the README are done. Still to do:
 
 1. **First real GPU run** of `titlerig_ltx2_animated.json` and `titlerig_flux_still.json` (by the user, on Comfy Cloud or Runpod). Try Spell-Lock on the real output. Tune `max_shift` and the LTX settings if needed.
-2. **Cutout text node** (queued by the user): one image or video inside the letters, another outside.
-3. **After build night (nice to have):** P3 Recraft.
+2. **After build night (nice to have):** P3 Recraft.

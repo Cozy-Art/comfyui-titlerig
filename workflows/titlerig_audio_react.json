@@ -1,5 +1,5 @@
 {
-  "id": "e6f3badb-10a1-4eb2-a075-31ae34f2e340",
+  "id": "cff3636e-7716-44ca-afde-26a2ab2d12bc",
   "revision": 0,
   "last_node_id": 29,
   "last_link_id": 17,
@@ -1763,7 +1763,7 @@
       ],
       "size": [
         400,
-        536
+        576
       ],
       "flags": {},
       "order": 11,
@@ -1877,6 +1877,18 @@
           "links": [
             14
           ]
+        },
+        {
+          "localized_name": "face",
+          "name": "face",
+          "type": "MASK",
+          "links": null
+        },
+        {
+          "localized_name": "shadow",
+          "name": "shadow",
+          "type": "MASK",
+          "links": null
         }
       ],
       "properties": {

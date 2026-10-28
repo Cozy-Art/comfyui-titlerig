@@ -34,6 +34,6 @@ Full PRD: https://claude.ai/artifact/2qzTkJzmj6nwPUjcdNAad4 (summary in docs/PRD
   - [x] Demo assets in `docs/media/`: Chrome Slam flip-in, Ben-Day Pop halftone on the beat, ticker on a spinning sphere, Magnet repel-and-snap-back, preview widget dark + light
   - [x] README polish: hero GIF, pitch, node list, install, workflows table (open vs API), credits
   - [ ] First real GPU run of both AI workflows (by the user on build night); try Spell-Lock on real output
-- [ ] Cutout text node: an `inside` image / video masked to the letters (rig alpha, per frame), an `outside` image / video everywhere else; mask from faces / faces + extrusion / silhouette + shadow; fit cover / contain / stretch; feather; optional outline stroke; optional rig shading on top
+- [x] Cutout text node: an `inside` image / video masked to the letters (rig alpha, per frame), an `outside` image / video everywhere else; mask from faces / faces + extrusion / silhouette + shadow; fit cover / contain / stretch; feather; optional outline stroke; optional rig shading on top
 - [ ] Nice to have, after build night — P3 (optional, separate workflow, API — never in the open-weights entry): Recraft vectorize / vector generation via ComfyUI's Recraft partner nodes
 - [x] Install ComfyUI (CPU) in the sandbox, confirm nodes load and the rig-only workflow runs headless

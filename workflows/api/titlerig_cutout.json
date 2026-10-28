@@ -1,0 +1,206 @@
+{
+  "1": {
+    "class_type": "TitleRigText",
+    "inputs": {
+      "text": "CUT OUT",
+      "font": "Anton-Regular",
+      "size": 260,
+      "tracking": 10.0,
+      "kerning_json": "{}",
+      "letters_json": "{}"
+    }
+  },
+  "2": {
+    "class_type": "TitleRigLook3D",
+    "inputs": {
+      "face": "#ffffff",
+      "face_gradient_to": "#ffffff",
+      "side": "#9ca3af",
+      "extrude": 24,
+      "extrude_angle": 55.0,
+      "bevel": 6.0,
+      "bevel_profile": "round",
+      "light_angle": 225.0,
+      "light_height": 0.6,
+      "gloss": 0.9,
+      "rim": 0.4
+    }
+  },
+  "3": {
+    "class_type": "TitleRigShadow",
+    "inputs": {
+      "texture": "halftone",
+      "color": "#0f172a",
+      "angle": 45.0,
+      "length": 36.0,
+      "softness": 0.0,
+      "texture_scale": 10.0,
+      "texture_angle": 45.0,
+      "opacity": 1.0
+    }
+  },
+  "4": {
+    "class_type": "TitleRigLayout",
+    "inputs": {
+      "mode": "flat",
+      "bend": 0.0,
+      "align": 0.5,
+      "bulge": 0.0,
+      "tilt_x": 0.0,
+      "tilt_y": 0.0,
+      "fov": 50.0,
+      "vanish": false,
+      "vp_x": 0.5,
+      "vp_y": 1.4,
+      "flag_amp": 0.0,
+      "flag_wavelength": 420.0,
+      "flag_phase": 0.0,
+      "flag_shade": 0.5,
+      "curve_json": ""
+    }
+  },
+  "9": {
+    "class_type": "TitleRigAnimate",
+    "inputs": {
+      "effect": "pop",
+      "target": "letters",
+      "direction": "in",
+      "easing": "back",
+      "duration": 0.6,
+      "stagger": 0.06,
+      "order": "center_out",
+      "amount": 0.0,
+      "start": 0.0,
+      "fps": 24.0,
+      "hold": 0.8,
+      "shuffle_seed": 0,
+      "letters": "all",
+      "influence": 1.0,
+      "response": "follow",
+      "retrigger": "restart"
+    },
+    "_meta": {
+      "title": "Pop in (back, centre out)"
+    }
+  },
+  "11": {
+    "class_type": "TitleRigRenderAnimation",
+    "inputs": {
+      "glyphs": [
+        "1",
+        0
+      ],
+      "anim": [
+        "9",
+        0
+      ],
+      "width": 960,
+      "height": 540,
+      "look": [
+        "2",
+        0
+      ],
+      "shadow": [
+        "3",
+        0
+      ],
+      "layout": [
+        "4",
+        0
+      ]
+    }
+  },
+  "30": {
+    "class_type": "LoadImage",
+    "inputs": {
+      "image": "example.png"
+    },
+    "_meta": {
+      "title": "Inside (any image; or Load Video frames)"
+    }
+  },
+  "31": {
+    "class_type": "EmptyImage",
+    "inputs": {
+      "width": 960,
+      "height": 540,
+      "batch_size": 1,
+      "color": 1973067
+    },
+    "_meta": {
+      "title": "Outside (swap for Load Image / Load Video)"
+    }
+  },
+  "32": {
+    "class_type": "TitleRigCutout",
+    "inputs": {
+      "inside": [
+        "30",
+        0
+      ],
+      "alpha": [
+        "11",
+        1
+      ],
+      "outside": [
+        "31",
+        0
+      ],
+      "beauty": [
+        "11",
+        0
+      ],
+      "shadow": [
+        "11",
+        8
+      ],
+      "mask_from": "faces + extrusion",
+      "fit_inside": "cover",
+      "fit_outside": "cover",
+      "timing": "loop",
+      "grow": 0.0,
+      "feather": 0.5,
+      "stroke": 4.0,
+      "stroke_color": "#ffd400",
+      "shading": 0.7,
+      "background": "#000000"
+    }
+  },
+  "33": {
+    "class_type": "CreateVideo",
+    "inputs": {
+      "images": [
+        "32",
+        0
+      ],
+      "fps": [
+        "11",
+        6
+      ]
+    }
+  },
+  "34": {
+    "class_type": "SaveVideo",
+    "inputs": {
+      "video": [
+        "33",
+        0
+      ],
+      "filename_prefix": "titlerig/cutout",
+      "format": "mp4",
+      "codec": "h264"
+    }
+  },
+  "35": {
+    "class_type": "PreviewImage",
+    "inputs": {
+      "images": [
+        "32",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Cutout frames"
+    }
+  }
+}

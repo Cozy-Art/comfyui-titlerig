@@ -8,7 +8,7 @@ const path = require("path");
 const { chromium } = require("playwright");
 
 const HERE = __dirname;
-const RUNNABLE = ["titlerig_rig_only", "titlerig_audio_react"];
+const RUNNABLE = ["titlerig_rig_only", "titlerig_audio_react", "titlerig_cutout"];
 const DIRS = [["api", "."], [path.join("api", "bonus"), "bonus"]];
 const args = process.argv.slice(2);
 const VERIFY = args.includes("--verify");

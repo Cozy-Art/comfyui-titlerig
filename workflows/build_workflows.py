@@ -135,6 +135,30 @@ def audio_react():
     return g
 
 
+def cutout():
+    """No AI, no models: big blocky letters pop in with an image inside and a colour (or a Load Video) outside."""
+    g = rig()
+    g["1"]["inputs"].update(text="CUT OUT", size=260, tracking=10.0)
+    g["2"]["inputs"].update(face="#ffffff", face_gradient_to="#ffffff", side="#9ca3af", extrude=24, bevel=6.0)
+    g["4"]["inputs"].update(mode="flat", bend=0.0)
+    g["9"] = node("TitleRigAnimate", dict(ANIM), "Pop in (back, centre out)")
+    g["11"] = node("TitleRigRenderAnimation", {"glyphs": ["1", 0], "anim": ["9", 0], "width": 960, "height": 540,
+                                               "look": ["2", 0], "shadow": ["3", 0], "layout": ["4", 0]})
+    g["30"] = node("LoadImage", {"image": "example.png"}, "Inside (any image; or Load Video frames)")
+    g["31"] = node("EmptyImage", {"width": 960, "height": 540, "batch_size": 1, "color": 0x1E1B4B},
+                   "Outside (swap for Load Image / Load Video)")
+    g["32"] = node("TitleRigCutout", {"inside": ["30", 0], "alpha": ["11", 1], "outside": ["31", 0],
+                                      "beauty": ["11", 0], "shadow": ["11", 8], "mask_from": "faces + extrusion",
+                                      "fit_inside": "cover", "fit_outside": "cover", "timing": "loop", "grow": 0.0,
+                                      "feather": 0.5, "stroke": 4.0, "stroke_color": "#ffd400", "shading": 0.7,
+                                      "background": "#000000"})
+    g["33"] = node("CreateVideo", {"images": ["32", 0], "fps": ["11", 6]})
+    g["34"] = node("SaveVideo", {"video": ["33", 0], "filename_prefix": "titlerig/cutout", "format": "mp4",
+                                 "codec": "h264"})
+    g["35"] = node("PreviewImage", {"images": ["32", 0]}, "Cutout frames")
+    return g
+
+
 def audio_drive():
     """Shared audio-reactive motion (ids 20-25): kicks pop the letters, hats bounce them, kicks throw the shadow."""
     react = {"fps": 24.0, "mode": "beats", "sensitivity": 0.5, "attack": 0.0, "release": 0.18, "start": 0.0,
@@ -338,11 +362,11 @@ def bonus_recraft_vector():
     return g
 
 
-WORKFLOWS = {"titlerig_rig_only": rig_only, "titlerig_audio_react": audio_react,
+WORKFLOWS = {"titlerig_rig_only": rig_only, "titlerig_audio_react": audio_react, "titlerig_cutout": cutout,
              "titlerig_ltx2_animated": ltx2_animated, "titlerig_flux_still": flux_still,
              "titlerig_flux2_still": flux2_still}
 BONUS = {"titlerig_flux3": bonus_flux3, "titlerig_recraft_vector": bonus_recraft_vector}
-RUNNABLE_ON_CPU = ("titlerig_rig_only", "titlerig_audio_react")  # no models, no API: safe to execute anywhere
+RUNNABLE_ON_CPU = ("titlerig_rig_only", "titlerig_audio_react", "titlerig_cutout")  # no models, no API: safe to execute anywhere
 # CPU dry runs of the AI workflows: the AI output node is replaced by the rig beauty pass, model nodes are pruned,
 # so everything TitleRig does around the model (rig, audio, Spell-Lock, cut-out, saves) runs end to end.
 DRYRUN = {"titlerig_ltx2_animated": ("71", ["26", 0]), "titlerig_flux_still": ("19", ["6", 0]),
