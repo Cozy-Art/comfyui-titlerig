@@ -7,7 +7,7 @@ import pytest
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from render import Glyphs, Layout, Look3D, Shadow, render_title  # noqa: E402
-from render.svg import rasterize, rig_layers, rig_svg, to_svg  # noqa: E402
+from render.svg import rasterize, rig_layers, rig_svg, supersampled, to_svg  # noqa: E402
 
 NS = {"s": "http://www.w3.org/2000/svg"}
 FLAT = dict(bevel=0, bevel_profile="flat")
@@ -39,12 +39,15 @@ def test_svg_is_valid_xml_with_layers_and_one_path_per_letter():
 @pytest.mark.parametrize("lay", [Layout(), Layout(mode="arc", bend=0.4), Layout(mode="ticker")])
 def test_traced_shapes_match_the_rig(lay):
     g, look, sh = Glyphs(text="BOAR", size=110), Look3D(extrude=14, **FLAT), Shadow(texture="solid", length=20)
-    L = rig_layers(g, look, sh, 500, 240, lay)
+    import cv2
+    L = rig_layers(g, look, sh, 500, 240, lay, supersample=2)
     r = raster(L)
-    p = render_title(g, look, sh, 500, 240, lay)
-    assert iou(r["faces"], p["face"]) > 0.93
-    assert iou(r["sides"], p["sides"]) > 0.85
-    assert iou(r["shadow"], p["shadow"] > 0.01) > 0.85
+    p = render_title(*supersampled(g, look, sh, lay, 2)[:3], 1000, 480, supersampled(g, look, sh, lay, 2)[3])
+    down = lambda m: cv2.resize(m.astype(np.float32), (500, 240), interpolation=cv2.INTER_AREA)  # noqa: E731
+    # tracing fidelity: the SVG against the very render it was traced from
+    assert iou(r["faces"], down(p["face"])) > 0.95
+    assert iou(r["sides"], down(p["sides"])) > 0.9
+    assert iou(r["shadow"], down(p["shadow"] > 0.01)) > 0.9
 
 
 def test_holes_survive():
