@@ -356,7 +356,7 @@ def _dashed(d: ImageDraw.ImageDraw, pts: np.ndarray, dash: float, gap: float, fi
 
 def draw_guides(W: int, H: int, ox: float, baseline: float, m: dict, color=(0.56, 0.57, 1.0),
                 path: ArcPath | None = None, s_centre: float = 0.0, mid_y: float = 0.0) -> np.ndarray:
-    """Dashed type guides (RGBA): ascender, cap line, x-height, baseline (long dashes), descender.
+    """Dashed type guides (RGBA): ascender, cap line, x-height, mid (cap midline), baseline (long dashes), descender.
 
     With an arc path the guides follow the curve, offset along its normal."""
     img = Image.new("RGBA", (W, H), (0, 0, 0, 0))
@@ -366,13 +366,14 @@ def draw_guides(W: int, H: int, ox: float, baseline: float, m: dict, color=(0.56
         "ascender": top,
         "cap": top + m["cap_top"],
         "x-height": top + m["x_top"],
+        "mid": baseline - (baseline - top - m["cap_top"]) / 2,  # cap midline: arcs, bulge and word pivots run here
         "baseline": baseline,
         "descender": baseline + m["descent"],
     }
     c = tuple(int(v * 255) for v in color)
     x0, x1 = max(0, int(ox - 40)), min(W, int(ox + m["width"] + 40))
     for name, y in lines.items():
-        dash = 14 if name != "baseline" else 40
+        dash = {"baseline": 40, "mid": 5}.get(name, 14)
         fill = c + (230 if name == "baseline" else 150,)
         if path is not None:
             half = m["width"] / 2 + 40

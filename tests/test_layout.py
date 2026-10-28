@@ -95,3 +95,14 @@ def test_full_layout_keeps_pass_contract():
         assert a.min() >= 0 and a.max() <= 1.0001, k
     assert p["face"].sum() > 500 and p["sides"].sum() > 50
     assert (p["face"] * p["sides"]).sum() == 0
+
+
+def test_mid_guide_sits_on_cap_midline_and_follows_arc():
+    from render.core import draw_guides, layout
+    _, _, _, m = layout(Glyphs(text="H", size=120))
+    g = draw_guides(600, 300, 100, 200, m)
+    mid = 200 - (m["ascent"] - m["cap_top"]) / 2
+    assert g[int(round(mid)) - 1:int(round(mid)) + 2, 100:400, 3].max() > 0.3
+    arc = face(mode="arc", bend=0.6)["guides"][..., 3]
+    flat = face()["guides"][..., 3]
+    assert not np.allclose(arc, flat)
