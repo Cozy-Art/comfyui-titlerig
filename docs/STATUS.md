@@ -20,8 +20,10 @@ this file says where things stand and what a fresh session should know before to
 | Workflows (P1c) | rig-only and audio-react example workflows (no models, CPU) | `workflows/` |
 | AI workflows (build night) | LTX-2 depth IC-LoRA video, FLUX.1 Depth still, FLUX.2-dev still; bonus API FLUX 3 + Recraft (never run). Validated structurally, by ComfyUI's own validator (placeholder model files) and by CPU dry runs of the rig half | `workflows/`, `workflows/README.md` |
 | Cutout text | image / video inside the letters, another outside; mask from faces, faces + extrusion or silhouette + shadow; fit, loop / hold / ping-pong, grow, feather, stroke, rig shading | `render/cutout.py`, `workflows/titlerig_cutout.json` |
+| Build night kit | runbook (`docs/BUILD_NIGHT.md`), Runpod setup script generated from `MODELS`, Comfy Cloud fallback (Mac exports depth video, core-only LTX workflow, Spell-Lock at home), submission checklist | `docs/`, `scripts/`, `examples/export_for_cloud.py`, `examples/spell_lock_video.py` |
+| Demo video | 75 s script + shot list; `build_demo.py` assembles it with TitleRig cards, kick-snapped cuts, slots for AI results | `docs/demo/`, `examples/build_demo.py` |
 | Demo media | four hero clips (MP4 + GIF), 2×2 `hero.gif`, preview widget dark + light screenshots | `docs/media/`, `examples/hero_clips.py` |
-| ComfyUI | 13 nodes load in a CPU ComfyUI; the three model-free workflows run headless and round-trip through the frontend | see "Environment" |
+| ComfyUI | 13 nodes load in a CPU ComfyUI (also on a fresh clone following only the README); the three model-free workflows run headless and round-trip through the frontend | see "Environment" |
 
 Nodes (all under **TitleRig**): Text, Look 3D, Shadow, Layout, Render, Animate, Audio React, Render Animation,
 Style Preset, Magnet, SVG Export, Spell-Lock, Cutout.
@@ -29,7 +31,7 @@ Style Preset, Magnet, SVG Export, Spell-Lock, Cutout.
 ## Verified vs not
 
 - **Verified:**
-  - Pure-Python tests: 241 pass and 3 skip (the skips need torch) under the system Python; all pass under the ComfyUI env.
+  - Pure-Python tests: 294 pass and 4 skip (the skips need torch) under the system Python; all pass under the ComfyUI env.
   - All 13 nodes register in ComfyUI.
   - `workflows/run_headless.py` runs both workflows to success.
   - `workflows/to_ui.js --verify` loads each UI file in the real frontend, builds the prompt and runs it.
@@ -100,7 +102,7 @@ Style Preset, Magnet, SVG Export, Spell-Lock, Cutout.
 
 ## Next
 
-Build night is tracked in the CLAUDE.md backlog ("Build night"). Workflows, demo media and the README are done. Still to do:
-
-1. **First real GPU run** of `titlerig_ltx2_animated.json` and `titlerig_flux_still.json` (by the user, on Comfy Cloud or Runpod). Try Spell-Lock on the real output. Tune `max_shift` and the LTX settings if needed.
-2. **After build night (nice to have):** P3 Recraft.
+1. **Build night (the user, on a GPU):** follow `docs/BUILD_NIGHT.md`. Run the LTX-2 hero and the FLUX still, check Spell-Lock's drift on real frames, and record the canvas.
+2. **Video:** drop the results into `docs/demo/slots/`, then run `python examples/build_demo.py`.
+3. **Submit** by Oct 30, 7am PT, following `docs/SUBMIT.md`. Confirm the form fields on the contest page; comfy.org was unreachable from the sandbox.
+4. **After build night (nice to have):** P3 Recraft.
