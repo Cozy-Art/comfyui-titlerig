@@ -1,5 +1,5 @@
 {
-  "id": "09da64d2-c30d-469f-886e-9ce0a036bdd0",
+  "id": "f3fa1d13-5c1d-4ac5-9456-e7d82d37a8ba",
   "revision": 0,
   "last_node_id": 13,
   "last_link_id": 15,
@@ -13,7 +13,7 @@
       ],
       "size": [
         270,
-        178
+        202
       ],
       "flags": {},
       "order": 0,
@@ -74,6 +74,16 @@
             "name": "letters_json"
           },
           "link": null
+        },
+        {
+          "localized_name": "word_json",
+          "name": "word_json",
+          "shape": 7,
+          "type": "STRING",
+          "widget": {
+            "name": "word_json"
+          },
+          "link": null
         }
       ],
       "outputs": [
@@ -96,6 +106,7 @@
         200,
         4,
         "{}",
+        "{}",
         "{}"
       ],
       "widgets_values_named": {
@@ -104,7 +115,8 @@
         "size": 200,
         "tracking": 4,
         "kerning_json": "{}",
-        "letters_json": "{}"
+        "letters_json": "{}",
+        "word_json": "{}"
       }
     },
     {
@@ -112,7 +124,7 @@
       "type": "TitleRigLook3D",
       "pos": [
         100,
-        438
+        462
       ],
       "size": [
         270,
@@ -268,7 +280,7 @@
       "type": "TitleRigShadow",
       "pos": [
         100,
-        866
+        890
       ],
       "size": [
         270,
@@ -391,11 +403,11 @@
       "type": "TitleRigLayout",
       "pos": [
         100,
-        1222
+        1246
       ],
       "size": [
         270,
-        394
+        514
       ],
       "flags": {},
       "order": 3,
@@ -528,6 +540,56 @@
           "link": null
         },
         {
+          "localized_name": "wrap_radius",
+          "name": "wrap_radius",
+          "shape": 7,
+          "type": "FLOAT",
+          "widget": {
+            "name": "wrap_radius"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "wrap_phase",
+          "name": "wrap_phase",
+          "shape": 7,
+          "type": "FLOAT",
+          "widget": {
+            "name": "wrap_phase"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "wrap_tilt",
+          "name": "wrap_tilt",
+          "shape": 7,
+          "type": "FLOAT",
+          "widget": {
+            "name": "wrap_tilt"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "wrap_repeat",
+          "name": "wrap_repeat",
+          "shape": 7,
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "wrap_repeat"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "wrap_shade",
+          "name": "wrap_shade",
+          "shape": 7,
+          "type": "FLOAT",
+          "widget": {
+            "name": "wrap_shade"
+          },
+          "link": null
+        },
+        {
           "localized_name": "curve_json",
           "name": "curve_json",
           "shape": 7,
@@ -567,6 +629,11 @@
         420,
         0,
         0.5,
+        0.32,
+        0,
+        15,
+        true,
+        0.6,
         ""
       ],
       "widgets_values_named": {
@@ -584,6 +651,11 @@
         "flag_wavelength": 420,
         "flag_phase": 0,
         "flag_shade": 0.5,
+        "wrap_radius": 0.32,
+        "wrap_phase": 0,
+        "wrap_tilt": 15,
+        "wrap_repeat": true,
+        "wrap_shade": 0.6,
         "curve_json": ""
       }
     },
@@ -595,8 +667,8 @@
         130
       ],
       "size": [
-        270,
-        306
+        400,
+        576
       ],
       "flags": {},
       "order": 5,
@@ -739,19 +811,21 @@
       "widgets_values": [
         1280,
         720,
-        "all"
+        "all",
+        ""
       ],
       "widgets_values_named": {
         "width": 1280,
         "height": 720,
-        "guide_lines": "all"
+        "guide_lines": "all",
+        "titlerig_preview": ""
       }
     },
     {
       "id": 6,
       "type": "SaveImage",
       "pos": [
-        840,
+        970,
         130
       ],
       "size": [
@@ -798,7 +872,7 @@
       "id": 7,
       "type": "SaveImage",
       "pos": [
-        840,
+        970,
         318
       ],
       "size": [
@@ -845,7 +919,7 @@
       "id": 8,
       "type": "PreviewImage",
       "pos": [
-        840,
+        970,
         506
       ],
       "size": [
@@ -881,11 +955,11 @@
       "type": "TitleRigAnimate",
       "pos": [
         100,
-        1746
+        1890
       ],
       "size": [
         270,
-        438
+        462
       ],
       "flags": {},
       "order": 4,
@@ -1048,6 +1122,16 @@
             "name": "retrigger"
           },
           "link": null
+        },
+        {
+          "localized_name": "corners_json",
+          "name": "corners_json",
+          "shape": 7,
+          "type": "STRING",
+          "widget": {
+            "name": "corners_json"
+          },
+          "link": null
         }
       ],
       "outputs": [
@@ -1080,7 +1164,8 @@
         "all",
         1,
         "follow",
-        "restart"
+        "restart",
+        ""
       ],
       "widgets_values_named": {
         "effect": "pop",
@@ -1098,7 +1183,8 @@
         "letters": "all",
         "influence": 1,
         "response": "follow",
-        "retrigger": "restart"
+        "retrigger": "restart",
+        "corners_json": ""
       }
     },
     {
@@ -1106,11 +1192,11 @@
       "type": "TitleRigAnimate",
       "pos": [
         470,
-        566
+        836
       ],
       "size": [
         270,
-        438
+        462
       ],
       "flags": {},
       "order": 6,
@@ -1273,6 +1359,16 @@
             "name": "retrigger"
           },
           "link": null
+        },
+        {
+          "localized_name": "corners_json",
+          "name": "corners_json",
+          "shape": 7,
+          "type": "STRING",
+          "widget": {
+            "name": "corners_json"
+          },
+          "link": null
         }
       ],
       "outputs": [
@@ -1305,7 +1401,8 @@
         "all",
         1,
         "follow",
-        "restart"
+        "restart",
+        ""
       ],
       "widgets_values_named": {
         "effect": "roll_z",
@@ -1323,19 +1420,20 @@
         "letters": "all",
         "influence": 1,
         "response": "follow",
-        "retrigger": "restart"
+        "retrigger": "restart",
+        "corners_json": ""
       }
     },
     {
       "id": 11,
       "type": "TitleRigRenderAnimation",
       "pos": [
-        840,
+        970,
         662
       ],
       "size": [
-        270.648046875,
-        202
+        400,
+        512
       ],
       "flags": {},
       "order": 10,
@@ -1446,18 +1544,20 @@
       },
       "widgets_values": [
         960,
-        544
+        544,
+        ""
       ],
       "widgets_values_named": {
         "width": 960,
-        "height": 544
+        "height": 544,
+        "titlerig_preview": ""
       }
     },
     {
       "id": 12,
       "type": "SaveAnimatedWEBP",
       "pos": [
-        1210.648046875,
+        1470,
         130
       ],
       "size": [
@@ -1548,7 +1648,7 @@
       "id": 13,
       "type": "SaveAnimatedWEBP",
       "pos": [
-        1210.648046875,
+        1470,
         414
       ],
       "size": [
@@ -1762,7 +1862,7 @@
   "config": {},
   "extra": {
     "ds": {
-      "scale": 0.45782463928967815,
+      "scale": 0.4239465570400822,
       "offset": [
         40,
         40

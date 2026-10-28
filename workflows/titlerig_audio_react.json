@@ -1,5 +1,5 @@
 {
-  "id": "6469375a-3e59-49e3-a855-02eb3d70d30f",
+  "id": "6c6f9825-a2fe-4f65-b7e1-d66234b180af",
   "revision": 0,
   "last_node_id": 29,
   "last_link_id": 17,
@@ -13,7 +13,7 @@
       ],
       "size": [
         270,
-        178
+        202
       ],
       "flags": {},
       "order": 0,
@@ -74,6 +74,16 @@
             "name": "letters_json"
           },
           "link": null
+        },
+        {
+          "localized_name": "word_json",
+          "name": "word_json",
+          "shape": 7,
+          "type": "STRING",
+          "widget": {
+            "name": "word_json"
+          },
+          "link": null
         }
       ],
       "outputs": [
@@ -95,6 +105,7 @@
         150,
         4,
         "{}",
+        "{}",
         "{}"
       ],
       "widgets_values_named": {
@@ -103,7 +114,8 @@
         "size": 150,
         "tracking": 4,
         "kerning_json": "{}",
-        "letters_json": "{}"
+        "letters_json": "{}",
+        "word_json": "{}"
       }
     },
     {
@@ -111,7 +123,7 @@
       "type": "TitleRigLook3D",
       "pos": [
         100,
-        438
+        462
       ],
       "size": [
         270,
@@ -266,7 +278,7 @@
       "type": "TitleRigShadow",
       "pos": [
         100,
-        866
+        890
       ],
       "size": [
         270,
@@ -388,11 +400,11 @@
       "type": "TitleRigLayout",
       "pos": [
         100,
-        1222
+        1246
       ],
       "size": [
         270,
-        394
+        514
       ],
       "flags": {},
       "order": 3,
@@ -525,6 +537,56 @@
           "link": null
         },
         {
+          "localized_name": "wrap_radius",
+          "name": "wrap_radius",
+          "shape": 7,
+          "type": "FLOAT",
+          "widget": {
+            "name": "wrap_radius"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "wrap_phase",
+          "name": "wrap_phase",
+          "shape": 7,
+          "type": "FLOAT",
+          "widget": {
+            "name": "wrap_phase"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "wrap_tilt",
+          "name": "wrap_tilt",
+          "shape": 7,
+          "type": "FLOAT",
+          "widget": {
+            "name": "wrap_tilt"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "wrap_repeat",
+          "name": "wrap_repeat",
+          "shape": 7,
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "wrap_repeat"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "wrap_shade",
+          "name": "wrap_shade",
+          "shape": 7,
+          "type": "FLOAT",
+          "widget": {
+            "name": "wrap_shade"
+          },
+          "link": null
+        },
+        {
           "localized_name": "curve_json",
           "name": "curve_json",
           "shape": 7,
@@ -563,6 +625,11 @@
         420,
         0,
         0.5,
+        0.32,
+        0,
+        15,
+        true,
+        0.6,
         ""
       ],
       "widgets_values_named": {
@@ -580,6 +647,11 @@
         "flag_wavelength": 420,
         "flag_phase": 0,
         "flag_shade": 0.5,
+        "wrap_radius": 0.32,
+        "wrap_phase": 0,
+        "wrap_tilt": 15,
+        "wrap_repeat": true,
+        "wrap_shade": 0.6,
         "curve_json": ""
       }
     },
@@ -588,7 +660,7 @@
       "type": "LoadAudio",
       "pos": [
         100,
-        1746
+        1890
       ],
       "size": [
         282.798828125,
@@ -980,7 +1052,7 @@
       ],
       "size": [
         270,
-        438
+        462
       ],
       "flags": {},
       "order": 7,
@@ -1143,6 +1215,16 @@
             "name": "retrigger"
           },
           "link": null
+        },
+        {
+          "localized_name": "corners_json",
+          "name": "corners_json",
+          "shape": 7,
+          "type": "STRING",
+          "widget": {
+            "name": "corners_json"
+          },
+          "link": null
         }
       ],
       "outputs": [
@@ -1175,7 +1257,8 @@
         "word:1",
         1,
         "follow",
-        "restart"
+        "restart",
+        ""
       ],
       "widgets_values_named": {
         "effect": "pop",
@@ -1193,7 +1276,8 @@
         "letters": "word:1",
         "influence": 1,
         "response": "follow",
-        "retrigger": "restart"
+        "retrigger": "restart",
+        "corners_json": ""
       }
     },
     {
@@ -1205,7 +1289,7 @@
       ],
       "size": [
         270,
-        438
+        462
       ],
       "flags": {},
       "order": 9,
@@ -1368,6 +1452,16 @@
             "name": "retrigger"
           },
           "link": null
+        },
+        {
+          "localized_name": "corners_json",
+          "name": "corners_json",
+          "shape": 7,
+          "type": "STRING",
+          "widget": {
+            "name": "corners_json"
+          },
+          "link": null
         }
       ],
       "outputs": [
@@ -1400,7 +1494,8 @@
         "word:2",
         1,
         "trigger",
-        "finish"
+        "finish",
+        ""
       ],
       "widgets_values_named": {
         "effect": "drop",
@@ -1418,7 +1513,8 @@
         "letters": "word:2",
         "influence": 1,
         "response": "trigger",
-        "retrigger": "finish"
+        "retrigger": "finish",
+        "corners_json": ""
       }
     },
     {
@@ -1430,7 +1526,7 @@
       ],
       "size": [
         270,
-        438
+        462
       ],
       "flags": {},
       "order": 10,
@@ -1593,6 +1689,16 @@
             "name": "retrigger"
           },
           "link": null
+        },
+        {
+          "localized_name": "corners_json",
+          "name": "corners_json",
+          "shape": 7,
+          "type": "STRING",
+          "widget": {
+            "name": "corners_json"
+          },
+          "link": null
         }
       ],
       "outputs": [
@@ -1625,7 +1731,8 @@
         "all",
         1,
         "follow",
-        "restart"
+        "restart",
+        ""
       ],
       "widgets_values_named": {
         "effect": "shadow_length",
@@ -1643,7 +1750,8 @@
         "letters": "all",
         "influence": 1,
         "response": "follow",
-        "retrigger": "restart"
+        "retrigger": "restart",
+        "corners_json": ""
       }
     },
     {
@@ -1654,8 +1762,8 @@
         130
       ],
       "size": [
-        270.648046875,
-        202
+        400,
+        512
       ],
       "flags": {},
       "order": 11,
@@ -1766,18 +1874,20 @@
       },
       "widgets_values": [
         960,
-        544
+        544,
+        ""
       ],
       "widgets_values_named": {
         "width": 960,
-        "height": 544
+        "height": 544,
+        "titlerig_preview": ""
       }
     },
     {
       "id": 27,
       "type": "CreateVideo",
       "pos": [
-        2333.446875,
+        2462.798828125,
         130
       ],
       "size": [
@@ -1871,7 +1981,7 @@
       "id": 28,
       "type": "SaveVideo",
       "pos": [
-        2703.446875,
+        2832.798828125,
         130
       ],
       "size": [
@@ -1965,7 +2075,7 @@
       "type": "PreviewImage",
       "pos": [
         852.798828125,
-        698
+        722
       ],
       "size": [
         140,
