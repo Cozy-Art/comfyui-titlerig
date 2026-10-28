@@ -7,6 +7,7 @@ import numpy as np
 
 from ..render.presets import AUDIO_MODES as PRESET_AUDIO, FORMATS, PRESET_NAMES, ltx23_settings, TARGETS as PROMPT_TARGETS, build_prompt, flux2_settings, flux3_settings, suggested_look
 from ..render.magnet import PATHS as MAGNET_PATHS, POLARITIES, Magnet
+from ..render.svg import rig_svg
 from ..render.audio import AUDIO_MODES, BANDS, audio_curve, curve_preview
 from ..render.animate import DIRECTIONS, EASINGS, EFFECTS, ORDERS, RESPONSES, RETRIGGERS, TARGETS, Anim, Track, render_frames
 from ..render import LAYOUT_MODES, SHADOW_TEXTURES, Glyphs, Layout, Look3D, Shadow, bundled_fonts, render_title
@@ -350,6 +351,46 @@ class TitleRigMagnet:
         return (Anim(list(anim.tracks), fps=anim.fps, hold=max(anim.hold, hold), magnets=list(anim.magnets) + [mg]),)
 
 
+class TitleRigSVGExport:
+    """Trace the rig into a layered SVG (shadow shapes, extrusion tones, one path per letter) and save it."""
+    CATEGORY = CAT
+    RETURN_TYPES = ("STRING", "STRING")
+    RETURN_NAMES = ("svg", "path")
+    FUNCTION = "export"
+    OUTPUT_NODE = True
+
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {"required": {
+            "glyphs": ("TITLERIG_GLYPHS",),
+            "width": ("INT", {"default": 1280, "min": 64, "max": 4096, "step": 8}),
+            "height": ("INT", {"default": 720, "min": 64, "max": 4096, "step": 8}),
+            "filename_prefix": ("STRING", {"default": "titlerig/title"}),
+            "supersample": ("INT", {"default": 2, "min": 1, "max": 4, "tooltip": "trace at this multiple for smoother edges"}),
+            "side_tones": ("INT", {"default": 4, "min": 1, "max": 12, "tooltip": "extrusion depth bands"}),
+            "background": ("STRING", {"default": "", "tooltip": "hex fill behind the title (empty = transparent)"}),
+        }, "optional": {
+            "look": ("TITLERIG_LOOK",),
+            "shadow": ("TITLERIG_SHADOW",),
+            "layout": ("TITLERIG_LAYOUT",),
+        }}
+
+    def export(self, glyphs, width, height, filename_prefix, supersample, side_tones, background,
+               look=None, shadow=None, layout=None):
+        import os
+
+        import folder_paths  # ComfyUI
+
+        svg = rig_svg(glyphs, look, shadow, width, height, layout, supersample, side_tones, background or None)
+        full, name, counter, sub, _ = folder_paths.get_save_image_path(filename_prefix, folder_paths.get_output_directory(),
+                                                                         width, height)
+        fname = f"{name}_{counter:05}_.svg"
+        path = os.path.join(full, fname)
+        with open(path, "w", encoding="utf-8") as f:
+            f.write(svg)
+        return {"ui": {"text": [os.path.join(sub, fname)]}, "result": (svg, path)}
+
+
 class TitleRigRenderAnimation:
     CATEGORY = CAT
     RETURN_TYPES = ("IMAGE", "MASK", "IMAGE", "IMAGE", "IMAGE", "INT", "FLOAT")
@@ -390,6 +431,7 @@ NODE_CLASS_MAPPINGS = {
     "TitleRigAudioReact": TitleRigAudioReact,
     "TitleRigStylePreset": TitleRigStylePreset,
     "TitleRigMagnet": TitleRigMagnet,
+    "TitleRigSVGExport": TitleRigSVGExport,
 }
 NODE_DISPLAY_NAME_MAPPINGS = {
     "TitleRigText": "TitleRig Text",
@@ -402,4 +444,5 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "TitleRigAudioReact": "TitleRig Audio React",
     "TitleRigStylePreset": "TitleRig Style Preset",
     "TitleRigMagnet": "TitleRig Magnet",
+    "TitleRigSVGExport": "TitleRig SVG Export",
 }

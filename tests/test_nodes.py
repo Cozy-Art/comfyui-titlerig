@@ -89,3 +89,22 @@ def test_magnet_node_chains_after_animate(pack):
     (a,) = m["TitleRigAnimate"]().build(**_defaults(m["TitleRigAnimate"]))
     (b,) = m["TitleRigMagnet"]().build(**{**_defaults(m["TitleRigMagnet"]), "anim": a, "magnet_text": "M"})
     assert len(b.tracks) == 1 and len(b.magnets) == 1 and b.magnets[0].text == "M"
+
+
+def test_svg_export_node_writes_file(pack, tmp_path, monkeypatch):
+    import types
+    fp = types.ModuleType("folder_paths")
+    fp.get_output_directory = lambda: str(tmp_path)
+
+    def save_path(prefix, out, w, h):
+        d = os.path.join(out, os.path.dirname(prefix))
+        os.makedirs(d, exist_ok=True)
+        return d, os.path.basename(prefix), 1, os.path.dirname(prefix), prefix
+
+    fp.get_save_image_path = save_path
+    monkeypatch.setitem(sys.modules, "folder_paths", fp)
+    m = pack.NODE_CLASS_MAPPINGS
+    (g,) = m["TitleRigText"]().build(text="AB", font="Anton", size=60, tracking=0)
+    res = m["TitleRigSVGExport"]().export(g, 200, 120, "titlerig/t", 1, 3, "")
+    svg, path = res["result"]
+    assert svg.startswith("<svg") and os.path.isfile(path) and open(path).read() == svg
