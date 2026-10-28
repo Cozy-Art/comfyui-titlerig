@@ -3,10 +3,10 @@ import os
 import sys
 
 import numpy as np
-from PIL import Image
+from PIL import Image, ImageDraw
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from render import Glyphs, Look3D, Shadow, render_title  # noqa: E402
+from render import Glyphs, Layout, Look3D, Shadow, render_title  # noqa: E402
 
 OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "out")
 os.makedirs(OUT, exist_ok=True)
@@ -48,4 +48,33 @@ sheet = Image.new("RGB", (1100, 420 * len(tiles)), (20, 20, 24))
 for i, t in enumerate(tiles):
     sheet.paste(t, (0, 420 * i))
 sheet.save(os.path.join(OUT, "contact_sheet.png"))
+
+# P0b layouts: arc + bulge, perspective tilt, vanishing point, flag warp (guides overlaid)
+LAYOUTS = {
+    "arc  bend +0.5": Layout(mode="arc", bend=0.5),
+    "smile  bend -0.5  bulge +0.3": Layout(mode="arc", bend=-0.5, bulge=0.3),
+    "bulge +0.6": Layout(bulge=0.6),
+    "tilt_x 40 (crawl)": Layout(tilt_x=40),
+    "tilt_y 30": Layout(tilt_y=30),
+    "vanishing point (0.5, 1.6)": Layout(vanish=True, vp_x=0.5, vp_y=1.6),
+    "flag  amp 26  wave 360": Layout(flag_amp=26, flag_wavelength=360),
+    "arc + tilt_x 35 + flag": Layout(mode="arc", bend=0.35, tilt_x=35, flag_amp=10, flag_wavelength=300),
+}
+look, sh = LOOKS["chrome_slam"]
+lt = []
+for i, (label, lay) in enumerate(LAYOUTS.items()):
+    lk = look if i % 2 else Look3D()
+    p = render_title(Glyphs(text="BADD ASS", font="Anton", size=130, tracking=4), lk, sh if i % 2 else Shadow(),
+                     760, 360, lay)
+    b, gd = p["beauty"], p["guides"]
+    rgb = b[..., :3] * b[..., 3:] + 0.11 * (1 - b[..., 3:])
+    rgb = rgb * (1 - gd[..., 3:] * 0.7) + gd[..., :3] * gd[..., 3:] * 0.7
+    img = Image.fromarray((np.clip(rgb, 0, 1) * 255).astype(np.uint8))
+    ImageDraw.Draw(img).text((14, 12), label, fill=(230, 230, 240))
+    lt.append(img)
+cols = 2
+ls = Image.new("RGB", (760 * cols, 360 * ((len(lt) + 1) // cols)), (20, 20, 24))
+for i, t in enumerate(lt):
+    ls.paste(t, (760 * (i % cols), 360 * (i // cols)))
+ls.save(os.path.join(OUT, "layout_sheet.png"))
 print("wrote", OUT)

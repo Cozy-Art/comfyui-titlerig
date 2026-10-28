@@ -45,3 +45,15 @@ def test_letter_ids_distinct():
     p = render_title(Glyphs(text="ABC", size=120), Look3D(extrude=0), Shadow(on=False), 600, 240)
     colors = {tuple(c) for c in p["letter_ids"].reshape(-1, 3)[p["face"].reshape(-1) > 0].round(3)}
     assert len(colors) >= 3
+
+
+def test_guides_can_be_hidden_or_picked():
+    from render.core import parse_guides
+    kw = dict(look=Look3D(extrude=0), shadow=Shadow(on=False), width=500, height=240)
+    assert render_title(Glyphs(text="AB", size=100), guides="none", **kw)["guides"].max() == 0
+    full = render_title(Glyphs(text="AB", size=100), **kw)["guides"][..., 3].sum()
+    some = render_title(Glyphs(text="AB", size=100), guides="baseline, mid", **kw)["guides"][..., 3].sum()
+    assert 0 < some < full
+    assert parse_guides(["mid", "cap"]) == ("cap", "mid")
+    with pytest.raises(ValueError):
+        parse_guides("baseline,bogus")
