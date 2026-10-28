@@ -9,6 +9,8 @@ from ..render.presets import AUDIO_MODES as PRESET_AUDIO, FORMATS, PRESET_NAMES,
 from ..render.magnet import PATHS as MAGNET_PATHS, POLARITIES, Magnet
 from ..render.svg import rig_svg
 from ..render.spell_lock import spell_lock_batch
+from ..render.cutout import FITS, MASK_FROM, TIMING, cutout, pick_mask
+from ..render.core import _rgb
 from ..render.audio import AUDIO_MODES, BANDS, audio_curve, curve_preview
 from ..render.animate import pad_frames
 from ..render.animate import DIRECTIONS, EASINGS, EFFECTS, ORDERS, RESPONSES, RETRIGGERS, TARGETS, Anim, Track, render_frames
@@ -425,10 +427,51 @@ class TitleRigSpellLock:
         return (torch.from_numpy(r["frames"]), torch.from_numpy(r["fix_masks"]), drift, report)
 
 
+class TitleRigCutout:
+    """Cutout text: an image or video inside the letters, another outside, masked by the rig per frame."""
+    CATEGORY = CAT
+    RETURN_TYPES = ("IMAGE", "MASK")
+    RETURN_NAMES = ("images", "letters")
+    FUNCTION = "cut"
+
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {"required": {
+            "inside": ("IMAGE", {"tooltip": "image or video frames shown inside the letters"}),
+            "alpha": ("MASK", {"tooltip": "TitleRig alpha (faces + extrusion), one frame or one per frame"}),
+            "mask_from": (list(MASK_FROM), {"default": "faces + extrusion"}),
+            "fit_inside": (list(FITS), {"default": "cover"}),
+            "fit_outside": (list(FITS), {"default": "cover"}),
+            "timing": (list(TIMING), {"default": "loop", "tooltip": "what a source shorter than the clip does"}),
+            "grow": ("FLOAT", {"default": 0.0, "min": -64, "max": 64, "step": 0.5, "tooltip": "px, + fattens the letters"}),
+            "feather": ("FLOAT", {"default": 0.0, "min": 0, "max": 64, "step": 0.5, "tooltip": "px of soft edge"}),
+            "stroke": ("FLOAT", {"default": 0.0, "min": 0, "max": 64, "step": 0.5, "tooltip": "px outline outside the letters"}),
+            "stroke_color": ("STRING", {"default": "#ffffff"}),
+            "shading": ("FLOAT", {"default": 0.0, "min": 0, "max": 1, "step": 0.05,
+                                  "tooltip": "lay the rig's lighting over the inside (needs beauty)"}),
+            "background": ("STRING", {"default": "#000000", "tooltip": "fills outside when nothing is connected"}),
+        }, "optional": {
+            "outside": ("IMAGE", {"tooltip": "image or video frames shown everywhere else"}),
+            "face": ("MASK", {"tooltip": "TitleRig face mask (for mask_from = faces)"}),
+            "shadow": ("MASK", {"tooltip": "TitleRig shadow mask (for mask_from = silhouette + shadow)"}),
+            "beauty": ("IMAGE", {"tooltip": "TitleRig beauty, for shading"}),
+        }}
+
+    def cut(self, inside, alpha, mask_from, fit_inside, fit_outside, timing, grow, feather, stroke, stroke_color,
+            shading, background, outside=None, face=None, shadow=None, beauty=None):
+        np_ = lambda t: None if t is None else t.detach().cpu().numpy()  # noqa: E731
+        mask = pick_mask(np_(alpha), np_(face), np_(shadow), mask_from)
+        rgb, a = cutout(np_(inside), mask, np_(outside), np_(beauty), fit_inside, fit_outside, grow, feather, stroke,
+                        _rgb(stroke_color), shading, timing, _rgb(background))
+        import torch
+
+        return (torch.from_numpy(rgb), torch.from_numpy(a))
+
+
 class TitleRigRenderAnimation:
     CATEGORY = CAT
-    RETURN_TYPES = ("IMAGE", "MASK", "IMAGE", "IMAGE", "IMAGE", "INT", "FLOAT")
-    RETURN_NAMES = ("beauty", "alpha", "depth", "edges", "letter_ids", "frame_count", "fps")
+    RETURN_TYPES = ("IMAGE", "MASK", "IMAGE", "IMAGE", "IMAGE", "INT", "FLOAT", "MASK", "MASK")
+    RETURN_NAMES = ("beauty", "alpha", "depth", "edges", "letter_ids", "frame_count", "fps", "face", "shadow")
     FUNCTION = "render"
 
     @classmethod
@@ -448,7 +491,7 @@ class TitleRigRenderAnimation:
 
     def render(self, glyphs, anim, width, height, look=None, shadow=None, layout=None, pad_ltx=False):
         p = render_frames(anim, glyphs, look, shadow, width, height, layout,
-                          passes=("beauty", "alpha", "depth", "edges", "letter_ids"))
+                          passes=("beauty", "alpha", "depth", "edges", "letter_ids", "face", "shadow"))
         if pad_ltx:
             p = pad_frames(p, ltx_frames(p["beauty"].shape[0]))
         import torch
@@ -456,7 +499,7 @@ class TitleRigRenderAnimation:
         t = lambda a: torch.from_numpy(np.ascontiguousarray(a, np.float32))  # noqa: E731  (no copy when contiguous)
         beauty = t(p.pop("beauty")[..., :3])  # the one copy: RGB out of RGBA, then the RGBA frames are freed
         return (beauty, t(p["alpha"]), t(p["depth"]), t(p["edges"]), t(p["letter_ids"]),
-                int(beauty.shape[0]), float(anim.fps))
+                int(beauty.shape[0]), float(anim.fps), t(p["face"]), t(p["shadow"]))
 
 
 NODE_CLASS_MAPPINGS = {
@@ -472,6 +515,7 @@ NODE_CLASS_MAPPINGS = {
     "TitleRigMagnet": TitleRigMagnet,
     "TitleRigSVGExport": TitleRigSVGExport,
     "TitleRigSpellLock": TitleRigSpellLock,
+    "TitleRigCutout": TitleRigCutout,
 }
 NODE_DISPLAY_NAME_MAPPINGS = {
     "TitleRigText": "TitleRig Text",
@@ -486,4 +530,5 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "TitleRigMagnet": "TitleRig Magnet",
     "TitleRigSVGExport": "TitleRig SVG Export",
     "TitleRigSpellLock": "TitleRig Spell-Lock",
+    "TitleRigCutout": "TitleRig Cutout",
 }

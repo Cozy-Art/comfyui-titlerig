@@ -6,6 +6,7 @@
 | --- | --- | --- | --- |
 | `titlerig_rig_only.json` | open · no models | CPU | still + animated title (beauty and depth), WEBP |
 | `titlerig_audio_react.json` | open · no models | CPU | the hero motion on its own: words react to the track, MP4 with sound |
+| `titlerig_cutout.json` | open · no models | CPU | Cutout text: an image inside the popping letters, a colour outside (swap either for Load Video), MP4 |
 | `titlerig_ltx2_animated.json` | **open weights · hero** | GPU (LTX-2 19B) | audio-reactive rig → depth frames → **LTX-2 + Depth Control IC-LoRA** → Spell-Lock → MP4 with the original track |
 | `titlerig_flux_still.json` | open weights | GPU (FLUX.1 [dev]) | rig depth → **FLUX.1 Depth [dev]** → Spell-Lock → raw, locked and transparent title PNGs |
 | `titlerig_flux2_still.json` | open weights | GPU (FLUX.2 [dev]) | rig beauty as **reference image 1** → FLUX.2 [dev] → Spell-Lock → same PNG set |

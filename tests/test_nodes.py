@@ -69,6 +69,22 @@ def test_render_nodes_return_tensors(pack):
     (a,) = m["TitleRigAnimate"]().build(**{**_defaults(m["TitleRigAnimate"]), "fps": 8.0, "duration": 0.25})
     o = m["TitleRigRenderAnimation"]().render(g, a, 160, 96)
     assert o[0].shape[1:] == (96, 160, 3) and o[0].shape[0] == o[5] > 1 and isinstance(o[0], torch.Tensor)
+    assert o[7].shape == o[8].shape == o[1].shape  # face, shadow masks per frame (for Cutout)
+
+
+def test_cutout_node_on_animated_masks(pack):
+    torch = pytest.importorskip("torch")
+    m = pack.NODE_CLASS_MAPPINGS
+    (g,) = m["TitleRigText"]().build(text="AB", font="Anton", size=60, tracking=0)
+    (a,) = m["TitleRigAnimate"]().build(**{**_defaults(m["TitleRigAnimate"]), "fps": 8.0, "duration": 0.25})
+    o = m["TitleRigRenderAnimation"]().render(g, a, 160, 96)
+    kw = {**_defaults(m["TitleRigCutout"]), "mask_from": "silhouette + shadow", "stroke": 2.0}
+    inside = torch.rand(3, 50, 80, 3)  # a 3-frame "video" at another size
+    img, letters = m["TitleRigCutout"]().cut(inside=inside, alpha=o[1], outside=torch.zeros(1, 96, 160, 3),
+                                             shadow=o[8], beauty=o[0], **kw)
+    assert img.shape == (o[5], 96, 160, 3) and letters.shape == (o[5], 96, 160) and letters.max() == 1
+    with pytest.raises(ValueError):
+        m["TitleRigCutout"]().cut(inside=inside, alpha=o[1], **{**kw, "mask_from": "faces"})
 
 
 def test_audio_react_node_drives_animate(pack):

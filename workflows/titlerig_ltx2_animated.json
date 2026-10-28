@@ -1,5 +1,5 @@
 {
-  "id": "b3efc185-34cf-4cdb-8d13-ee17cee08949",
+  "id": "498de464-d287-4658-9263-daabf649087d",
   "revision": 0,
   "last_node_id": 88,
   "last_link_id": 89,
@@ -1636,7 +1636,7 @@
       ],
       "size": [
         400,
-        536
+        576
       ],
       "flags": {},
       "order": 23,
@@ -1761,6 +1761,18 @@
             83,
             87
           ]
+        },
+        {
+          "localized_name": "face",
+          "name": "face",
+          "type": "MASK",
+          "links": null
+        },
+        {
+          "localized_name": "shadow",
+          "name": "shadow",
+          "type": "MASK",
+          "links": null
         }
       ],
       "title": "Rig: depth + edges + alpha frames",

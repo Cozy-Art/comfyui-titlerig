@@ -1,0 +1,1734 @@
+{
+  "id": "b358dda8-fb59-4f2b-82b0-f69f2be4dfc2",
+  "revision": 0,
+  "last_node_id": 35,
+  "last_link_id": 14,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "TitleRigText",
+      "pos": [
+        100,
+        130
+      ],
+      "size": [
+        270,
+        202
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "text",
+          "name": "text",
+          "type": "STRING",
+          "widget": {
+            "name": "text"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "font",
+          "name": "font",
+          "type": "COMBO",
+          "widget": {
+            "name": "font"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "size",
+          "name": "size",
+          "type": "INT",
+          "widget": {
+            "name": "size"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "tracking",
+          "name": "tracking",
+          "type": "FLOAT",
+          "widget": {
+            "name": "tracking"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "kerning_json",
+          "name": "kerning_json",
+          "shape": 7,
+          "type": "STRING",
+          "widget": {
+            "name": "kerning_json"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "letters_json",
+          "name": "letters_json",
+          "shape": 7,
+          "type": "STRING",
+          "widget": {
+            "name": "letters_json"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "word_json",
+          "name": "word_json",
+          "shape": 7,
+          "type": "STRING",
+          "widget": {
+            "name": "word_json"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "glyphs",
+          "name": "glyphs",
+          "type": "TITLERIG_GLYPHS",
+          "links": [
+            1
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "TitleRigText"
+      },
+      "widgets_values": [
+        "CUT OUT",
+        "Anton-Regular",
+        260,
+        10,
+        "{}",
+        "{}",
+        "{}"
+      ],
+      "widgets_values_named": {
+        "text": "CUT OUT",
+        "font": "Anton-Regular",
+        "size": 260,
+        "tracking": 10,
+        "kerning_json": "{}",
+        "letters_json": "{}",
+        "word_json": "{}"
+      }
+    },
+    {
+      "id": 2,
+      "type": "TitleRigLook3D",
+      "pos": [
+        100,
+        462
+      ],
+      "size": [
+        270,
+        298
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "face",
+          "name": "face",
+          "type": "STRING",
+          "widget": {
+            "name": "face"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "face_gradient_to",
+          "name": "face_gradient_to",
+          "type": "STRING",
+          "widget": {
+            "name": "face_gradient_to"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "side",
+          "name": "side",
+          "type": "STRING",
+          "widget": {
+            "name": "side"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "extrude",
+          "name": "extrude",
+          "type": "INT",
+          "widget": {
+            "name": "extrude"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "extrude_angle",
+          "name": "extrude_angle",
+          "type": "FLOAT",
+          "widget": {
+            "name": "extrude_angle"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "bevel",
+          "name": "bevel",
+          "type": "FLOAT",
+          "widget": {
+            "name": "bevel"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "bevel_profile",
+          "name": "bevel_profile",
+          "type": "COMBO",
+          "widget": {
+            "name": "bevel_profile"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "light_angle",
+          "name": "light_angle",
+          "type": "FLOAT",
+          "widget": {
+            "name": "light_angle"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "light_height",
+          "name": "light_height",
+          "type": "FLOAT",
+          "widget": {
+            "name": "light_height"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "gloss",
+          "name": "gloss",
+          "type": "FLOAT",
+          "widget": {
+            "name": "gloss"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "rim",
+          "name": "rim",
+          "type": "FLOAT",
+          "widget": {
+            "name": "rim"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "look",
+          "name": "look",
+          "type": "TITLERIG_LOOK",
+          "links": [
+            3
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "TitleRigLook3D"
+      },
+      "widgets_values": [
+        "#ffffff",
+        "#ffffff",
+        "#9ca3af",
+        24,
+        55,
+        6,
+        "round",
+        225,
+        0.6,
+        0.9,
+        0.4
+      ],
+      "widgets_values_named": {
+        "face": "#ffffff",
+        "face_gradient_to": "#ffffff",
+        "side": "#9ca3af",
+        "extrude": 24,
+        "extrude_angle": 55,
+        "bevel": 6,
+        "bevel_profile": "round",
+        "light_angle": 225,
+        "light_height": 0.6,
+        "gloss": 0.9,
+        "rim": 0.4
+      }
+    },
+    {
+      "id": 3,
+      "type": "TitleRigShadow",
+      "pos": [
+        100,
+        890
+      ],
+      "size": [
+        270,
+        226
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "texture",
+          "name": "texture",
+          "type": "COMBO",
+          "widget": {
+            "name": "texture"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "color",
+          "name": "color",
+          "type": "STRING",
+          "widget": {
+            "name": "color"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "angle",
+          "name": "angle",
+          "type": "FLOAT",
+          "widget": {
+            "name": "angle"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "length",
+          "name": "length",
+          "type": "FLOAT",
+          "widget": {
+            "name": "length"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "softness",
+          "name": "softness",
+          "type": "FLOAT",
+          "widget": {
+            "name": "softness"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "texture_scale",
+          "name": "texture_scale",
+          "type": "FLOAT",
+          "widget": {
+            "name": "texture_scale"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "texture_angle",
+          "name": "texture_angle",
+          "type": "FLOAT",
+          "widget": {
+            "name": "texture_angle"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "opacity",
+          "name": "opacity",
+          "type": "FLOAT",
+          "widget": {
+            "name": "opacity"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "shadow",
+          "name": "shadow",
+          "type": "TITLERIG_SHADOW",
+          "links": [
+            4
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "TitleRigShadow"
+      },
+      "widgets_values": [
+        "halftone",
+        "#0f172a",
+        45,
+        36,
+        0,
+        10,
+        45,
+        1
+      ],
+      "widgets_values_named": {
+        "texture": "halftone",
+        "color": "#0f172a",
+        "angle": 45,
+        "length": 36,
+        "softness": 0,
+        "texture_scale": 10,
+        "texture_angle": 45,
+        "opacity": 1
+      }
+    },
+    {
+      "id": 4,
+      "type": "TitleRigLayout",
+      "pos": [
+        100,
+        1246
+      ],
+      "size": [
+        270,
+        514
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "mode",
+          "name": "mode",
+          "type": "COMBO",
+          "widget": {
+            "name": "mode"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "bend",
+          "name": "bend",
+          "type": "FLOAT",
+          "widget": {
+            "name": "bend"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "align",
+          "name": "align",
+          "type": "FLOAT",
+          "widget": {
+            "name": "align"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "bulge",
+          "name": "bulge",
+          "type": "FLOAT",
+          "widget": {
+            "name": "bulge"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "tilt_x",
+          "name": "tilt_x",
+          "type": "FLOAT",
+          "widget": {
+            "name": "tilt_x"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "tilt_y",
+          "name": "tilt_y",
+          "type": "FLOAT",
+          "widget": {
+            "name": "tilt_y"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "fov",
+          "name": "fov",
+          "type": "FLOAT",
+          "widget": {
+            "name": "fov"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "vanish",
+          "name": "vanish",
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "vanish"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "vp_x",
+          "name": "vp_x",
+          "type": "FLOAT",
+          "widget": {
+            "name": "vp_x"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "vp_y",
+          "name": "vp_y",
+          "type": "FLOAT",
+          "widget": {
+            "name": "vp_y"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "flag_amp",
+          "name": "flag_amp",
+          "type": "FLOAT",
+          "widget": {
+            "name": "flag_amp"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "flag_wavelength",
+          "name": "flag_wavelength",
+          "type": "FLOAT",
+          "widget": {
+            "name": "flag_wavelength"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "flag_phase",
+          "name": "flag_phase",
+          "type": "FLOAT",
+          "widget": {
+            "name": "flag_phase"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "flag_shade",
+          "name": "flag_shade",
+          "type": "FLOAT",
+          "widget": {
+            "name": "flag_shade"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "wrap_radius",
+          "name": "wrap_radius",
+          "shape": 7,
+          "type": "FLOAT",
+          "widget": {
+            "name": "wrap_radius"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "wrap_phase",
+          "name": "wrap_phase",
+          "shape": 7,
+          "type": "FLOAT",
+          "widget": {
+            "name": "wrap_phase"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "wrap_tilt",
+          "name": "wrap_tilt",
+          "shape": 7,
+          "type": "FLOAT",
+          "widget": {
+            "name": "wrap_tilt"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "wrap_repeat",
+          "name": "wrap_repeat",
+          "shape": 7,
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "wrap_repeat"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "wrap_shade",
+          "name": "wrap_shade",
+          "shape": 7,
+          "type": "FLOAT",
+          "widget": {
+            "name": "wrap_shade"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "curve_json",
+          "name": "curve_json",
+          "shape": 7,
+          "type": "STRING",
+          "widget": {
+            "name": "curve_json"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "layout",
+          "name": "layout",
+          "type": "TITLERIG_LAYOUT",
+          "links": [
+            5
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "TitleRigLayout"
+      },
+      "widgets_values": [
+        "flat",
+        0,
+        0.5,
+        0,
+        0,
+        0,
+        50,
+        false,
+        0.5,
+        1.4,
+        0,
+        420,
+        0,
+        0.5,
+        0.32,
+        0,
+        15,
+        true,
+        0.6,
+        ""
+      ],
+      "widgets_values_named": {
+        "mode": "flat",
+        "bend": 0,
+        "align": 0.5,
+        "bulge": 0,
+        "tilt_x": 0,
+        "tilt_y": 0,
+        "fov": 50,
+        "vanish": false,
+        "vp_x": 0.5,
+        "vp_y": 1.4,
+        "flag_amp": 0,
+        "flag_wavelength": 420,
+        "flag_phase": 0,
+        "flag_shade": 0.5,
+        "wrap_radius": 0.32,
+        "wrap_phase": 0,
+        "wrap_tilt": 15,
+        "wrap_repeat": true,
+        "wrap_shade": 0.6,
+        "curve_json": ""
+      }
+    },
+    {
+      "id": 9,
+      "type": "TitleRigAnimate",
+      "pos": [
+        100,
+        1890
+      ],
+      "size": [
+        270,
+        462
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "anim",
+          "name": "anim",
+          "shape": 7,
+          "type": "TITLERIG_ANIM",
+          "link": null
+        },
+        {
+          "localized_name": "drive",
+          "name": "drive",
+          "shape": 7,
+          "type": "TITLERIG_CURVE",
+          "link": null
+        },
+        {
+          "localized_name": "effect",
+          "name": "effect",
+          "type": "COMBO",
+          "widget": {
+            "name": "effect"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "target",
+          "name": "target",
+          "type": "COMBO",
+          "widget": {
+            "name": "target"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "direction",
+          "name": "direction",
+          "type": "COMBO",
+          "widget": {
+            "name": "direction"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "easing",
+          "name": "easing",
+          "type": "COMBO",
+          "widget": {
+            "name": "easing"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "duration",
+          "name": "duration",
+          "type": "FLOAT",
+          "widget": {
+            "name": "duration"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "stagger",
+          "name": "stagger",
+          "type": "FLOAT",
+          "widget": {
+            "name": "stagger"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "order",
+          "name": "order",
+          "type": "COMBO",
+          "widget": {
+            "name": "order"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "amount",
+          "name": "amount",
+          "type": "FLOAT",
+          "widget": {
+            "name": "amount"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "start",
+          "name": "start",
+          "type": "FLOAT",
+          "widget": {
+            "name": "start"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "fps",
+          "name": "fps",
+          "type": "FLOAT",
+          "widget": {
+            "name": "fps"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "hold",
+          "name": "hold",
+          "type": "FLOAT",
+          "widget": {
+            "name": "hold"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "shuffle_seed",
+          "name": "shuffle_seed",
+          "type": "INT",
+          "widget": {
+            "name": "shuffle_seed"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "letters",
+          "name": "letters",
+          "type": "STRING",
+          "widget": {
+            "name": "letters"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "influence",
+          "name": "influence",
+          "type": "FLOAT",
+          "widget": {
+            "name": "influence"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "response",
+          "name": "response",
+          "type": "COMBO",
+          "widget": {
+            "name": "response"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "retrigger",
+          "name": "retrigger",
+          "type": "COMBO",
+          "widget": {
+            "name": "retrigger"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "corners_json",
+          "name": "corners_json",
+          "shape": 7,
+          "type": "STRING",
+          "widget": {
+            "name": "corners_json"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "anim",
+          "name": "anim",
+          "type": "TITLERIG_ANIM",
+          "links": [
+            2
+          ]
+        }
+      ],
+      "title": "Pop in (back, centre out)",
+      "properties": {
+        "Node name for S&R": "TitleRigAnimate"
+      },
+      "widgets_values": [
+        "pop",
+        "letters",
+        "in",
+        "back",
+        0.6,
+        0.06,
+        "center_out",
+        0,
+        0,
+        24,
+        0.8,
+        0,
+        "all",
+        1,
+        "follow",
+        "restart",
+        ""
+      ],
+      "widgets_values_named": {
+        "effect": "pop",
+        "target": "letters",
+        "direction": "in",
+        "easing": "back",
+        "duration": 0.6,
+        "stagger": 0.06,
+        "order": "center_out",
+        "amount": 0,
+        "start": 0,
+        "fps": 24,
+        "hold": 0.8,
+        "shuffle_seed": 0,
+        "letters": "all",
+        "influence": 1,
+        "response": "follow",
+        "retrigger": "restart",
+        "corners_json": ""
+      }
+    },
+    {
+      "id": 11,
+      "type": "TitleRigRenderAnimation",
+      "pos": [
+        482.798828125,
+        130
+      ],
+      "size": [
+        400,
+        576
+      ],
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "glyphs",
+          "name": "glyphs",
+          "type": "TITLERIG_GLYPHS",
+          "link": 1
+        },
+        {
+          "localized_name": "anim",
+          "name": "anim",
+          "type": "TITLERIG_ANIM",
+          "link": 2
+        },
+        {
+          "localized_name": "look",
+          "name": "look",
+          "shape": 7,
+          "type": "TITLERIG_LOOK",
+          "link": 3
+        },
+        {
+          "localized_name": "shadow",
+          "name": "shadow",
+          "shape": 7,
+          "type": "TITLERIG_SHADOW",
+          "link": 4
+        },
+        {
+          "localized_name": "layout",
+          "name": "layout",
+          "shape": 7,
+          "type": "TITLERIG_LAYOUT",
+          "link": 5
+        },
+        {
+          "localized_name": "width",
+          "name": "width",
+          "type": "INT",
+          "widget": {
+            "name": "width"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "height",
+          "name": "height",
+          "type": "INT",
+          "widget": {
+            "name": "height"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "pad_ltx",
+          "name": "pad_ltx",
+          "shape": 7,
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "pad_ltx"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "beauty",
+          "name": "beauty",
+          "type": "IMAGE",
+          "links": [
+            9
+          ]
+        },
+        {
+          "localized_name": "alpha",
+          "name": "alpha",
+          "type": "MASK",
+          "links": [
+            7
+          ]
+        },
+        {
+          "localized_name": "depth",
+          "name": "depth",
+          "type": "IMAGE",
+          "links": null
+        },
+        {
+          "localized_name": "edges",
+          "name": "edges",
+          "type": "IMAGE",
+          "links": null
+        },
+        {
+          "localized_name": "letter_ids",
+          "name": "letter_ids",
+          "type": "IMAGE",
+          "links": null
+        },
+        {
+          "localized_name": "frame_count",
+          "name": "frame_count",
+          "type": "INT",
+          "links": null
+        },
+        {
+          "localized_name": "fps",
+          "name": "fps",
+          "type": "FLOAT",
+          "links": [
+            12
+          ]
+        },
+        {
+          "localized_name": "face",
+          "name": "face",
+          "type": "MASK",
+          "links": null
+        },
+        {
+          "localized_name": "shadow",
+          "name": "shadow",
+          "type": "MASK",
+          "links": [
+            10
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "TitleRigRenderAnimation"
+      },
+      "widgets_values": [
+        960,
+        544,
+        false,
+        ""
+      ],
+      "widgets_values_named": {
+        "width": 960,
+        "height": 544,
+        "pad_ltx": false,
+        "titlerig_preview": ""
+      }
+    },
+    {
+      "id": 30,
+      "type": "LoadImage",
+      "pos": [
+        100,
+        2482
+      ],
+      "size": [
+        282.798828125,
+        102
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "image",
+          "name": "image",
+          "type": "COMBO",
+          "widget": {
+            "name": "image"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "choose file to upload",
+          "name": "upload",
+          "type": "IMAGEUPLOAD",
+          "widget": {
+            "name": "upload"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "IMAGE",
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            6
+          ]
+        },
+        {
+          "localized_name": "MASK",
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "title": "Inside (any image; or Load Video frames)",
+      "properties": {
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "example.png",
+        "image"
+      ],
+      "widgets_values_named": {
+        "image": "example.png",
+        "upload": "image"
+      }
+    },
+    {
+      "id": 31,
+      "type": "EmptyImage",
+      "pos": [
+        100,
+        2714
+      ],
+      "size": [
+        270,
+        130
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "width",
+          "name": "width",
+          "type": "INT",
+          "widget": {
+            "name": "width"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "height",
+          "name": "height",
+          "type": "INT",
+          "widget": {
+            "name": "height"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "batch_size",
+          "name": "batch_size",
+          "type": "INT",
+          "widget": {
+            "name": "batch_size"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "color",
+          "name": "color",
+          "type": "INT",
+          "widget": {
+            "name": "color"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "IMAGE",
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            8
+          ]
+        }
+      ],
+      "title": "Outside (swap for Load Image / Load Video)",
+      "properties": {
+        "Node name for S&R": "EmptyImage"
+      },
+      "widgets_values": [
+        960,
+        540,
+        1,
+        1973067
+      ],
+      "widgets_values_named": {
+        "width": 960,
+        "height": 540,
+        "batch_size": 1,
+        "color": 1973067
+      }
+    },
+    {
+      "id": 32,
+      "type": "TitleRigCutout",
+      "pos": [
+        982.798828125,
+        130
+      ],
+      "size": [
+        270,
+        374
+      ],
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "inside",
+          "name": "inside",
+          "type": "IMAGE",
+          "link": 6
+        },
+        {
+          "localized_name": "alpha",
+          "name": "alpha",
+          "type": "MASK",
+          "link": 7
+        },
+        {
+          "localized_name": "outside",
+          "name": "outside",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": 8
+        },
+        {
+          "localized_name": "face",
+          "name": "face",
+          "shape": 7,
+          "type": "MASK",
+          "link": null
+        },
+        {
+          "localized_name": "shadow",
+          "name": "shadow",
+          "shape": 7,
+          "type": "MASK",
+          "link": 10
+        },
+        {
+          "localized_name": "beauty",
+          "name": "beauty",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": 9
+        },
+        {
+          "localized_name": "mask_from",
+          "name": "mask_from",
+          "type": "COMBO",
+          "widget": {
+            "name": "mask_from"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "fit_inside",
+          "name": "fit_inside",
+          "type": "COMBO",
+          "widget": {
+            "name": "fit_inside"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "fit_outside",
+          "name": "fit_outside",
+          "type": "COMBO",
+          "widget": {
+            "name": "fit_outside"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "timing",
+          "name": "timing",
+          "type": "COMBO",
+          "widget": {
+            "name": "timing"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "grow",
+          "name": "grow",
+          "type": "FLOAT",
+          "widget": {
+            "name": "grow"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "feather",
+          "name": "feather",
+          "type": "FLOAT",
+          "widget": {
+            "name": "feather"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "stroke",
+          "name": "stroke",
+          "type": "FLOAT",
+          "widget": {
+            "name": "stroke"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "stroke_color",
+          "name": "stroke_color",
+          "type": "STRING",
+          "widget": {
+            "name": "stroke_color"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "shading",
+          "name": "shading",
+          "type": "FLOAT",
+          "widget": {
+            "name": "shading"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "background",
+          "name": "background",
+          "type": "STRING",
+          "widget": {
+            "name": "background"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "images",
+          "name": "images",
+          "type": "IMAGE",
+          "links": [
+            11,
+            14
+          ]
+        },
+        {
+          "localized_name": "letters",
+          "name": "letters",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "TitleRigCutout"
+      },
+      "widgets_values": [
+        "faces + extrusion",
+        "cover",
+        "cover",
+        "loop",
+        0,
+        0.5,
+        4,
+        "#ffd400",
+        0.7,
+        "#000000"
+      ],
+      "widgets_values_named": {
+        "mask_from": "faces + extrusion",
+        "fit_inside": "cover",
+        "fit_outside": "cover",
+        "timing": "loop",
+        "grow": 0,
+        "feather": 0.5,
+        "stroke": 4,
+        "stroke_color": "#ffd400",
+        "shading": 0.7,
+        "background": "#000000"
+      }
+    },
+    {
+      "id": 33,
+      "type": "CreateVideo",
+      "pos": [
+        1352.798828125,
+        130
+      ],
+      "size": [
+        270,
+        150
+      ],
+      "flags": {},
+      "order": 9,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "images",
+          "name": "images",
+          "type": "IMAGE",
+          "link": 11
+        },
+        {
+          "localized_name": "audio",
+          "name": "audio",
+          "shape": 7,
+          "type": "AUDIO",
+          "link": null
+        },
+        {
+          "localized_name": "fps",
+          "name": "fps",
+          "type": "FLOAT",
+          "widget": {
+            "name": "fps"
+          },
+          "link": 12
+        },
+        {
+          "localized_name": "bit_depth",
+          "name": "bit_depth",
+          "shape": 7,
+          "type": "COMBO",
+          "widget": {
+            "name": "bit_depth"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "color_space",
+          "name": "color_space",
+          "shape": 7,
+          "type": "COMBO",
+          "widget": {
+            "name": "color_space"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "codec",
+          "name": "codec",
+          "shape": 7,
+          "type": "COMBO",
+          "widget": {
+            "name": "codec"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "VIDEO",
+          "name": "VIDEO",
+          "type": "VIDEO",
+          "links": [
+            13
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CreateVideo"
+      },
+      "widgets_values": [
+        30,
+        "auto",
+        "sRGB",
+        "none"
+      ],
+      "widgets_values_named": {
+        "fps": 30,
+        "bit_depth": "auto",
+        "color_space": "sRGB",
+        "codec": "none"
+      }
+    },
+    {
+      "id": 34,
+      "type": "SaveVideo",
+      "pos": [
+        1722.798828125,
+        130
+      ],
+      "size": [
+        270,
+        130
+      ],
+      "flags": {},
+      "order": 11,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "video",
+          "name": "video",
+          "type": "VIDEO",
+          "link": 13
+        },
+        {
+          "localized_name": "filename_prefix",
+          "name": "filename_prefix",
+          "type": "STRING",
+          "widget": {
+            "name": "filename_prefix"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "format",
+          "name": "format",
+          "type": "COMFY_DYNAMICCOMBO_V3",
+          "widget": {
+            "name": "format"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "codec",
+          "name": "format.codec",
+          "type": "COMFY_DYNAMICCOMBO_V3",
+          "widget": {
+            "name": "format.codec"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "codec",
+          "name": "codec",
+          "shape": 7,
+          "type": "COMFY_DYNAMICCOMBO_V3",
+          "widget": {
+            "name": "codec"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "encoding",
+          "name": "codec.encoding",
+          "shape": 7,
+          "type": "COMFY_DYNAMICCOMBO_V3",
+          "widget": {
+            "name": "codec.encoding"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "video",
+          "name": "video",
+          "type": "VIDEO",
+          "links": null
+        }
+      ],
+      "properties": {},
+      "widgets_values": [
+        "titlerig/cutout",
+        "mp4",
+        "auto",
+        "h264",
+        "auto"
+      ],
+      "widgets_values_named": {
+        "filename_prefix": "titlerig/cutout",
+        "format": "mp4",
+        "format.codec": "auto",
+        "codec": "h264",
+        "codec.encoding": "auto"
+      }
+    },
+    {
+      "id": 35,
+      "type": "PreviewImage",
+      "pos": [
+        1352.798828125,
+        410
+      ],
+      "size": [
+        140,
+        26
+      ],
+      "flags": {},
+      "order": 10,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "images",
+          "name": "images",
+          "type": "IMAGE",
+          "link": 14
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "images",
+          "name": "images",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Cutout frames",
+      "properties": {
+        "Node name for S&R": "PreviewImage"
+      }
+    }
+  ],
+  "links": [
+    [
+      1,
+      1,
+      0,
+      11,
+      0,
+      "TITLERIG_GLYPHS"
+    ],
+    [
+      2,
+      9,
+      0,
+      11,
+      1,
+      "TITLERIG_ANIM"
+    ],
+    [
+      3,
+      2,
+      0,
+      11,
+      2,
+      "TITLERIG_LOOK"
+    ],
+    [
+      4,
+      3,
+      0,
+      11,
+      3,
+      "TITLERIG_SHADOW"
+    ],
+    [
+      5,
+      4,
+      0,
+      11,
+      4,
+      "TITLERIG_LAYOUT"
+    ],
+    [
+      6,
+      30,
+      0,
+      32,
+      0,
+      "IMAGE"
+    ],
+    [
+      7,
+      11,
+      1,
+      32,
+      1,
+      "MASK"
+    ],
+    [
+      8,
+      31,
+      0,
+      32,
+      2,
+      "IMAGE"
+    ],
+    [
+      9,
+      11,
+      0,
+      32,
+      5,
+      "IMAGE"
+    ],
+    [
+      10,
+      11,
+      8,
+      32,
+      4,
+      "MASK"
+    ],
+    [
+      11,
+      32,
+      0,
+      33,
+      0,
+      "IMAGE"
+    ],
+    [
+      12,
+      11,
+      6,
+      33,
+      2,
+      "FLOAT"
+    ],
+    [
+      13,
+      33,
+      0,
+      34,
+      0,
+      "VIDEO"
+    ],
+    [
+      14,
+      32,
+      0,
+      35,
+      0,
+      "IMAGE"
+    ]
+  ],
+  "groups": [],
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 2.2916666666666665,
+      "offset": [
+        -225.07155539772725,
+        -470
+      ]
+    }
+  },
+  "version": 0.4
+}
