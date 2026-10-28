@@ -90,10 +90,15 @@ Style Preset, Magnet, SVG Export, Spell-Lock.
 
 ## Next
 
-- **Backlog:** only P3 is left. It's optional, separate and API-only: Recraft vectorize via ComfyUI's partner nodes, never in the open-weights entry.
-- **The contest entry still needs the PRD's AI workflows**, which aren't in the CLAUDE.md backlog yet:
-  - (1) FLUX still: rig depth / canny → composite with alpha → PNG.
-  - (2) the animated hero: LTX-2.3 + depth IC-LoRA → Spell-Lock → MP4.
+Build night is tracked in the CLAUDE.md backlog ("Build night"). In order:
 
-  Both need model weights, which this sandbox can't run, so they can be authored and validated structurally but not executed here.
-- **Demo video / README polish** for submission.
+1. **AI workflows for the entry:**
+   - (a) `titlerig_ltx2_animated.json`: rig depth / edges → LTX-2 + Depth IC-LoRA → Spell-Lock → MP4. This is the hero.
+   - (b) `titlerig_flux_still.json`: rig depth / edges → FLUX → composite → PNG.
+   - (c) the model and custom-node list in `workflows/README.md`.
+
+   This sandbox has no GPU and no Hugging Face access, so the JSON and node wiring are validated here. The TitleRig half runs on CPU, and the first real run happens on build night (Comfy Cloud / Runpod).
+2. **Bonus API workflows** (FLUX 3, Recraft vector): built, never run, clearly marked API.
+3. **Demo assets** in `docs/media/` for the submission video.
+4. **README polish.**
+5. **After build night (nice to have):** P3 Recraft.
