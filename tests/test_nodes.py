@@ -44,9 +44,10 @@ def test_inputs_match_function_signatures(pack):
 
 def test_builder_nodes_with_defaults(pack):
     m = pack.NODE_CLASS_MAPPINGS
-    for name in ("TitleRigText", "TitleRigLook3D", "TitleRigShadow", "TitleRigLayout", "TitleRigAnimate"):
-        (obj,) = getattr(m[name](), m[name].FUNCTION)(**_defaults(m[name]))
-        assert obj is not None
+    for name in ("TitleRigText", "TitleRigLook3D", "TitleRigShadow", "TitleRigLayout", "TitleRigAnimate",
+                 "TitleRigStylePreset", "TitleRigMagnet"):
+        out = getattr(m[name](), m[name].FUNCTION)(**_defaults(m[name]))
+        assert len(out) == len(m[name].RETURN_TYPES) and out[0] is not None
 
 
 def test_animate_chains_and_takes_drive(pack):
@@ -81,3 +82,10 @@ def test_audio_react_node_drives_animate(pack):
     assert n == 48 and prev.shape[0] == 1 and onsets
     (a,) = m["TitleRigAnimate"]().build(**{**_defaults(m["TitleRigAnimate"]), "drive": curve})
     assert a.n_frames(3) == 48 and np.allclose(a.tracks[0].drive, curve["values"])
+
+
+def test_magnet_node_chains_after_animate(pack):
+    m = pack.NODE_CLASS_MAPPINGS
+    (a,) = m["TitleRigAnimate"]().build(**_defaults(m["TitleRigAnimate"]))
+    (b,) = m["TitleRigMagnet"]().build(**{**_defaults(m["TitleRigMagnet"]), "anim": a, "magnet_text": "M"})
+    assert len(b.tracks) == 1 and len(b.magnets) == 1 and b.magnets[0].text == "M"

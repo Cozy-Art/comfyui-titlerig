@@ -146,10 +146,41 @@ def _free(d: dict, bbox) -> np.ndarray:
 
 
 def _tf(d: dict, cx: float, cy: float, bbox=None) -> np.ndarray:
-    """Letter / group / word transform: free transform of its box first, then scale, rotate and move."""
+    """Letter / group / word transform: free transform of its box first, then scale, rotate and move,
+    then `stretch` (k along `stretch_angle` deg, 1/k across it) about the moved centre: squash & stretch."""
     s = d.get("scale", 1.0)
-    return _affine(d.get("rot", 0.0), s * d.get("sx", 1.0), s * d.get("sy", 1.0), cx, cy,
-                   d.get("dx", 0.0), d.get("dy", 0.0)) @ _free(d, bbox)
+    M = _affine(d.get("rot", 0.0), s * d.get("sx", 1.0), s * d.get("sy", 1.0), cx, cy,
+                d.get("dx", 0.0), d.get("dy", 0.0)) @ _free(d, bbox)
+    k = d.get("stretch", 1.0)
+    if k and abs(k - 1.0) > 1e-6:
+        a = d.get("stretch_angle", 0.0)
+        mx, my = cx + d.get("dx", 0.0), cy + d.get("dy", 0.0)
+        M = _affine(a, 1, 1, mx, my) @ _affine(0, k, 1.0 / k, mx, my) @ _affine(-a, 1, 1, mx, my) @ M
+    return M
+
+
+def letter_anchors(g: "Glyphs", W: int, H: int, lay: Layout) -> dict[int, tuple[float, float]]:
+    """Rest centre (px) of every visible letter, after the layout's arc: where a magnet's field is sampled."""
+    font, chars, xs, m = layout(g)
+    ox = (W - m["width"]) / 2.0
+    oy = (H - m["ascent"] - m["descent"]) / 2.0
+    mid_y = oy + m["ascent"] - (m["ascent"] - m["cap_top"]) / 2
+    path = None
+    if lay.mode == "arc":
+        path = (ArcPath(np.asarray(lay.curve, np.float64) * np.array([W, H])) if lay.curve is not None
+                else ArcPath(bend_curve(lay.bend, max(m["width"], 1.0), W / 2, mid_y)))
+    out = {}
+    for i, ch in enumerate(chars):
+        if not ch.strip():
+            continue
+        bb = font.getbbox(ch)
+        cx, cy = ox + xs[i] + (bb[0] + bb[2]) / 2, oy + (bb[1] + bb[3]) / 2
+        if path is not None:
+            pt, ang = path.at(lay.align * path.length + (cx - (ox + m["width"] / 2)))
+            off = cy - mid_y
+            cx, cy = pt[0] - math.sin(ang) * off, pt[1] + math.cos(ang) * off
+        out[i] = (float(cx), float(cy))
+    return out
 
 
 def _union(boxes):

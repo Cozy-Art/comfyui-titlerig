@@ -6,6 +6,7 @@ import json
 import numpy as np
 
 from ..render.presets import AUDIO_MODES as PRESET_AUDIO, FORMATS, PRESET_NAMES, ltx23_settings, TARGETS as PROMPT_TARGETS, build_prompt, flux2_settings, flux3_settings, suggested_look
+from ..render.magnet import PATHS as MAGNET_PATHS, POLARITIES, Magnet
 from ..render.audio import AUDIO_MODES, BANDS, audio_curve, curve_preview
 from ..render.animate import DIRECTIONS, EASINGS, EFFECTS, ORDERS, RESPONSES, RETRIGGERS, TARGETS, Anim, Track, render_frames
 from ..render import LAYOUT_MODES, SHADOW_TEXTURES, Glyphs, Layout, Look3D, Shadow, bundled_fonts, render_title
@@ -291,6 +292,54 @@ class TitleRigAudioReact:
         return (c, prev, len(c["values"]), ", ".join(f"{t:.3f}" for t in c["onsets"]))
 
 
+class TitleRigMagnet:
+    """A moving magnet (optionally a second word) that attracts or repels the title's letters, with springy
+    lag and squash & stretch. Adds to an Animate chain; feed the result to Render Animation."""
+    CATEGORY = CAT
+    RETURN_TYPES = ("TITLERIG_ANIM",)
+    RETURN_NAMES = ("anim",)
+    FUNCTION = "build"
+
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {"required": {
+            "polarity": (list(POLARITIES), {"default": "repel"}),
+            "strength": ("FLOAT", {"default": 90.0, "min": 0, "max": 2000, "step": 1, "tooltip": "px of push"}),
+            "range": ("FLOAT", {"default": 220.0, "min": 1, "max": 4000, "step": 1, "tooltip": "px falloff radius"}),
+            "lag": ("FLOAT", {"default": 0.15, "min": 0, "max": 5, "step": 0.01,
+                              "tooltip": "s: far letters respond this much later"}),
+            "spring": ("FLOAT", {"default": 0.5, "min": 0, "max": 1, "step": 0.01, "tooltip": "0 smooth, 1 bouncy"}),
+            "squash": ("FLOAT", {"default": 0.4, "min": 0, "max": 1, "step": 0.01,
+                                 "tooltip": "squash & stretch along each letter's velocity"}),
+            "path": (list(MAGNET_PATHS), {"default": "sweep"}),
+            "x": ("FLOAT", {"default": -0.15, "min": -2, "max": 3, "step": 0.01}),
+            "y": ("FLOAT", {"default": 0.5, "min": -2, "max": 3, "step": 0.01}),
+            "x_end": ("FLOAT", {"default": 1.15, "min": -2, "max": 3, "step": 0.01}),
+            "y_end": ("FLOAT", {"default": 0.5, "min": -2, "max": 3, "step": 0.01}),
+            "radius": ("FLOAT", {"default": 0.3, "min": 0, "max": 3, "step": 0.01, "tooltip": "orbit, x canvas height"}),
+            "duration": ("FLOAT", {"default": 2.5, "min": 0.05, "max": 600, "step": 0.05}),
+            "start": ("FLOAT", {"default": 0.0, "min": 0, "max": 600, "step": 0.05}),
+            "fps": ("FLOAT", {"default": 24.0, "min": 1, "max": 120, "step": 1}),
+            "hold": ("FLOAT", {"default": 0.8, "min": 0, "max": 60, "step": 0.05}),
+        }, "optional": {
+            "anim": ("TITLERIG_ANIM", {"tooltip": "chain: tracks and magnets from earlier nodes"}),
+            "drive": ("TITLERIG_CURVE", {"tooltip": "per-frame curve (e.g. Audio React) that scales strength"}),
+            "magnet_text": ("STRING", {"default": "", "tooltip": "render this word as the magnet (empty = invisible)"}),
+            "magnet_size": ("INT", {"default": 120, "min": 8, "max": 1024}),
+        }}
+
+    def build(self, polarity, strength, range, lag, spring, squash, path, x, y, x_end, y_end, radius, duration,
+              start, fps, hold, anim=None, drive=None, magnet_text="", magnet_size=120):
+        mg = Magnet(polarity=polarity, strength=strength, range=range, lag=lag, spring=spring, squash=squash,
+                    path=path, x=x, y=y, x_end=x_end, y_end=y_end, radius=radius, duration=duration, start=start,
+                    drive=None if drive is None else drive["values"], text=magnet_text, size=magnet_size)
+        if drive is not None:
+            fps = drive["fps"]
+        if anim is None:
+            return (Anim([], fps=fps, hold=hold, magnets=[mg]),)
+        return (Anim(list(anim.tracks), fps=anim.fps, hold=max(anim.hold, hold), magnets=list(anim.magnets) + [mg]),)
+
+
 class TitleRigRenderAnimation:
     CATEGORY = CAT
     RETURN_TYPES = ("IMAGE", "MASK", "IMAGE", "IMAGE", "IMAGE", "INT", "FLOAT")
@@ -330,6 +379,7 @@ NODE_CLASS_MAPPINGS = {
     "TitleRigRenderAnimation": TitleRigRenderAnimation,
     "TitleRigAudioReact": TitleRigAudioReact,
     "TitleRigStylePreset": TitleRigStylePreset,
+    "TitleRigMagnet": TitleRigMagnet,
 }
 NODE_DISPLAY_NAME_MAPPINGS = {
     "TitleRigText": "TitleRig Text",
@@ -341,4 +391,5 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "TitleRigRenderAnimation": "TitleRig Render Animation",
     "TitleRigAudioReact": "TitleRig Audio React",
     "TitleRigStylePreset": "TitleRig Style Preset",
+    "TitleRigMagnet": "TitleRig Magnet",
 }
