@@ -194,12 +194,23 @@ def _normals(h: np.ndarray, strength: float = 6.0) -> np.ndarray:
     return n / np.linalg.norm(n, axis=2, keepdims=True)
 
 
-def _texture(kind: str, H: int, W: int, scale: float, angle: float, intensity: np.ndarray) -> np.ndarray:
-    """Return a 0/1 coverage map for a shadow texture, modulated by intensity (0..1)."""
-    yy, xx = np.mgrid[0:H, 0:W].astype(np.float32)
+def _texture(kind: str, H: int, W: int, scale: float, angle: float, intensity: np.ndarray,
+             ox: int = 0, oy: int = 0, FW: int | None = None, FH: int | None = None) -> np.ndarray:
+    """Return a 0/1 coverage map for a shadow texture, modulated by intensity (0..1).
+
+    The H x W tile sits at (ox, oy) on an FW x FH canvas: patterns stay locked to the canvas, so a moving
+    crop never makes them swim."""
+    FW, FH = FW or W, FH or H
+    if kind in ("noise", "pixel") and (W, H) != (FW, FH):
+        full = np.zeros((FH, FW), np.float32)
+        full[oy:oy + H, ox:ox + W] = intensity
+        return _texture(kind, FH, FW, scale, angle, full)[oy:oy + H, ox:ox + W]
+    yy, xx = np.mgrid[oy:oy + H, ox:ox + W].astype(np.float32)
     a = math.radians(angle)
     u = xx * math.cos(a) + yy * math.sin(a)
     v = -xx * math.sin(a) + yy * math.cos(a)
+    cv_ = [-x * math.sin(a) + y * math.cos(a) for x in (0, FW - 1) for y in (0, FH - 1)]
+    vmin, vptp = min(cv_), max(cv_) - min(cv_)
     s = max(2.0, scale)
     if kind == "solid":
         return intensity
@@ -218,7 +229,7 @@ def _texture(kind: str, H: int, W: int, scale: float, angle: float, intensity: n
         small = cv2.resize(intensity, (max(1, int(W / s)), max(1, int(H / s))), interpolation=cv2.INTER_AREA)
         return (cv2.resize(small, (W, H), interpolation=cv2.INTER_NEAREST) > 0.35).astype(np.float32)
     if kind == "gradient":
-        return intensity * np.clip(1 - (v - v.min()) / (np.ptp(v) + 1e-6) * 0.8, 0, 1)
+        return intensity * np.clip(1 - (v - vmin) / (vptp + 1e-6) * 0.8, 0, 1)
     raise ValueError(f"unknown shadow texture: {kind}")
 
 
@@ -235,6 +246,17 @@ def render_title(g: Glyphs, look: Look3D | None = None, shadow: Shadow | None = 
         mx, my = flag_maps(W, H, lay)
         face = cv2.remap(face, mx, my, cv2.INTER_LINEAR, borderValue=0)
         ids = cv2.remap(ids.astype(np.float32), mx, my, cv2.INTER_NEAREST, borderValue=0).astype(np.int32)
+
+    # work only on the title's box (+ room for extrusion, bevel and shadow); pasted back into the canvas at the end
+    FW, FH = W, H
+    x0, y0, x1, y1 = 0, 0, W, H
+    ys_, xs_ = np.nonzero(face > 0.01)
+    if len(ys_) and not lay.vanish:  # a vanishing point can pull the extrusion anywhere: keep the full canvas
+        pad = int(look.extrude + look.bevel + (shadow.length + 3 * shadow.softness if shadow.on else 0)) + 8
+        x0, x1 = max(0, xs_.min() - pad), min(W, xs_.max() + pad + 1)
+        y0, y1 = max(0, ys_.min() - pad), min(H, ys_.max() + pad + 1)
+        face, ids = face[y0:y1, x0:x1], ids[y0:y1, x0:x1]
+        W, H = x1 - x0, y1 - y0
     fm = (face > 0.5).astype(np.float32)
 
     # extrusion: stack copies receding along extrude_angle, or converging on a vanishing point
@@ -284,7 +306,7 @@ def render_title(g: Glyphs, look: Look3D | None = None, shadow: Shadow | None = 
     sc = _rgb(look.side)
     side_rgb = sc[None, None] * (0.55 + 0.45 * side_depth[..., None])
     if lay.flag_amp and lay.flag_shade:
-        shade = flag_shading(W, lay)[None, :, None]
+        shade = flag_shading(FW, lay)[None, x0:x1, None]
         face_rgb = np.clip(face_rgb * shade, 0, 1)
         side_rgb = np.clip(side_rgb * shade, 0, 1)
 
@@ -300,7 +322,8 @@ def render_title(g: Glyphs, look: Look3D | None = None, shadow: Shadow | None = 
         if shadow.softness > 0:
             acc = cv2.GaussianBlur(acc, (0, 0), shadow.softness)
         acc = acc * (1 - silhouette)
-        shadow_mask = _texture(shadow.texture, H, W, shadow.texture_scale, shadow.texture_angle, acc) * (acc > 0.02)
+        shadow_mask = _texture(shadow.texture, H, W, shadow.texture_scale, shadow.texture_angle, acc,
+                               x0, y0, FW, FH) * (acc > 0.02)
         shadow_mask = shadow_mask * shadow.opacity
 
     # composite beauty (straight alpha)
@@ -322,6 +345,7 @@ def render_title(g: Glyphs, look: Look3D | None = None, shadow: Shadow | None = 
     letter_ids = palette[ids]
 
     show = parse_guides(guides)
+    W, H = FW, FH
     guides = (draw_guides(W, H, geo["ox"], geo["baseline"], m, path=geo["path"], s_centre=geo["s_centre"],
                           mid_y=geo["mid_y"], show=show) if show else np.zeros((H, W, 4), np.float32))
     if lay.flag_amp and show:
@@ -340,6 +364,12 @@ def render_title(g: Glyphs, look: Look3D | None = None, shadow: Shadow | None = 
         "letter_ids": letter_ids,
         "guides": guides,
     }
+    if (x1 - x0, y1 - y0) != (W, H):
+        for k, a in out.items():
+            if k != "guides":
+                full = np.zeros((H, W) + a.shape[2:], np.float32)
+                full[y0:y1, x0:x1] = a
+                out[k] = full
     if lay.tilt_x or lay.tilt_y:
         Hm = tilt_homography(W, H, lay.tilt_x, lay.tilt_y, lay.fov)
         for k, a in out.items():
