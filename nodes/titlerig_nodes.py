@@ -5,6 +5,7 @@ import json
 
 import numpy as np
 
+from ..render.presets import PRESET_NAMES, TARGETS as PROMPT_TARGETS, build_prompt, suggested_look
 from ..render.audio import AUDIO_MODES, BANDS, audio_curve, curve_preview
 from ..render.animate import DIRECTIONS, EASINGS, EFFECTS, ORDERS, RESPONSES, RETRIGGERS, TARGETS, Anim, Track, render_frames
 from ..render import LAYOUT_MODES, SHADOW_TEXTURES, Glyphs, Layout, Look3D, Shadow, bundled_fonts, render_title
@@ -133,6 +134,32 @@ class TitleRigLayout:
         return (Layout(mode=mode, bend=bend, curve=curve, align=align, bulge=bulge, tilt_x=tilt_x, tilt_y=tilt_y,
                        fov=fov, vanish=vanish, vp_x=vp_x, vp_y=vp_y, flag_amp=flag_amp,
                        flag_wavelength=flag_wavelength, flag_phase=flag_phase, flag_shade=flag_shade),)
+
+
+class TitleRigStylePreset:
+    """Bright, ad-ready style: prompts for the AI pass + a matching rig Look and Shadow."""
+    CATEGORY = CAT
+    RETURN_TYPES = ("STRING", "STRING", "TITLERIG_LOOK", "TITLERIG_SHADOW")
+    RETURN_NAMES = ("positive", "negative", "look", "shadow")
+    FUNCTION = "build"
+
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {"required": {
+            "preset": (list(PRESET_NAMES), {"default": "Chrome Slam"}),
+            "target": (list(PROMPT_TARGETS), {"default": "flux2_dev", "tooltip": "flux2_dev: open-weights still "
+                       "(depth/canny) · flux3: API bonus, rig beauty = image 1 · ltx2_video: animated"}),
+            "colour_words": ("STRING", {"default": "", "tooltip": "optional, e.g. 'teal and hot pink' (replaces the "
+                             "preset's palette words)"}),
+            "text": ("STRING", {"default": "TITLE", "tooltip": "used when no glyphs are connected"}),
+        }, "optional": {
+            "glyphs": ("TITLERIG_GLYPHS", {"tooltip": "take the exact text from the rig"}),
+        }}
+
+    def build(self, preset, target, colour_words, text, glyphs=None):
+        pos, neg = build_prompt(preset, glyphs.text if glyphs is not None else text, colour_words, target)
+        look, shadow = suggested_look(preset)
+        return (pos, neg, look, shadow)
 
 
 class TitleRigRender:
@@ -292,6 +319,7 @@ NODE_CLASS_MAPPINGS = {
     "TitleRigAnimate": TitleRigAnimate,
     "TitleRigRenderAnimation": TitleRigRenderAnimation,
     "TitleRigAudioReact": TitleRigAudioReact,
+    "TitleRigStylePreset": TitleRigStylePreset,
 }
 NODE_DISPLAY_NAME_MAPPINGS = {
     "TitleRigText": "TitleRig Text",
@@ -302,4 +330,5 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "TitleRigAnimate": "TitleRig Animate",
     "TitleRigRenderAnimation": "TitleRig Render Animation",
     "TitleRigAudioReact": "TitleRig Audio React",
+    "TitleRigStylePreset": "TitleRig Style Preset",
 }
