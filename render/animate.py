@@ -15,13 +15,15 @@ import numpy as np
 from .core import Glyphs, Look3D, Shadow, render_title
 from .geometry import Layout
 
-LETTER_EFFECTS = ("flip_x", "spin_y", "roll_z", "pop", "drop", "slide", "squash", "shake")
+LETTER_EFFECTS = ("flip_x", "spin_y", "roll_z", "pop", "drop", "slide", "squash", "shake",
+                  "skew_x", "skew_y", "taper_x", "taper_y", "corner_pin")
 SHADOW_EFFECTS = ("shadow_length", "shadow_angle", "shadow_opacity", "shadow_softness")
 LOOK_EFFECTS = ("extrude", "light")
 LAYOUT_EFFECTS = ("wave", "tilt_x", "tilt_y", "bend")
 EFFECTS = LETTER_EFFECTS + LAYOUT_EFFECTS + SHADOW_EFFECTS + LOOK_EFFECTS
 EASINGS = ("linear", "in", "out", "in_out", "sine", "expo", "back", "elastic", "bounce", "spring", "steps")
 RESPONSES = ("follow", "trigger")
+DEFAULT_CORNERS = [[-24, -18], [24, -18], [0, 0], [0, 0]]  # corner_pin without a target: the top flares out
 RETRIGGERS = ("restart", "finish", "layer")
 ORDERS = ("forward", "reverse", "center_out", "edges_in", "random")
 DIRECTIONS = ("in", "out", "loop")
@@ -31,9 +33,11 @@ TARGETS = ("letters", "word")
 DEFAULT_AMOUNT = {"flip_x": 90.0, "spin_y": 360.0, "roll_z": 180.0, "pop": 100.0, "drop": 420.0, "slide": 700.0,
                   "wave": 360.0, "shadow_length": 60.0, "shadow_angle": 45.0, "shadow_opacity": 100.0,
                   "shadow_softness": 12.0, "squash": 35.0, "shake": 12.0, "extrude": 30.0, "light": 90.0,
-                  "tilt_x": 30.0, "tilt_y": 30.0, "bend": 50.0}
+                  "tilt_x": 30.0, "tilt_y": 30.0, "bend": 50.0, "skew_x": 20.0, "skew_y": 12.0,
+                  "taper_x": 50.0, "taper_y": 40.0, "corner_pin": 100.0}
 # squash: % squash (negative = stretch tall), shake: px jitter, extrude: px depth, light: deg of key-light sweep,
-# tilt_x/tilt_y: deg, bend: % of full arc bend
+# tilt_x/tilt_y: deg, bend: % of full arc bend, skew_x/skew_y: deg, taper_x/taper_y: % (negative flares),
+# corner_pin: % of the track's `corners` offsets ([[dx,dy] x4], TL TR BR BL, px)
 
 
 # ------------------------------------------------------------------------------------------------ easing
@@ -101,6 +105,7 @@ class Track:
     drive: np.ndarray | None = None    # per-frame curve (n,) or spectrum (bands, n), 0..1; replaces time + easing
     letters: str = "all"               # which letters: "all", "0,2,5-7" (char indices), "word:2" (1-based words)
     influence: float = 1.0             # dial: scales how far the track pushes (0 = off, 2 = double)
+    corners: list | None = None        # corner_pin target: [[dx, dy] x4] px, TL TR BR BL
     response: str = "follow"           # drive only: follow the curve, or "trigger": every hit replays the easing
     retrigger: str = "restart"         # trigger: restart on every hit | finish the current one first | layer (max)
 
@@ -254,8 +259,15 @@ def _raw_value(tr: Track, rank: int, frame: int, fps: float, pos: float | None) 
     return 1.0 - e if tr.direction == "in" else e
 
 
-def _apply(d: dict, effect: str, amount: float, v: float) -> None:
-    if effect == "flip_x":
+def _apply(d: dict, effect: str, amount: float, v: float, corners=None) -> None:
+    if effect in ("skew_x", "skew_y"):
+        d[effect] = d.get(effect, 0.0) + amount * v
+    elif effect in ("taper_x", "taper_y"):
+        d[effect] = d.get(effect, 0.0) + amount / 100.0 * v
+    elif effect == "corner_pin":
+        c = np.asarray(corners if corners is not None else DEFAULT_CORNERS, np.float64).reshape(4, 2)
+        d["corners"] = np.asarray(d.get("corners", np.zeros((4, 2))), np.float64) + c * amount / 100.0 * v
+    elif effect == "flip_x":
         d["sy"] = d.get("sy", 1.0) * math.cos(math.radians(amount * v))
     elif effect == "spin_y":
         d["sx"] = d.get("sx", 1.0) * math.cos(math.radians(amount * v))
@@ -339,7 +351,7 @@ def pose(anim: Anim, g: Glyphs, lay: Layout, frame: int, shadow: Shadow | None =
                     d["dx"] = d.get("dx", 0.0) + rng_v["dx"]
                     d["dy"] = d.get("dy", 0.0) + rng_v["dy"]
             else:
-                _apply(tgt[0], tr.effect, amount, v)
+                _apply(tgt[0], tr.effect, amount, v, tr.corners)
                 for d in tgt[1:]:  # group members share the first member's group transform
                     d.update({k: val for k, val in tgt[0].items() if k != "id"})
             continue
@@ -352,7 +364,7 @@ def pose(anim: Anim, g: Glyphs, lay: Layout, frame: int, shadow: Shadow | None =
             if tr.effect == "shake":
                 _shake(g.letters[i], amount, v, tr.seed, frame, i)
             else:
-                _apply(g.letters[i], tr.effect, amount, v)
+                _apply(g.letters[i], tr.effect, amount, v, tr.corners)
     return g, lay, shadow, look
 
 

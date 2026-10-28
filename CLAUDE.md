@@ -22,8 +22,8 @@ Full PRD: https://claude.ai/artifact/2qzTkJzmj6nwPUjcdNAad4 (summary in docs/PRD
 - [x] P0b: arc layout (port Glyph Bench's bezier + bulge), perspective tilt + vanishing point, flag warp
 - [x] P1a Animate: flip X / spin Y / roll Z / pop / drop / slide; whole word or per letter; stagger + order; easing (in-out, back, elastic, bounce); frames → IMAGE batch
 - [x] P1b Audio-reactive (hero demo): AUDIO in → onset/beat times + loudness envelope (numpy, no heavy deps); sensitivity, attack, release, band (bass/mids/highs); drives any Animate property
-- [ ] P1c rig-only example workflow JSON + GIF
+- [x] P1c rig-only example workflow JSON + GIF
 - [ ] P2: Style Preset node (prompts in docs/PRD.md), Magnet (polarity attract/repel, strength, range, lag, spring, squash/stretch), sphere/cube/ticker wraps, Spell-Lock, preview widget in `web/` (dark default + light theme)
 - [ ] P2: SVG export from the rig (faces, sides, textured shadow as shapes) — open, no API
 - [ ] P3 (optional, separate workflow, API — never in the open-weights entry): Recraft vectorize / vector generation via ComfyUI's Recraft partner nodes
-- [ ] Install ComfyUI (CPU) in the sandbox, confirm nodes load and the rig-only workflow runs headless
+- [x] Install ComfyUI (CPU) in the sandbox, confirm nodes load and the rig-only workflow runs headless

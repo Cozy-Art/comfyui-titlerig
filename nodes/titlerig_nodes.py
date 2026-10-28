@@ -34,13 +34,17 @@ class TitleRigText:
             "tracking": ("FLOAT", {"default": 0.0, "min": -200, "max": 400, "step": 0.5}),
         }, "optional": {
             "kerning_json": ("STRING", {"default": "{}", "tooltip": 'Pair index -> px, e.g. {"0": -12}'}),
-            "letters_json": ("STRING", {"default": "{}", "tooltip": 'Letter index -> {scale, rot, dx, dy, space_l, space_r}'}),
+            "letters_json": ("STRING", {"default": "{}", "tooltip": 'Letter index -> {scale, sx, sy, rot, dx, dy, '
+                                        'space_l, space_r, skew_x, skew_y, taper_x, taper_y, corners: [[dx,dy] x4 TL TR BR BL]}'}),
+            "word_json": ("STRING", {"default": "{}", "tooltip": 'Whole word: {scale, sx, sy, rot, dx, dy, skew_x, '
+                                     'skew_y, taper_x, taper_y, corners} — e.g. {"taper_x": 0.3} narrows the top'}),
         }}
 
-    def build(self, text, font, size, tracking, kerning_json="{}", letters_json="{}"):
+    def build(self, text, font, size, tracking, kerning_json="{}", letters_json="{}", word_json="{}"):
         kern = {int(k): float(v) for k, v in json.loads(kerning_json or "{}").items()}
         letters = {int(k): v for k, v in json.loads(letters_json or "{}").items()}
-        return (Glyphs(text=text, font=font, size=size, tracking=tracking, kerning=kern, letters=letters),)
+        word = json.loads(word_json or "{}")
+        return (Glyphs(text=text, font=font, size=size, tracking=tracking, kerning=kern, letters=letters, word=word),)
 
 
 class TitleRigLook3D:
@@ -181,7 +185,8 @@ class TitleRigAnimate:
                                  "tooltip": "0 = effect default. deg: flip/spin/roll/wave/shadow_angle · "
                                             "% shrink: pop, % fade: shadow_opacity (negative grows/darkens) · "
                                             "px: drop/slide/shake/extrude/shadow_length/shadow_softness · "
-                                            "% squash (negative stretches) · deg: light/tilt_x/tilt_y · % bend"}),
+                                            "% squash (negative stretches) · deg: light/tilt_x/tilt_y/skew_x/skew_y · % bend/taper_x/taper_y · "
+                                            "% of corners_json for corner_pin"}),
             "start": ("FLOAT", {"default": 0.0, "min": 0, "max": 600, "step": 0.01}),
             "fps": ("FLOAT", {"default": 24.0, "min": 1, "max": 120, "step": 1}),
             "hold": ("FLOAT", {"default": 0.6, "min": 0, "max": 60, "step": 0.05, "tooltip": "seconds of rest at the end"}),
@@ -196,14 +201,17 @@ class TitleRigAnimate:
                           "waits for the current one to finish (keeps bounces tidy on busy music), or layers (max)"}),
         }, "optional": {
             "anim": ("TITLERIG_ANIM", {"tooltip": "chain: tracks from an earlier Animate node"}),
+            "corners_json": ("STRING", {"default": "", "tooltip": "corner_pin target: [[dx,dy],[dx,dy],[dx,dy],[dx,dy]] px, "
+                                        "TL TR BR BL (empty = top corners flare out)"}),
             "drive": ("TITLERIG_CURVE", {"tooltip": "per-frame 0..1 curve (e.g. TitleRig Audio React) replaces time + easing"}),
         }}
 
     def build(self, effect, target, direction, easing, duration, stagger, order, amount, start, fps, hold, shuffle_seed,
-              letters="all", influence=1.0, response="follow", retrigger="restart", anim=None, drive=None):
+              letters="all", influence=1.0, response="follow", retrigger="restart", anim=None, corners_json="", drive=None):
         tr = Track(effect=effect, target=target, direction=direction, easing=easing, duration=duration,
                    stagger=stagger, order=order, amount=amount or None, start=start, seed=shuffle_seed,
                    letters=letters, influence=influence, response=response, retrigger=retrigger,
+                   corners=json.loads(corners_json) if corners_json.strip() else None,
                    drive=None if drive is None else drive["values"])
         if drive is not None:
             fps = drive["fps"]

@@ -19,3 +19,17 @@ The depth and edges outputs are the control passes for FLUX depth/canny and LTX-
   python workflows/run_headless.py workflows/api/titlerig_rig_only.json
   ```
 - `to_ui.js`: rebuilds the UI files by loading the API graphs into the real ComfyUI frontend (Node + Playwright)
+
+![rig-only workflow output: beauty above, depth below](../docs/media/rig_only_workflow.gif)
+
+## Verified headless on CPU
+
+Both workflows were run on a CPU-only ComfyUI (no GPU, no models): `run_headless.py` on the API files, and `to_ui.js --verify` on the UI files (each is loaded into the frontend, turned into a prompt and executed).
+
+In a sandbox where `download.pytorch.org` is blocked, the CPU PyTorch build comes from conda-forge:
+
+```bash
+micromamba create -p /opt/comfyenv -c conda-forge python=3.13 "pytorch=*=cpu*" torchvision
+/opt/comfyenv/bin/python -m pip install -r ComfyUI/requirements.txt   # torch is already satisfied
+/opt/comfyenv/bin/python ComfyUI/main.py --cpu
+```

@@ -1,0 +1,1773 @@
+{
+  "id": "09da64d2-c30d-469f-886e-9ce0a036bdd0",
+  "revision": 0,
+  "last_node_id": 13,
+  "last_link_id": 15,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "TitleRigText",
+      "pos": [
+        100,
+        130
+      ],
+      "size": [
+        270,
+        178
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "text",
+          "name": "text",
+          "type": "STRING",
+          "widget": {
+            "name": "text"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "font",
+          "name": "font",
+          "type": "COMBO",
+          "widget": {
+            "name": "font"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "size",
+          "name": "size",
+          "type": "INT",
+          "widget": {
+            "name": "size"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "tracking",
+          "name": "tracking",
+          "type": "FLOAT",
+          "widget": {
+            "name": "tracking"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "kerning_json",
+          "name": "kerning_json",
+          "shape": 7,
+          "type": "STRING",
+          "widget": {
+            "name": "kerning_json"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "letters_json",
+          "name": "letters_json",
+          "shape": 7,
+          "type": "STRING",
+          "widget": {
+            "name": "letters_json"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "glyphs",
+          "name": "glyphs",
+          "type": "TITLERIG_GLYPHS",
+          "links": [
+            1,
+            9
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "TitleRigText"
+      },
+      "widgets_values": [
+        "TITLERIG",
+        "Anton-Regular",
+        200,
+        4,
+        "{}",
+        "{}"
+      ],
+      "widgets_values_named": {
+        "text": "TITLERIG",
+        "font": "Anton-Regular",
+        "size": 200,
+        "tracking": 4,
+        "kerning_json": "{}",
+        "letters_json": "{}"
+      }
+    },
+    {
+      "id": 2,
+      "type": "TitleRigLook3D",
+      "pos": [
+        100,
+        438
+      ],
+      "size": [
+        270,
+        298
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "face",
+          "name": "face",
+          "type": "STRING",
+          "widget": {
+            "name": "face"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "face_gradient_to",
+          "name": "face_gradient_to",
+          "type": "STRING",
+          "widget": {
+            "name": "face_gradient_to"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "side",
+          "name": "side",
+          "type": "STRING",
+          "widget": {
+            "name": "side"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "extrude",
+          "name": "extrude",
+          "type": "INT",
+          "widget": {
+            "name": "extrude"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "extrude_angle",
+          "name": "extrude_angle",
+          "type": "FLOAT",
+          "widget": {
+            "name": "extrude_angle"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "bevel",
+          "name": "bevel",
+          "type": "FLOAT",
+          "widget": {
+            "name": "bevel"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "bevel_profile",
+          "name": "bevel_profile",
+          "type": "COMBO",
+          "widget": {
+            "name": "bevel_profile"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "light_angle",
+          "name": "light_angle",
+          "type": "FLOAT",
+          "widget": {
+            "name": "light_angle"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "light_height",
+          "name": "light_height",
+          "type": "FLOAT",
+          "widget": {
+            "name": "light_height"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "gloss",
+          "name": "gloss",
+          "type": "FLOAT",
+          "widget": {
+            "name": "gloss"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "rim",
+          "name": "rim",
+          "type": "FLOAT",
+          "widget": {
+            "name": "rim"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "look",
+          "name": "look",
+          "type": "TITLERIG_LOOK",
+          "links": [
+            2,
+            11
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "TitleRigLook3D"
+      },
+      "widgets_values": [
+        "#ff8fd8",
+        "#ffd400",
+        "#7c3aed",
+        30,
+        55,
+        12,
+        "round",
+        225,
+        0.6,
+        0.9,
+        0.4
+      ],
+      "widgets_values_named": {
+        "face": "#ff8fd8",
+        "face_gradient_to": "#ffd400",
+        "side": "#7c3aed",
+        "extrude": 30,
+        "extrude_angle": 55,
+        "bevel": 12,
+        "bevel_profile": "round",
+        "light_angle": 225,
+        "light_height": 0.6,
+        "gloss": 0.9,
+        "rim": 0.4
+      }
+    },
+    {
+      "id": 3,
+      "type": "TitleRigShadow",
+      "pos": [
+        100,
+        866
+      ],
+      "size": [
+        270,
+        226
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "texture",
+          "name": "texture",
+          "type": "COMBO",
+          "widget": {
+            "name": "texture"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "color",
+          "name": "color",
+          "type": "STRING",
+          "widget": {
+            "name": "color"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "angle",
+          "name": "angle",
+          "type": "FLOAT",
+          "widget": {
+            "name": "angle"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "length",
+          "name": "length",
+          "type": "FLOAT",
+          "widget": {
+            "name": "length"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "softness",
+          "name": "softness",
+          "type": "FLOAT",
+          "widget": {
+            "name": "softness"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "texture_scale",
+          "name": "texture_scale",
+          "type": "FLOAT",
+          "widget": {
+            "name": "texture_scale"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "texture_angle",
+          "name": "texture_angle",
+          "type": "FLOAT",
+          "widget": {
+            "name": "texture_angle"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "opacity",
+          "name": "opacity",
+          "type": "FLOAT",
+          "widget": {
+            "name": "opacity"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "shadow",
+          "name": "shadow",
+          "type": "TITLERIG_SHADOW",
+          "links": [
+            3,
+            12
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "TitleRigShadow"
+      },
+      "widgets_values": [
+        "halftone",
+        "#0f172a",
+        45,
+        36,
+        0,
+        10,
+        45,
+        1
+      ],
+      "widgets_values_named": {
+        "texture": "halftone",
+        "color": "#0f172a",
+        "angle": 45,
+        "length": 36,
+        "softness": 0,
+        "texture_scale": 10,
+        "texture_angle": 45,
+        "opacity": 1
+      }
+    },
+    {
+      "id": 4,
+      "type": "TitleRigLayout",
+      "pos": [
+        100,
+        1222
+      ],
+      "size": [
+        270,
+        394
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "mode",
+          "name": "mode",
+          "type": "COMBO",
+          "widget": {
+            "name": "mode"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "bend",
+          "name": "bend",
+          "type": "FLOAT",
+          "widget": {
+            "name": "bend"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "align",
+          "name": "align",
+          "type": "FLOAT",
+          "widget": {
+            "name": "align"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "bulge",
+          "name": "bulge",
+          "type": "FLOAT",
+          "widget": {
+            "name": "bulge"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "tilt_x",
+          "name": "tilt_x",
+          "type": "FLOAT",
+          "widget": {
+            "name": "tilt_x"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "tilt_y",
+          "name": "tilt_y",
+          "type": "FLOAT",
+          "widget": {
+            "name": "tilt_y"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "fov",
+          "name": "fov",
+          "type": "FLOAT",
+          "widget": {
+            "name": "fov"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "vanish",
+          "name": "vanish",
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "vanish"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "vp_x",
+          "name": "vp_x",
+          "type": "FLOAT",
+          "widget": {
+            "name": "vp_x"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "vp_y",
+          "name": "vp_y",
+          "type": "FLOAT",
+          "widget": {
+            "name": "vp_y"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "flag_amp",
+          "name": "flag_amp",
+          "type": "FLOAT",
+          "widget": {
+            "name": "flag_amp"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "flag_wavelength",
+          "name": "flag_wavelength",
+          "type": "FLOAT",
+          "widget": {
+            "name": "flag_wavelength"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "flag_phase",
+          "name": "flag_phase",
+          "type": "FLOAT",
+          "widget": {
+            "name": "flag_phase"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "flag_shade",
+          "name": "flag_shade",
+          "type": "FLOAT",
+          "widget": {
+            "name": "flag_shade"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "curve_json",
+          "name": "curve_json",
+          "shape": 7,
+          "type": "STRING",
+          "widget": {
+            "name": "curve_json"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "layout",
+          "name": "layout",
+          "type": "TITLERIG_LAYOUT",
+          "links": [
+            4,
+            13
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "TitleRigLayout"
+      },
+      "widgets_values": [
+        "arc",
+        0.22,
+        0.5,
+        0,
+        0,
+        0,
+        50,
+        false,
+        0.5,
+        1.4,
+        0,
+        420,
+        0,
+        0.5,
+        ""
+      ],
+      "widgets_values_named": {
+        "mode": "arc",
+        "bend": 0.22,
+        "align": 0.5,
+        "bulge": 0,
+        "tilt_x": 0,
+        "tilt_y": 0,
+        "fov": 50,
+        "vanish": false,
+        "vp_x": 0.5,
+        "vp_y": 1.4,
+        "flag_amp": 0,
+        "flag_wavelength": 420,
+        "flag_phase": 0,
+        "flag_shade": 0.5,
+        "curve_json": ""
+      }
+    },
+    {
+      "id": 5,
+      "type": "TitleRigRender",
+      "pos": [
+        470,
+        130
+      ],
+      "size": [
+        270,
+        306
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "glyphs",
+          "name": "glyphs",
+          "type": "TITLERIG_GLYPHS",
+          "link": 1
+        },
+        {
+          "localized_name": "look",
+          "name": "look",
+          "shape": 7,
+          "type": "TITLERIG_LOOK",
+          "link": 2
+        },
+        {
+          "localized_name": "shadow",
+          "name": "shadow",
+          "shape": 7,
+          "type": "TITLERIG_SHADOW",
+          "link": 3
+        },
+        {
+          "localized_name": "layout",
+          "name": "layout",
+          "shape": 7,
+          "type": "TITLERIG_LAYOUT",
+          "link": 4
+        },
+        {
+          "localized_name": "width",
+          "name": "width",
+          "type": "INT",
+          "widget": {
+            "name": "width"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "height",
+          "name": "height",
+          "type": "INT",
+          "widget": {
+            "name": "height"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "guide_lines",
+          "name": "guide_lines",
+          "shape": 7,
+          "type": "STRING",
+          "widget": {
+            "name": "guide_lines"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "beauty",
+          "name": "beauty",
+          "type": "IMAGE",
+          "links": [
+            5
+          ]
+        },
+        {
+          "localized_name": "alpha",
+          "name": "alpha",
+          "type": "MASK",
+          "links": null
+        },
+        {
+          "localized_name": "depth",
+          "name": "depth",
+          "type": "IMAGE",
+          "links": [
+            6
+          ]
+        },
+        {
+          "localized_name": "edges",
+          "name": "edges",
+          "type": "IMAGE",
+          "links": null
+        },
+        {
+          "localized_name": "normals",
+          "name": "normals",
+          "type": "IMAGE",
+          "links": null
+        },
+        {
+          "localized_name": "face",
+          "name": "face",
+          "type": "MASK",
+          "links": null
+        },
+        {
+          "localized_name": "sides",
+          "name": "sides",
+          "type": "MASK",
+          "links": null
+        },
+        {
+          "localized_name": "highlight",
+          "name": "highlight",
+          "type": "MASK",
+          "links": null
+        },
+        {
+          "localized_name": "shadow",
+          "name": "shadow",
+          "type": "MASK",
+          "links": null
+        },
+        {
+          "localized_name": "letter_ids",
+          "name": "letter_ids",
+          "type": "IMAGE",
+          "links": null
+        },
+        {
+          "localized_name": "guides",
+          "name": "guides",
+          "type": "IMAGE",
+          "links": [
+            7
+          ]
+        }
+      ],
+      "title": "Render still",
+      "properties": {
+        "Node name for S&R": "TitleRigRender"
+      },
+      "widgets_values": [
+        1280,
+        720,
+        "all"
+      ],
+      "widgets_values_named": {
+        "width": 1280,
+        "height": 720,
+        "guide_lines": "all"
+      }
+    },
+    {
+      "id": 6,
+      "type": "SaveImage",
+      "pos": [
+        840,
+        130
+      ],
+      "size": [
+        270,
+        58
+      ],
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "images",
+          "name": "images",
+          "type": "IMAGE",
+          "link": 5
+        },
+        {
+          "localized_name": "filename_prefix",
+          "name": "filename_prefix",
+          "type": "STRING",
+          "widget": {
+            "name": "filename_prefix"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "images",
+          "name": "images",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "properties": {},
+      "widgets_values": [
+        "titlerig/still_beauty"
+      ],
+      "widgets_values_named": {
+        "filename_prefix": "titlerig/still_beauty"
+      }
+    },
+    {
+      "id": 7,
+      "type": "SaveImage",
+      "pos": [
+        840,
+        318
+      ],
+      "size": [
+        270,
+        58
+      ],
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "images",
+          "name": "images",
+          "type": "IMAGE",
+          "link": 6
+        },
+        {
+          "localized_name": "filename_prefix",
+          "name": "filename_prefix",
+          "type": "STRING",
+          "widget": {
+            "name": "filename_prefix"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "images",
+          "name": "images",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "properties": {},
+      "widgets_values": [
+        "titlerig/still_depth"
+      ],
+      "widgets_values_named": {
+        "filename_prefix": "titlerig/still_depth"
+      }
+    },
+    {
+      "id": 8,
+      "type": "PreviewImage",
+      "pos": [
+        840,
+        506
+      ],
+      "size": [
+        140,
+        26
+      ],
+      "flags": {},
+      "order": 9,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "images",
+          "name": "images",
+          "type": "IMAGE",
+          "link": 7
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "images",
+          "name": "images",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Guides",
+      "properties": {
+        "Node name for S&R": "PreviewImage"
+      }
+    },
+    {
+      "id": 9,
+      "type": "TitleRigAnimate",
+      "pos": [
+        100,
+        1746
+      ],
+      "size": [
+        270,
+        438
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "anim",
+          "name": "anim",
+          "shape": 7,
+          "type": "TITLERIG_ANIM",
+          "link": null
+        },
+        {
+          "localized_name": "drive",
+          "name": "drive",
+          "shape": 7,
+          "type": "TITLERIG_CURVE",
+          "link": null
+        },
+        {
+          "localized_name": "effect",
+          "name": "effect",
+          "type": "COMBO",
+          "widget": {
+            "name": "effect"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "target",
+          "name": "target",
+          "type": "COMBO",
+          "widget": {
+            "name": "target"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "direction",
+          "name": "direction",
+          "type": "COMBO",
+          "widget": {
+            "name": "direction"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "easing",
+          "name": "easing",
+          "type": "COMBO",
+          "widget": {
+            "name": "easing"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "duration",
+          "name": "duration",
+          "type": "FLOAT",
+          "widget": {
+            "name": "duration"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "stagger",
+          "name": "stagger",
+          "type": "FLOAT",
+          "widget": {
+            "name": "stagger"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "order",
+          "name": "order",
+          "type": "COMBO",
+          "widget": {
+            "name": "order"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "amount",
+          "name": "amount",
+          "type": "FLOAT",
+          "widget": {
+            "name": "amount"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "start",
+          "name": "start",
+          "type": "FLOAT",
+          "widget": {
+            "name": "start"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "fps",
+          "name": "fps",
+          "type": "FLOAT",
+          "widget": {
+            "name": "fps"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "hold",
+          "name": "hold",
+          "type": "FLOAT",
+          "widget": {
+            "name": "hold"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "shuffle_seed",
+          "name": "shuffle_seed",
+          "type": "INT",
+          "widget": {
+            "name": "shuffle_seed"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "letters",
+          "name": "letters",
+          "type": "STRING",
+          "widget": {
+            "name": "letters"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "influence",
+          "name": "influence",
+          "type": "FLOAT",
+          "widget": {
+            "name": "influence"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "response",
+          "name": "response",
+          "type": "COMBO",
+          "widget": {
+            "name": "response"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "retrigger",
+          "name": "retrigger",
+          "type": "COMBO",
+          "widget": {
+            "name": "retrigger"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "anim",
+          "name": "anim",
+          "type": "TITLERIG_ANIM",
+          "links": [
+            8
+          ]
+        }
+      ],
+      "title": "Pop in (back, centre out)",
+      "properties": {
+        "Node name for S&R": "TitleRigAnimate"
+      },
+      "widgets_values": [
+        "pop",
+        "letters",
+        "in",
+        "back",
+        0.6,
+        0.06,
+        "center_out",
+        0,
+        0,
+        24,
+        0.8,
+        0,
+        "all",
+        1,
+        "follow",
+        "restart"
+      ],
+      "widgets_values_named": {
+        "effect": "pop",
+        "target": "letters",
+        "direction": "in",
+        "easing": "back",
+        "duration": 0.6,
+        "stagger": 0.06,
+        "order": "center_out",
+        "amount": 0,
+        "start": 0,
+        "fps": 24,
+        "hold": 0.8,
+        "shuffle_seed": 0,
+        "letters": "all",
+        "influence": 1,
+        "response": "follow",
+        "retrigger": "restart"
+      }
+    },
+    {
+      "id": 10,
+      "type": "TitleRigAnimate",
+      "pos": [
+        470,
+        566
+      ],
+      "size": [
+        270,
+        438
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "anim",
+          "name": "anim",
+          "shape": 7,
+          "type": "TITLERIG_ANIM",
+          "link": 8
+        },
+        {
+          "localized_name": "drive",
+          "name": "drive",
+          "shape": 7,
+          "type": "TITLERIG_CURVE",
+          "link": null
+        },
+        {
+          "localized_name": "effect",
+          "name": "effect",
+          "type": "COMBO",
+          "widget": {
+            "name": "effect"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "target",
+          "name": "target",
+          "type": "COMBO",
+          "widget": {
+            "name": "target"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "direction",
+          "name": "direction",
+          "type": "COMBO",
+          "widget": {
+            "name": "direction"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "easing",
+          "name": "easing",
+          "type": "COMBO",
+          "widget": {
+            "name": "easing"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "duration",
+          "name": "duration",
+          "type": "FLOAT",
+          "widget": {
+            "name": "duration"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "stagger",
+          "name": "stagger",
+          "type": "FLOAT",
+          "widget": {
+            "name": "stagger"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "order",
+          "name": "order",
+          "type": "COMBO",
+          "widget": {
+            "name": "order"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "amount",
+          "name": "amount",
+          "type": "FLOAT",
+          "widget": {
+            "name": "amount"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "start",
+          "name": "start",
+          "type": "FLOAT",
+          "widget": {
+            "name": "start"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "fps",
+          "name": "fps",
+          "type": "FLOAT",
+          "widget": {
+            "name": "fps"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "hold",
+          "name": "hold",
+          "type": "FLOAT",
+          "widget": {
+            "name": "hold"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "shuffle_seed",
+          "name": "shuffle_seed",
+          "type": "INT",
+          "widget": {
+            "name": "shuffle_seed"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "letters",
+          "name": "letters",
+          "type": "STRING",
+          "widget": {
+            "name": "letters"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "influence",
+          "name": "influence",
+          "type": "FLOAT",
+          "widget": {
+            "name": "influence"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "response",
+          "name": "response",
+          "type": "COMBO",
+          "widget": {
+            "name": "response"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "retrigger",
+          "name": "retrigger",
+          "type": "COMBO",
+          "widget": {
+            "name": "retrigger"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "anim",
+          "name": "anim",
+          "type": "TITLERIG_ANIM",
+          "links": [
+            10
+          ]
+        }
+      ],
+      "title": "Roll in (elastic)",
+      "properties": {
+        "Node name for S&R": "TitleRigAnimate"
+      },
+      "widgets_values": [
+        "roll_z",
+        "letters",
+        "in",
+        "elastic",
+        0.8,
+        0.06,
+        "forward",
+        25,
+        0,
+        24,
+        0.8,
+        0,
+        "all",
+        1,
+        "follow",
+        "restart"
+      ],
+      "widgets_values_named": {
+        "effect": "roll_z",
+        "target": "letters",
+        "direction": "in",
+        "easing": "elastic",
+        "duration": 0.8,
+        "stagger": 0.06,
+        "order": "forward",
+        "amount": 25,
+        "start": 0,
+        "fps": 24,
+        "hold": 0.8,
+        "shuffle_seed": 0,
+        "letters": "all",
+        "influence": 1,
+        "response": "follow",
+        "retrigger": "restart"
+      }
+    },
+    {
+      "id": 11,
+      "type": "TitleRigRenderAnimation",
+      "pos": [
+        840,
+        662
+      ],
+      "size": [
+        270.648046875,
+        202
+      ],
+      "flags": {},
+      "order": 10,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "glyphs",
+          "name": "glyphs",
+          "type": "TITLERIG_GLYPHS",
+          "link": 9
+        },
+        {
+          "localized_name": "anim",
+          "name": "anim",
+          "type": "TITLERIG_ANIM",
+          "link": 10
+        },
+        {
+          "localized_name": "look",
+          "name": "look",
+          "shape": 7,
+          "type": "TITLERIG_LOOK",
+          "link": 11
+        },
+        {
+          "localized_name": "shadow",
+          "name": "shadow",
+          "shape": 7,
+          "type": "TITLERIG_SHADOW",
+          "link": 12
+        },
+        {
+          "localized_name": "layout",
+          "name": "layout",
+          "shape": 7,
+          "type": "TITLERIG_LAYOUT",
+          "link": 13
+        },
+        {
+          "localized_name": "width",
+          "name": "width",
+          "type": "INT",
+          "widget": {
+            "name": "width"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "height",
+          "name": "height",
+          "type": "INT",
+          "widget": {
+            "name": "height"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "beauty",
+          "name": "beauty",
+          "type": "IMAGE",
+          "links": [
+            14
+          ]
+        },
+        {
+          "localized_name": "alpha",
+          "name": "alpha",
+          "type": "MASK",
+          "links": null
+        },
+        {
+          "localized_name": "depth",
+          "name": "depth",
+          "type": "IMAGE",
+          "links": [
+            15
+          ]
+        },
+        {
+          "localized_name": "edges",
+          "name": "edges",
+          "type": "IMAGE",
+          "links": null
+        },
+        {
+          "localized_name": "letter_ids",
+          "name": "letter_ids",
+          "type": "IMAGE",
+          "links": null
+        },
+        {
+          "localized_name": "frame_count",
+          "name": "frame_count",
+          "type": "INT",
+          "links": null
+        },
+        {
+          "localized_name": "fps",
+          "name": "fps",
+          "type": "FLOAT",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "TitleRigRenderAnimation"
+      },
+      "widgets_values": [
+        960,
+        544
+      ],
+      "widgets_values_named": {
+        "width": 960,
+        "height": 544
+      }
+    },
+    {
+      "id": 12,
+      "type": "SaveAnimatedWEBP",
+      "pos": [
+        1210.648046875,
+        130
+      ],
+      "size": [
+        270,
+        154
+      ],
+      "flags": {},
+      "order": 11,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "images",
+          "name": "images",
+          "type": "IMAGE",
+          "link": 14
+        },
+        {
+          "localized_name": "filename_prefix",
+          "name": "filename_prefix",
+          "type": "STRING",
+          "widget": {
+            "name": "filename_prefix"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "fps",
+          "name": "fps",
+          "type": "FLOAT",
+          "widget": {
+            "name": "fps"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "lossless",
+          "name": "lossless",
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "lossless"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "quality",
+          "name": "quality",
+          "type": "INT",
+          "widget": {
+            "name": "quality"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "method",
+          "name": "method",
+          "type": "COMBO",
+          "widget": {
+            "name": "method"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "images",
+          "name": "images",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "properties": {},
+      "widgets_values": [
+        "titlerig/anim_beauty",
+        24,
+        false,
+        85,
+        "default"
+      ],
+      "widgets_values_named": {
+        "filename_prefix": "titlerig/anim_beauty",
+        "fps": 24,
+        "lossless": false,
+        "quality": 85,
+        "method": "default"
+      }
+    },
+    {
+      "id": 13,
+      "type": "SaveAnimatedWEBP",
+      "pos": [
+        1210.648046875,
+        414
+      ],
+      "size": [
+        270,
+        154
+      ],
+      "flags": {},
+      "order": 12,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "images",
+          "name": "images",
+          "type": "IMAGE",
+          "link": 15
+        },
+        {
+          "localized_name": "filename_prefix",
+          "name": "filename_prefix",
+          "type": "STRING",
+          "widget": {
+            "name": "filename_prefix"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "fps",
+          "name": "fps",
+          "type": "FLOAT",
+          "widget": {
+            "name": "fps"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "lossless",
+          "name": "lossless",
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "lossless"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "quality",
+          "name": "quality",
+          "type": "INT",
+          "widget": {
+            "name": "quality"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "method",
+          "name": "method",
+          "type": "COMBO",
+          "widget": {
+            "name": "method"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "images",
+          "name": "images",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "properties": {},
+      "widgets_values": [
+        "titlerig/anim_depth",
+        24,
+        false,
+        85,
+        "default"
+      ],
+      "widgets_values_named": {
+        "filename_prefix": "titlerig/anim_depth",
+        "fps": 24,
+        "lossless": false,
+        "quality": 85,
+        "method": "default"
+      }
+    }
+  ],
+  "links": [
+    [
+      1,
+      1,
+      0,
+      5,
+      0,
+      "TITLERIG_GLYPHS"
+    ],
+    [
+      2,
+      2,
+      0,
+      5,
+      1,
+      "TITLERIG_LOOK"
+    ],
+    [
+      3,
+      3,
+      0,
+      5,
+      2,
+      "TITLERIG_SHADOW"
+    ],
+    [
+      4,
+      4,
+      0,
+      5,
+      3,
+      "TITLERIG_LAYOUT"
+    ],
+    [
+      5,
+      5,
+      0,
+      6,
+      0,
+      "IMAGE"
+    ],
+    [
+      6,
+      5,
+      2,
+      7,
+      0,
+      "IMAGE"
+    ],
+    [
+      7,
+      5,
+      10,
+      8,
+      0,
+      "IMAGE"
+    ],
+    [
+      8,
+      9,
+      0,
+      10,
+      0,
+      "TITLERIG_ANIM"
+    ],
+    [
+      9,
+      1,
+      0,
+      11,
+      0,
+      "TITLERIG_GLYPHS"
+    ],
+    [
+      10,
+      10,
+      0,
+      11,
+      1,
+      "TITLERIG_ANIM"
+    ],
+    [
+      11,
+      2,
+      0,
+      11,
+      2,
+      "TITLERIG_LOOK"
+    ],
+    [
+      12,
+      3,
+      0,
+      11,
+      3,
+      "TITLERIG_SHADOW"
+    ],
+    [
+      13,
+      4,
+      0,
+      11,
+      4,
+      "TITLERIG_LAYOUT"
+    ],
+    [
+      14,
+      11,
+      0,
+      12,
+      0,
+      "IMAGE"
+    ],
+    [
+      15,
+      11,
+      2,
+      13,
+      0,
+      "IMAGE"
+    ]
+  ],
+  "groups": [],
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 0.45782463928967815,
+      "offset": [
+        40,
+        40
+      ]
+    }
+  },
+  "version": 0.4
+}

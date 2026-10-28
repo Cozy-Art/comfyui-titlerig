@@ -26,6 +26,7 @@ TitleRig is an open-source ComfyUI node pack that renders exact, animated 3D tit
 - **Orders:** forward · reverse · center_out · edges_in · random. **Directions:** in · out · loop
 - **letters:** `all`, `0,2,5-7` (character indices) or `word:2`. With target `word`, a selection moves as one rigid group.
 - **influence:** a 0–4 dial on how hard the track pushes.
+- **Free transform:** `skew_x`, `skew_y`, `taper_x` (keystone; negative flares), `taper_y`, and `corner_pin` (`corners_json`: 4 corner offsets). Set it per letter in `letters_json`, per word in `word_json`, or on any group, and animate it like any other effect, sound included.
 
 ### Audio React (the hero)
 
@@ -67,6 +68,7 @@ pip install -r requirements.txt pytest
 python examples/contact_sheet.py   # stills + layout sheet → examples/out/*.png
 python examples/animate_demo.py    # effect grid → examples/out/animate_grid.gif
 python examples/audio_demo.py      # audio-reactive clips (+ MP4 with sound if ffmpeg is installed)
+python examples/free_transform_demo.py  # skew / taper / corner pin sheet + sound-driven clip
 python -m pytest -q
 ```
 
@@ -75,7 +77,9 @@ python -m pytest -q
 - **LTX-2** + Depth / Canny IC-LoRAs (Lightricks, open weights) — animated titles
 - **FLUX** (Black Forest Labs) depth-conditioned — stills
 
-Download links and exact files: see `workflows/README.md` (coming with the workflows).
+Rig-only workflows (no models, CPU): `workflows/titlerig_rig_only.json` and `workflows/titlerig_audio_react.json`. See `workflows/README.md`.
+
+![TitleRig rig-only workflow output](docs/media/rig_only_workflow.gif)
 
 Prompts are written with the open-source [super-skills](https://github.com/Cozy-Art/super-skills) prompting skills (FLUX.2, FLUX 3, Recraft V4) — see `docs/MODEL-SKILLS.md`. Optional API workflows (FLUX 3, Recraft vector) are kept separate from the open-weights workflows.
 

@@ -106,3 +106,47 @@ def test_mid_guide_sits_on_cap_midline_and_follows_arc():
     arc = face(mode="arc", bend=0.6)["guides"][..., 3]
     flat = face()["guides"][..., 3]
     assert not np.allclose(arc, flat)
+
+
+def _rows_span(f):
+    rows = np.where(f.any(1))[0]
+    w = lambda r: np.ptp(np.where(f[r])[0])  # noqa: E731
+    return w(rows.min() + 4), w(rows.max() - 4)
+
+
+def _render_face(g):
+    return render_title(g, lay=Layout(), **PLAIN)["face"]
+
+
+def test_taper_narrows_top_and_negative_flares():
+    top, bot = _rows_span(_render_face(Glyphs(text="H", size=160, letters={0: {"taper_x": 0.5}})))
+    assert top < bot * 0.7
+    top, bot = _rows_span(_render_face(Glyphs(text="H", size=160, letters={0: {"taper_x": -0.5}})))
+    assert top > bot * 1.3
+
+
+def test_skew_leans_top_right():
+    f = _render_face(Glyphs(text="I", size=160, letters={0: {"skew_x": 20}}))
+    rows = np.where(f.any(1))[0]
+    cx = lambda r: np.where(f[r])[0].mean()  # noqa: E731
+    assert cx(rows.min() + 3) > cx(rows.max() - 3) + 20
+
+
+def test_corner_pin_moves_one_corner():
+    plain = _render_face(Glyphs(text="H", size=160))
+    pinned = _render_face(Glyphs(text="H", size=160, letters={0: {"corners": [[0, 0], [60, -40], [0, 0], [0, 0]]}}))
+    assert np.where(pinned.any(1))[0].min() < np.where(plain.any(1))[0].min() - 20  # TR corner pulled up
+    assert np.where(pinned.any(0))[0].max() > np.where(plain.any(0))[0].max() + 30   # ... and right
+
+
+def test_word_free_transform_and_group_taper():
+    top, bot = _rows_span(_render_face(Glyphs(text="HHHH", size=120, word={"taper_x": 0.4})))
+    assert top < bot * 0.8
+    from render.animate import Anim, Track, pose
+    g, *_ = pose(Anim([Track(effect="taper_x", target="word", letters="word:2", drive=np.ones(1), amount=50)]),
+                 Glyphs(text="HH HH", size=110), Layout(), 0)
+    assert g.letters[3]["group"]["taper_x"] == 0.5
+    f = _render_face(g)
+    right = f[:, 450:]
+    top, bot = _rows_span(right)
+    assert top < bot * 0.8  # the second word tapers as one piece

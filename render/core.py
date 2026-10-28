@@ -116,9 +116,51 @@ def _affine(rot=0.0, sx=1.0, sy=1.0, cx=0.0, cy=0.0, dx=0.0, dy=0.0) -> np.ndarr
     return T @ A @ Ti
 
 
-def _tf(d: dict, cx: float, cy: float) -> np.ndarray:
+FREE_KEYS = ("skew_x", "skew_y", "taper_x", "taper_y", "corners")
+
+
+def _has_free(d: dict) -> bool:
+    return any(d.get(k) is not None and np.any(d.get(k)) for k in FREE_KEYS)
+
+
+def _free(d: dict, bbox) -> np.ndarray:
+    """3x3 free transform of a box (x0, y0, x1, y1): skew (deg), taper (fraction) and corner pin (px, TL TR BR BL).
+
+    taper_x narrows the top edge (negative widens it); taper_y shortens the right side."""
+    if bbox is None or not _has_free(d):
+        return np.eye(3)
+    x0, y0, x1, y1 = bbox
+    cx, cy = (x0 + x1) / 2, (y0 + y1) / 2
+    src = np.array([[x0, y0], [x1, y0], [x1, y1], [x0, y1]], np.float64)
+    dst = src.copy()
+    tx, ty = d.get("taper_x", 0.0), d.get("taper_y", 0.0)
+    dst[:2, 0] = cx + (dst[:2, 0] - cx) * max(0.02, 1 - tx)       # top edge
+    dst[1:3, 1] = cy + (dst[1:3, 1] - cy) * max(0.02, 1 - ty)     # right edge
+    kx, ky = math.tan(math.radians(d.get("skew_x", 0.0))), math.tan(math.radians(d.get("skew_y", 0.0)))
+    dst = np.column_stack([dst[:, 0] - kx * (dst[:, 1] - cy), dst[:, 1] + ky * (dst[:, 0] - cx)])
+    if d.get("corners") is not None:
+        dst = dst + np.asarray(d["corners"], np.float64).reshape(4, 2)
+    if x1 - x0 < 1 or y1 - y0 < 1:
+        return np.eye(3)
+    return cv2.getPerspectiveTransform(src.astype(np.float32), dst.astype(np.float32)).astype(np.float64)
+
+
+def _tf(d: dict, cx: float, cy: float, bbox=None) -> np.ndarray:
+    """Letter / group / word transform: free transform of its box first, then scale, rotate and move."""
     s = d.get("scale", 1.0)
-    return _affine(d.get("rot", 0.0), s * d.get("sx", 1.0), s * d.get("sy", 1.0), cx, cy, d.get("dx", 0.0), d.get("dy", 0.0))
+    return _affine(d.get("rot", 0.0), s * d.get("sx", 1.0), s * d.get("sy", 1.0), cx, cy,
+                   d.get("dx", 0.0), d.get("dy", 0.0)) @ _free(d, bbox)
+
+
+def _union(boxes):
+    b = np.array(boxes, np.float64)
+    return b[:, 0].min(), b[:, 1].min(), b[:, 2].max(), b[:, 3].max()
+
+
+def _warp(a: np.ndarray, M: np.ndarray, W: int, H: int, interp=cv2.INTER_LINEAR) -> np.ndarray:
+    if np.allclose(M[2], [0, 0, 1]):
+        return cv2.warpAffine(a, M[:2].astype(np.float32), (W, H), flags=interp)
+    return cv2.warpPerspective(a, M.astype(np.float64), (W, H), flags=interp)
 
 
 def _letter_layers(g: Glyphs, W: int, H: int, lay: Layout):
@@ -141,14 +183,15 @@ def _letter_layers(g: Glyphs, W: int, H: int, lay: Layout):
 
     face = np.zeros((H, W), np.float32)
     ids = np.zeros((H, W), np.int32)
-    centres = {}
+    centres, boxes = {}, {}
     for i, ch in enumerate(chars):
         bb = font.getbbox(ch)
         centres[i] = (ox + xs[i] + (bb[0] + bb[2]) / 2, oy + (bb[1] + bb[3]) / 2)
+        boxes[i] = (ox + xs[i] + bb[0], oy + bb[1], ox + xs[i] + bb[2], oy + bb[3])
     groups = {}  # rigid letter groups (Animate target "word" on a letter selection) pivot on their mean centre
     for i, lt in g.letters.items():
         if "group" in lt and i in centres:
-            groups.setdefault(lt["group"].get("id"), []).append(centres[i])
+            groups.setdefault(lt["group"].get("id"), []).append(i)
     for i, ch in enumerate(chars):
         if not ch.strip():
             continue
@@ -157,10 +200,11 @@ def _letter_layers(g: Glyphs, W: int, H: int, lay: Layout):
         ImageDraw.Draw(layer).text((ox + xs[i], oy), ch, font=font, fill=255)
         a = np.asarray(layer, np.float32) / 255.0
         cx, cy = centres[i]
-        M = _tf(lt, cx, cy) if lt else np.eye(3)
+        M = _tf(lt, cx, cy, boxes[i]) if lt else np.eye(3)
         if "group" in lt:
-            gx, gy = np.mean(groups[lt["group"].get("id")], axis=0)
-            M = _tf(lt["group"], gx, gy) @ M
+            members = groups[lt["group"].get("id")]
+            gx, gy = np.mean([centres[j] for j in members], axis=0)
+            M = _tf(lt["group"], gx, gy, _union([boxes[j] for j in members])) @ M
         if lay.bulge:
             u = (cx - ox) / max(m["width"], 1.0)
             M = _affine(0, 1.0, bulge_scale(u, lay.bulge), cx, mid_y) @ M
@@ -169,9 +213,15 @@ def _letter_layers(g: Glyphs, W: int, H: int, lay: Layout):
             M = _affine(math.degrees(ang), 1, 1, cx, mid_y, pt[0] - cx, pt[1] - mid_y) @ M
         M = word_M @ M
         if not np.allclose(M, np.eye(3)):
-            a = cv2.warpAffine(a, M[:2].astype(np.float32), (W, H), flags=cv2.INTER_LINEAR)
+            a = _warp(a, M, W, H)
         ids[a > 0.5] = i + 1
         face = np.maximum(face, a)
+    if _has_free(g.word):  # whole-word free transform: warp the laid-out title by its real box
+        ys_, xs_ = np.nonzero(face > 0.5)
+        if len(ys_):
+            P = _free(g.word, (xs_.min(), ys_.min(), xs_.max() + 1, ys_.max() + 1))
+            face = _warp(face, P, W, H)
+            ids = _warp(ids.astype(np.float32), P, W, H, cv2.INTER_NEAREST).astype(np.int32)
     geo = {"ox": ox, "baseline": baseline, "mid_y": mid_y, "path": path, "s_centre": s_centre, "word_M": word_M}
     return face, ids, m, geo, chars
 

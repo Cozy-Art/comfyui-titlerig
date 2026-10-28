@@ -1,0 +1,2149 @@
+{
+  "id": "6469375a-3e59-49e3-a855-02eb3d70d30f",
+  "revision": 0,
+  "last_node_id": 29,
+  "last_link_id": 17,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "TitleRigText",
+      "pos": [
+        100,
+        130
+      ],
+      "size": [
+        270,
+        178
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "text",
+          "name": "text",
+          "type": "STRING",
+          "widget": {
+            "name": "text"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "font",
+          "name": "font",
+          "type": "COMBO",
+          "widget": {
+            "name": "font"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "size",
+          "name": "size",
+          "type": "INT",
+          "widget": {
+            "name": "size"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "tracking",
+          "name": "tracking",
+          "type": "FLOAT",
+          "widget": {
+            "name": "tracking"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "kerning_json",
+          "name": "kerning_json",
+          "shape": 7,
+          "type": "STRING",
+          "widget": {
+            "name": "kerning_json"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "letters_json",
+          "name": "letters_json",
+          "shape": 7,
+          "type": "STRING",
+          "widget": {
+            "name": "letters_json"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "glyphs",
+          "name": "glyphs",
+          "type": "TITLERIG_GLYPHS",
+          "links": [
+            8
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "TitleRigText"
+      },
+      "widgets_values": [
+        "BASS TREBLE",
+        "Anton-Regular",
+        150,
+        4,
+        "{}",
+        "{}"
+      ],
+      "widgets_values_named": {
+        "text": "BASS TREBLE",
+        "font": "Anton-Regular",
+        "size": 150,
+        "tracking": 4,
+        "kerning_json": "{}",
+        "letters_json": "{}"
+      }
+    },
+    {
+      "id": 2,
+      "type": "TitleRigLook3D",
+      "pos": [
+        100,
+        438
+      ],
+      "size": [
+        270,
+        298
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "face",
+          "name": "face",
+          "type": "STRING",
+          "widget": {
+            "name": "face"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "face_gradient_to",
+          "name": "face_gradient_to",
+          "type": "STRING",
+          "widget": {
+            "name": "face_gradient_to"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "side",
+          "name": "side",
+          "type": "STRING",
+          "widget": {
+            "name": "side"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "extrude",
+          "name": "extrude",
+          "type": "INT",
+          "widget": {
+            "name": "extrude"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "extrude_angle",
+          "name": "extrude_angle",
+          "type": "FLOAT",
+          "widget": {
+            "name": "extrude_angle"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "bevel",
+          "name": "bevel",
+          "type": "FLOAT",
+          "widget": {
+            "name": "bevel"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "bevel_profile",
+          "name": "bevel_profile",
+          "type": "COMBO",
+          "widget": {
+            "name": "bevel_profile"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "light_angle",
+          "name": "light_angle",
+          "type": "FLOAT",
+          "widget": {
+            "name": "light_angle"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "light_height",
+          "name": "light_height",
+          "type": "FLOAT",
+          "widget": {
+            "name": "light_height"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "gloss",
+          "name": "gloss",
+          "type": "FLOAT",
+          "widget": {
+            "name": "gloss"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "rim",
+          "name": "rim",
+          "type": "FLOAT",
+          "widget": {
+            "name": "rim"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "look",
+          "name": "look",
+          "type": "TITLERIG_LOOK",
+          "links": [
+            10
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "TitleRigLook3D"
+      },
+      "widgets_values": [
+        "#ff8fd8",
+        "#ffd400",
+        "#7c3aed",
+        30,
+        55,
+        12,
+        "round",
+        225,
+        0.6,
+        0.9,
+        0.4
+      ],
+      "widgets_values_named": {
+        "face": "#ff8fd8",
+        "face_gradient_to": "#ffd400",
+        "side": "#7c3aed",
+        "extrude": 30,
+        "extrude_angle": 55,
+        "bevel": 12,
+        "bevel_profile": "round",
+        "light_angle": 225,
+        "light_height": 0.6,
+        "gloss": 0.9,
+        "rim": 0.4
+      }
+    },
+    {
+      "id": 3,
+      "type": "TitleRigShadow",
+      "pos": [
+        100,
+        866
+      ],
+      "size": [
+        270,
+        226
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "texture",
+          "name": "texture",
+          "type": "COMBO",
+          "widget": {
+            "name": "texture"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "color",
+          "name": "color",
+          "type": "STRING",
+          "widget": {
+            "name": "color"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "angle",
+          "name": "angle",
+          "type": "FLOAT",
+          "widget": {
+            "name": "angle"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "length",
+          "name": "length",
+          "type": "FLOAT",
+          "widget": {
+            "name": "length"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "softness",
+          "name": "softness",
+          "type": "FLOAT",
+          "widget": {
+            "name": "softness"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "texture_scale",
+          "name": "texture_scale",
+          "type": "FLOAT",
+          "widget": {
+            "name": "texture_scale"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "texture_angle",
+          "name": "texture_angle",
+          "type": "FLOAT",
+          "widget": {
+            "name": "texture_angle"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "opacity",
+          "name": "opacity",
+          "type": "FLOAT",
+          "widget": {
+            "name": "opacity"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "shadow",
+          "name": "shadow",
+          "type": "TITLERIG_SHADOW",
+          "links": [
+            11
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "TitleRigShadow"
+      },
+      "widgets_values": [
+        "halftone",
+        "#0f172a",
+        45,
+        36,
+        0,
+        10,
+        45,
+        1
+      ],
+      "widgets_values_named": {
+        "texture": "halftone",
+        "color": "#0f172a",
+        "angle": 45,
+        "length": 36,
+        "softness": 0,
+        "texture_scale": 10,
+        "texture_angle": 45,
+        "opacity": 1
+      }
+    },
+    {
+      "id": 4,
+      "type": "TitleRigLayout",
+      "pos": [
+        100,
+        1222
+      ],
+      "size": [
+        270,
+        394
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "mode",
+          "name": "mode",
+          "type": "COMBO",
+          "widget": {
+            "name": "mode"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "bend",
+          "name": "bend",
+          "type": "FLOAT",
+          "widget": {
+            "name": "bend"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "align",
+          "name": "align",
+          "type": "FLOAT",
+          "widget": {
+            "name": "align"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "bulge",
+          "name": "bulge",
+          "type": "FLOAT",
+          "widget": {
+            "name": "bulge"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "tilt_x",
+          "name": "tilt_x",
+          "type": "FLOAT",
+          "widget": {
+            "name": "tilt_x"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "tilt_y",
+          "name": "tilt_y",
+          "type": "FLOAT",
+          "widget": {
+            "name": "tilt_y"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "fov",
+          "name": "fov",
+          "type": "FLOAT",
+          "widget": {
+            "name": "fov"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "vanish",
+          "name": "vanish",
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "vanish"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "vp_x",
+          "name": "vp_x",
+          "type": "FLOAT",
+          "widget": {
+            "name": "vp_x"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "vp_y",
+          "name": "vp_y",
+          "type": "FLOAT",
+          "widget": {
+            "name": "vp_y"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "flag_amp",
+          "name": "flag_amp",
+          "type": "FLOAT",
+          "widget": {
+            "name": "flag_amp"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "flag_wavelength",
+          "name": "flag_wavelength",
+          "type": "FLOAT",
+          "widget": {
+            "name": "flag_wavelength"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "flag_phase",
+          "name": "flag_phase",
+          "type": "FLOAT",
+          "widget": {
+            "name": "flag_phase"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "flag_shade",
+          "name": "flag_shade",
+          "type": "FLOAT",
+          "widget": {
+            "name": "flag_shade"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "curve_json",
+          "name": "curve_json",
+          "shape": 7,
+          "type": "STRING",
+          "widget": {
+            "name": "curve_json"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "layout",
+          "name": "layout",
+          "type": "TITLERIG_LAYOUT",
+          "links": [
+            12
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "TitleRigLayout"
+      },
+      "widgets_values": [
+        "arc",
+        0.22,
+        0.5,
+        0,
+        0,
+        0,
+        50,
+        false,
+        0.5,
+        1.4,
+        0,
+        420,
+        0,
+        0.5,
+        ""
+      ],
+      "widgets_values_named": {
+        "mode": "arc",
+        "bend": 0.22,
+        "align": 0.5,
+        "bulge": 0,
+        "tilt_x": 0,
+        "tilt_y": 0,
+        "fov": 50,
+        "vanish": false,
+        "vp_x": 0.5,
+        "vp_y": 1.4,
+        "flag_amp": 0,
+        "flag_wavelength": 420,
+        "flag_phase": 0,
+        "flag_shade": 0.5,
+        "curve_json": ""
+      }
+    },
+    {
+      "id": 20,
+      "type": "LoadAudio",
+      "pos": [
+        100,
+        1746
+      ],
+      "size": [
+        282.798828125,
+        136
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "audio",
+          "name": "audio",
+          "type": "COMBO",
+          "widget": {
+            "name": "audio"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "audioUI",
+          "name": "audioUI",
+          "type": "AUDIO_UI",
+          "widget": {
+            "name": "audioUI"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "choose file to upload",
+          "name": "upload",
+          "type": "AUDIOUPLOAD",
+          "widget": {
+            "name": "upload"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "AUDIO",
+          "name": "AUDIO",
+          "type": "AUDIO",
+          "links": [
+            1,
+            2,
+            15
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LoadAudio"
+      },
+      "widgets_values": [
+        "titlerig_beat.wav",
+        ""
+      ],
+      "widgets_values_named": {
+        "audio": "titlerig_beat.wav",
+        "upload": ""
+      }
+    },
+    {
+      "id": 21,
+      "type": "TitleRigAudioReact",
+      "pos": [
+        482.798828125,
+        130
+      ],
+      "size": [
+        270,
+        310
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "audio",
+          "name": "audio",
+          "type": "AUDIO",
+          "link": 1
+        },
+        {
+          "localized_name": "fps",
+          "name": "fps",
+          "type": "FLOAT",
+          "widget": {
+            "name": "fps"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "band",
+          "name": "band",
+          "type": "COMBO",
+          "widget": {
+            "name": "band"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "mode",
+          "name": "mode",
+          "type": "COMBO",
+          "widget": {
+            "name": "mode"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "sensitivity",
+          "name": "sensitivity",
+          "type": "FLOAT",
+          "widget": {
+            "name": "sensitivity"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "attack",
+          "name": "attack",
+          "type": "FLOAT",
+          "widget": {
+            "name": "attack"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "release",
+          "name": "release",
+          "type": "FLOAT",
+          "widget": {
+            "name": "release"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "start",
+          "name": "start",
+          "type": "FLOAT",
+          "widget": {
+            "name": "start"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "max_seconds",
+          "name": "max_seconds",
+          "type": "FLOAT",
+          "widget": {
+            "name": "max_seconds"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "spectrum_bands",
+          "name": "spectrum_bands",
+          "shape": 7,
+          "type": "INT",
+          "widget": {
+            "name": "spectrum_bands"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "curve",
+          "name": "curve",
+          "type": "TITLERIG_CURVE",
+          "links": [
+            3,
+            6
+          ]
+        },
+        {
+          "localized_name": "preview",
+          "name": "preview",
+          "type": "IMAGE",
+          "links": [
+            17
+          ]
+        },
+        {
+          "localized_name": "frame_count",
+          "name": "frame_count",
+          "type": "INT",
+          "links": null
+        },
+        {
+          "localized_name": "onsets",
+          "name": "onsets",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "title": "Kicks (bass)",
+      "properties": {
+        "Node name for S&R": "TitleRigAudioReact"
+      },
+      "widgets_values": [
+        24,
+        "bass",
+        "beats",
+        0.5,
+        0,
+        0.18,
+        0,
+        0,
+        12
+      ],
+      "widgets_values_named": {
+        "fps": 24,
+        "band": "bass",
+        "mode": "beats",
+        "sensitivity": 0.5,
+        "attack": 0,
+        "release": 0.18,
+        "start": 0,
+        "max_seconds": 0,
+        "spectrum_bands": 12
+      }
+    },
+    {
+      "id": 22,
+      "type": "TitleRigAudioReact",
+      "pos": [
+        482.798828125,
+        570
+      ],
+      "size": [
+        270,
+        310
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "audio",
+          "name": "audio",
+          "type": "AUDIO",
+          "link": 2
+        },
+        {
+          "localized_name": "fps",
+          "name": "fps",
+          "type": "FLOAT",
+          "widget": {
+            "name": "fps"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "band",
+          "name": "band",
+          "type": "COMBO",
+          "widget": {
+            "name": "band"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "mode",
+          "name": "mode",
+          "type": "COMBO",
+          "widget": {
+            "name": "mode"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "sensitivity",
+          "name": "sensitivity",
+          "type": "FLOAT",
+          "widget": {
+            "name": "sensitivity"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "attack",
+          "name": "attack",
+          "type": "FLOAT",
+          "widget": {
+            "name": "attack"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "release",
+          "name": "release",
+          "type": "FLOAT",
+          "widget": {
+            "name": "release"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "start",
+          "name": "start",
+          "type": "FLOAT",
+          "widget": {
+            "name": "start"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "max_seconds",
+          "name": "max_seconds",
+          "type": "FLOAT",
+          "widget": {
+            "name": "max_seconds"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "spectrum_bands",
+          "name": "spectrum_bands",
+          "shape": 7,
+          "type": "INT",
+          "widget": {
+            "name": "spectrum_bands"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "curve",
+          "name": "curve",
+          "type": "TITLERIG_CURVE",
+          "links": [
+            4
+          ]
+        },
+        {
+          "localized_name": "preview",
+          "name": "preview",
+          "type": "IMAGE",
+          "links": null
+        },
+        {
+          "localized_name": "frame_count",
+          "name": "frame_count",
+          "type": "INT",
+          "links": null
+        },
+        {
+          "localized_name": "onsets",
+          "name": "onsets",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "title": "Hats (highs)",
+      "properties": {
+        "Node name for S&R": "TitleRigAudioReact"
+      },
+      "widgets_values": [
+        24,
+        "highs",
+        "beats",
+        0.15,
+        0,
+        0.12,
+        0,
+        0,
+        12
+      ],
+      "widgets_values_named": {
+        "fps": 24,
+        "band": "highs",
+        "mode": "beats",
+        "sensitivity": 0.15,
+        "attack": 0,
+        "release": 0.12,
+        "start": 0,
+        "max_seconds": 0,
+        "spectrum_bands": 12
+      }
+    },
+    {
+      "id": 23,
+      "type": "TitleRigAnimate",
+      "pos": [
+        852.798828125,
+        130
+      ],
+      "size": [
+        270,
+        438
+      ],
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "anim",
+          "name": "anim",
+          "shape": 7,
+          "type": "TITLERIG_ANIM",
+          "link": null
+        },
+        {
+          "localized_name": "drive",
+          "name": "drive",
+          "shape": 7,
+          "type": "TITLERIG_CURVE",
+          "link": 3
+        },
+        {
+          "localized_name": "effect",
+          "name": "effect",
+          "type": "COMBO",
+          "widget": {
+            "name": "effect"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "target",
+          "name": "target",
+          "type": "COMBO",
+          "widget": {
+            "name": "target"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "direction",
+          "name": "direction",
+          "type": "COMBO",
+          "widget": {
+            "name": "direction"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "easing",
+          "name": "easing",
+          "type": "COMBO",
+          "widget": {
+            "name": "easing"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "duration",
+          "name": "duration",
+          "type": "FLOAT",
+          "widget": {
+            "name": "duration"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "stagger",
+          "name": "stagger",
+          "type": "FLOAT",
+          "widget": {
+            "name": "stagger"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "order",
+          "name": "order",
+          "type": "COMBO",
+          "widget": {
+            "name": "order"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "amount",
+          "name": "amount",
+          "type": "FLOAT",
+          "widget": {
+            "name": "amount"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "start",
+          "name": "start",
+          "type": "FLOAT",
+          "widget": {
+            "name": "start"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "fps",
+          "name": "fps",
+          "type": "FLOAT",
+          "widget": {
+            "name": "fps"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "hold",
+          "name": "hold",
+          "type": "FLOAT",
+          "widget": {
+            "name": "hold"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "shuffle_seed",
+          "name": "shuffle_seed",
+          "type": "INT",
+          "widget": {
+            "name": "shuffle_seed"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "letters",
+          "name": "letters",
+          "type": "STRING",
+          "widget": {
+            "name": "letters"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "influence",
+          "name": "influence",
+          "type": "FLOAT",
+          "widget": {
+            "name": "influence"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "response",
+          "name": "response",
+          "type": "COMBO",
+          "widget": {
+            "name": "response"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "retrigger",
+          "name": "retrigger",
+          "type": "COMBO",
+          "widget": {
+            "name": "retrigger"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "anim",
+          "name": "anim",
+          "type": "TITLERIG_ANIM",
+          "links": [
+            5
+          ]
+        }
+      ],
+      "title": "BASS pops on kicks",
+      "properties": {
+        "Node name for S&R": "TitleRigAnimate"
+      },
+      "widgets_values": [
+        "pop",
+        "letters",
+        "in",
+        "back",
+        0.6,
+        0.042,
+        "center_out",
+        -40,
+        0,
+        24,
+        0.8,
+        0,
+        "word:1",
+        1,
+        "follow",
+        "restart"
+      ],
+      "widgets_values_named": {
+        "effect": "pop",
+        "target": "letters",
+        "direction": "in",
+        "easing": "back",
+        "duration": 0.6,
+        "stagger": 0.042,
+        "order": "center_out",
+        "amount": -40,
+        "start": 0,
+        "fps": 24,
+        "hold": 0.8,
+        "shuffle_seed": 0,
+        "letters": "word:1",
+        "influence": 1,
+        "response": "follow",
+        "retrigger": "restart"
+      }
+    },
+    {
+      "id": 24,
+      "type": "TitleRigAnimate",
+      "pos": [
+        1222.798828125,
+        130
+      ],
+      "size": [
+        270,
+        438
+      ],
+      "flags": {},
+      "order": 9,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "anim",
+          "name": "anim",
+          "shape": 7,
+          "type": "TITLERIG_ANIM",
+          "link": 5
+        },
+        {
+          "localized_name": "drive",
+          "name": "drive",
+          "shape": 7,
+          "type": "TITLERIG_CURVE",
+          "link": 4
+        },
+        {
+          "localized_name": "effect",
+          "name": "effect",
+          "type": "COMBO",
+          "widget": {
+            "name": "effect"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "target",
+          "name": "target",
+          "type": "COMBO",
+          "widget": {
+            "name": "target"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "direction",
+          "name": "direction",
+          "type": "COMBO",
+          "widget": {
+            "name": "direction"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "easing",
+          "name": "easing",
+          "type": "COMBO",
+          "widget": {
+            "name": "easing"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "duration",
+          "name": "duration",
+          "type": "FLOAT",
+          "widget": {
+            "name": "duration"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "stagger",
+          "name": "stagger",
+          "type": "FLOAT",
+          "widget": {
+            "name": "stagger"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "order",
+          "name": "order",
+          "type": "COMBO",
+          "widget": {
+            "name": "order"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "amount",
+          "name": "amount",
+          "type": "FLOAT",
+          "widget": {
+            "name": "amount"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "start",
+          "name": "start",
+          "type": "FLOAT",
+          "widget": {
+            "name": "start"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "fps",
+          "name": "fps",
+          "type": "FLOAT",
+          "widget": {
+            "name": "fps"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "hold",
+          "name": "hold",
+          "type": "FLOAT",
+          "widget": {
+            "name": "hold"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "shuffle_seed",
+          "name": "shuffle_seed",
+          "type": "INT",
+          "widget": {
+            "name": "shuffle_seed"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "letters",
+          "name": "letters",
+          "type": "STRING",
+          "widget": {
+            "name": "letters"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "influence",
+          "name": "influence",
+          "type": "FLOAT",
+          "widget": {
+            "name": "influence"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "response",
+          "name": "response",
+          "type": "COMBO",
+          "widget": {
+            "name": "response"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "retrigger",
+          "name": "retrigger",
+          "type": "COMBO",
+          "widget": {
+            "name": "retrigger"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "anim",
+          "name": "anim",
+          "type": "TITLERIG_ANIM",
+          "links": [
+            7
+          ]
+        }
+      ],
+      "title": "TREBLE bounces on hats",
+      "properties": {
+        "Node name for S&R": "TitleRigAnimate"
+      },
+      "widgets_values": [
+        "drop",
+        "letters",
+        "in",
+        "bounce",
+        0.3,
+        0.042,
+        "center_out",
+        40,
+        0,
+        24,
+        0.8,
+        0,
+        "word:2",
+        1,
+        "trigger",
+        "finish"
+      ],
+      "widgets_values_named": {
+        "effect": "drop",
+        "target": "letters",
+        "direction": "in",
+        "easing": "bounce",
+        "duration": 0.3,
+        "stagger": 0.042,
+        "order": "center_out",
+        "amount": 40,
+        "start": 0,
+        "fps": 24,
+        "hold": 0.8,
+        "shuffle_seed": 0,
+        "letters": "word:2",
+        "influence": 1,
+        "response": "trigger",
+        "retrigger": "finish"
+      }
+    },
+    {
+      "id": 25,
+      "type": "TitleRigAnimate",
+      "pos": [
+        1592.798828125,
+        130
+      ],
+      "size": [
+        270,
+        438
+      ],
+      "flags": {},
+      "order": 10,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "anim",
+          "name": "anim",
+          "shape": 7,
+          "type": "TITLERIG_ANIM",
+          "link": 7
+        },
+        {
+          "localized_name": "drive",
+          "name": "drive",
+          "shape": 7,
+          "type": "TITLERIG_CURVE",
+          "link": 6
+        },
+        {
+          "localized_name": "effect",
+          "name": "effect",
+          "type": "COMBO",
+          "widget": {
+            "name": "effect"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "target",
+          "name": "target",
+          "type": "COMBO",
+          "widget": {
+            "name": "target"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "direction",
+          "name": "direction",
+          "type": "COMBO",
+          "widget": {
+            "name": "direction"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "easing",
+          "name": "easing",
+          "type": "COMBO",
+          "widget": {
+            "name": "easing"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "duration",
+          "name": "duration",
+          "type": "FLOAT",
+          "widget": {
+            "name": "duration"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "stagger",
+          "name": "stagger",
+          "type": "FLOAT",
+          "widget": {
+            "name": "stagger"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "order",
+          "name": "order",
+          "type": "COMBO",
+          "widget": {
+            "name": "order"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "amount",
+          "name": "amount",
+          "type": "FLOAT",
+          "widget": {
+            "name": "amount"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "start",
+          "name": "start",
+          "type": "FLOAT",
+          "widget": {
+            "name": "start"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "fps",
+          "name": "fps",
+          "type": "FLOAT",
+          "widget": {
+            "name": "fps"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "hold",
+          "name": "hold",
+          "type": "FLOAT",
+          "widget": {
+            "name": "hold"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "shuffle_seed",
+          "name": "shuffle_seed",
+          "type": "INT",
+          "widget": {
+            "name": "shuffle_seed"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "letters",
+          "name": "letters",
+          "type": "STRING",
+          "widget": {
+            "name": "letters"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "influence",
+          "name": "influence",
+          "type": "FLOAT",
+          "widget": {
+            "name": "influence"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "response",
+          "name": "response",
+          "type": "COMBO",
+          "widget": {
+            "name": "response"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "retrigger",
+          "name": "retrigger",
+          "type": "COMBO",
+          "widget": {
+            "name": "retrigger"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "anim",
+          "name": "anim",
+          "type": "TITLERIG_ANIM",
+          "links": [
+            9
+          ]
+        }
+      ],
+      "title": "Kicks throw the shadow",
+      "properties": {
+        "Node name for S&R": "TitleRigAnimate"
+      },
+      "widgets_values": [
+        "shadow_length",
+        "letters",
+        "in",
+        "back",
+        0.6,
+        0.06,
+        "center_out",
+        50,
+        0,
+        24,
+        0.8,
+        0,
+        "all",
+        1,
+        "follow",
+        "restart"
+      ],
+      "widgets_values_named": {
+        "effect": "shadow_length",
+        "target": "letters",
+        "direction": "in",
+        "easing": "back",
+        "duration": 0.6,
+        "stagger": 0.06,
+        "order": "center_out",
+        "amount": 50,
+        "start": 0,
+        "fps": 24,
+        "hold": 0.8,
+        "shuffle_seed": 0,
+        "letters": "all",
+        "influence": 1,
+        "response": "follow",
+        "retrigger": "restart"
+      }
+    },
+    {
+      "id": 26,
+      "type": "TitleRigRenderAnimation",
+      "pos": [
+        1962.798828125,
+        130
+      ],
+      "size": [
+        270.648046875,
+        202
+      ],
+      "flags": {},
+      "order": 11,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "glyphs",
+          "name": "glyphs",
+          "type": "TITLERIG_GLYPHS",
+          "link": 8
+        },
+        {
+          "localized_name": "anim",
+          "name": "anim",
+          "type": "TITLERIG_ANIM",
+          "link": 9
+        },
+        {
+          "localized_name": "look",
+          "name": "look",
+          "shape": 7,
+          "type": "TITLERIG_LOOK",
+          "link": 10
+        },
+        {
+          "localized_name": "shadow",
+          "name": "shadow",
+          "shape": 7,
+          "type": "TITLERIG_SHADOW",
+          "link": 11
+        },
+        {
+          "localized_name": "layout",
+          "name": "layout",
+          "shape": 7,
+          "type": "TITLERIG_LAYOUT",
+          "link": 12
+        },
+        {
+          "localized_name": "width",
+          "name": "width",
+          "type": "INT",
+          "widget": {
+            "name": "width"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "height",
+          "name": "height",
+          "type": "INT",
+          "widget": {
+            "name": "height"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "beauty",
+          "name": "beauty",
+          "type": "IMAGE",
+          "links": [
+            13
+          ]
+        },
+        {
+          "localized_name": "alpha",
+          "name": "alpha",
+          "type": "MASK",
+          "links": null
+        },
+        {
+          "localized_name": "depth",
+          "name": "depth",
+          "type": "IMAGE",
+          "links": null
+        },
+        {
+          "localized_name": "edges",
+          "name": "edges",
+          "type": "IMAGE",
+          "links": null
+        },
+        {
+          "localized_name": "letter_ids",
+          "name": "letter_ids",
+          "type": "IMAGE",
+          "links": null
+        },
+        {
+          "localized_name": "frame_count",
+          "name": "frame_count",
+          "type": "INT",
+          "links": null
+        },
+        {
+          "localized_name": "fps",
+          "name": "fps",
+          "type": "FLOAT",
+          "links": [
+            14
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "TitleRigRenderAnimation"
+      },
+      "widgets_values": [
+        960,
+        544
+      ],
+      "widgets_values_named": {
+        "width": 960,
+        "height": 544
+      }
+    },
+    {
+      "id": 27,
+      "type": "CreateVideo",
+      "pos": [
+        2333.446875,
+        130
+      ],
+      "size": [
+        270,
+        150
+      ],
+      "flags": {},
+      "order": 12,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "images",
+          "name": "images",
+          "type": "IMAGE",
+          "link": 13
+        },
+        {
+          "localized_name": "audio",
+          "name": "audio",
+          "shape": 7,
+          "type": "AUDIO",
+          "link": 15
+        },
+        {
+          "localized_name": "fps",
+          "name": "fps",
+          "type": "FLOAT",
+          "widget": {
+            "name": "fps"
+          },
+          "link": 14
+        },
+        {
+          "localized_name": "bit_depth",
+          "name": "bit_depth",
+          "shape": 7,
+          "type": "COMBO",
+          "widget": {
+            "name": "bit_depth"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "color_space",
+          "name": "color_space",
+          "shape": 7,
+          "type": "COMBO",
+          "widget": {
+            "name": "color_space"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "codec",
+          "name": "codec",
+          "shape": 7,
+          "type": "COMBO",
+          "widget": {
+            "name": "codec"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "VIDEO",
+          "name": "VIDEO",
+          "type": "VIDEO",
+          "links": [
+            16
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CreateVideo"
+      },
+      "widgets_values": [
+        30,
+        "auto",
+        "sRGB",
+        "none"
+      ],
+      "widgets_values_named": {
+        "fps": 30,
+        "bit_depth": "auto",
+        "color_space": "sRGB",
+        "codec": "none"
+      }
+    },
+    {
+      "id": 28,
+      "type": "SaveVideo",
+      "pos": [
+        2703.446875,
+        130
+      ],
+      "size": [
+        270,
+        130
+      ],
+      "flags": {},
+      "order": 13,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "video",
+          "name": "video",
+          "type": "VIDEO",
+          "link": 16
+        },
+        {
+          "localized_name": "filename_prefix",
+          "name": "filename_prefix",
+          "type": "STRING",
+          "widget": {
+            "name": "filename_prefix"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "format",
+          "name": "format",
+          "type": "COMFY_DYNAMICCOMBO_V3",
+          "widget": {
+            "name": "format"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "codec",
+          "name": "format.codec",
+          "type": "COMFY_DYNAMICCOMBO_V3",
+          "widget": {
+            "name": "format.codec"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "codec",
+          "name": "codec",
+          "shape": 7,
+          "type": "COMFY_DYNAMICCOMBO_V3",
+          "widget": {
+            "name": "codec"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "encoding",
+          "name": "codec.encoding",
+          "shape": 7,
+          "type": "COMFY_DYNAMICCOMBO_V3",
+          "widget": {
+            "name": "codec.encoding"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "video",
+          "name": "video",
+          "type": "VIDEO",
+          "links": null
+        }
+      ],
+      "properties": {},
+      "widgets_values": [
+        "titlerig/audio_react",
+        "mp4",
+        "auto",
+        "h264",
+        "auto"
+      ],
+      "widgets_values_named": {
+        "filename_prefix": "titlerig/audio_react",
+        "format": "mp4",
+        "format.codec": "auto",
+        "codec": "h264",
+        "codec.encoding": "auto"
+      }
+    },
+    {
+      "id": 29,
+      "type": "PreviewImage",
+      "pos": [
+        852.798828125,
+        698
+      ],
+      "size": [
+        140,
+        26
+      ],
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "images",
+          "name": "images",
+          "type": "IMAGE",
+          "link": 17
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "images",
+          "name": "images",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Kick curve",
+      "properties": {
+        "Node name for S&R": "PreviewImage"
+      }
+    }
+  ],
+  "links": [
+    [
+      1,
+      20,
+      0,
+      21,
+      0,
+      "AUDIO"
+    ],
+    [
+      2,
+      20,
+      0,
+      22,
+      0,
+      "AUDIO"
+    ],
+    [
+      3,
+      21,
+      0,
+      23,
+      1,
+      "TITLERIG_CURVE"
+    ],
+    [
+      4,
+      22,
+      0,
+      24,
+      1,
+      "TITLERIG_CURVE"
+    ],
+    [
+      5,
+      23,
+      0,
+      24,
+      0,
+      "TITLERIG_ANIM"
+    ],
+    [
+      6,
+      21,
+      0,
+      25,
+      1,
+      "TITLERIG_CURVE"
+    ],
+    [
+      7,
+      24,
+      0,
+      25,
+      0,
+      "TITLERIG_ANIM"
+    ],
+    [
+      8,
+      1,
+      0,
+      26,
+      0,
+      "TITLERIG_GLYPHS"
+    ],
+    [
+      9,
+      25,
+      0,
+      26,
+      1,
+      "TITLERIG_ANIM"
+    ],
+    [
+      10,
+      2,
+      0,
+      26,
+      2,
+      "TITLERIG_LOOK"
+    ],
+    [
+      11,
+      3,
+      0,
+      26,
+      3,
+      "TITLERIG_SHADOW"
+    ],
+    [
+      12,
+      4,
+      0,
+      26,
+      4,
+      "TITLERIG_LAYOUT"
+    ],
+    [
+      13,
+      26,
+      0,
+      27,
+      0,
+      "IMAGE"
+    ],
+    [
+      14,
+      26,
+      6,
+      27,
+      2,
+      "FLOAT"
+    ],
+    [
+      15,
+      20,
+      0,
+      27,
+      1,
+      "AUDIO"
+    ],
+    [
+      16,
+      27,
+      0,
+      28,
+      0,
+      "VIDEO"
+    ],
+    [
+      17,
+      21,
+      1,
+      29,
+      0,
+      "IMAGE"
+    ]
+  ],
+  "groups": [],
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 0.9,
+      "offset": [
+        40,
+        40
+      ]
+    }
+  },
+  "version": 0.4
+}
