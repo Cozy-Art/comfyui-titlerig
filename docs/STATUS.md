@@ -48,7 +48,7 @@ Style Preset, Magnet, SVG Export, Spell-Lock, Cutout.
   - Wobble larger than `max_shift` (6 px) is only partly pulled back.
   - It fixes *shape*, not spelling: an entirely wrong letter inside the right silhouette passes.
   - The `edges` input is accepted but unused (drift is measured on silhouettes).
-- **Flip X / spin Y:** a letter turning edge-on keeps its extrusion, so it reads as a flat bar for a frame or two.
+- **Flip X / spin Y:** a turning letter is a solid card. It extrudes along its own turned depth axis, so edge-on it shows the extrusion as a wall as deep as `extrude`. Within about 6° of edge-on, the face is hidden. Letters still waiting to flip in show as edge-on slabs. Vanishing-point extrusion (`vanish`) keeps the old flat behaviour.
 - **SVG export:** faces carry their gradient, not the raster bevel lighting (Chrome Slam's emboss highlights are lost).
 - **Wraps:** the globe in `sphere_ticker` is drawn by the demo script, not the rig (the rig renders only the letters). Front faces only (no back-side letters); cube is a band (no top or bottom face); sphere text is not
   designed for the poles.

@@ -194,6 +194,9 @@ def _warp(a: np.ndarray, M: np.ndarray, W: int, H: int, interp=cv2.INTER_LINEAR)
     return cv2.warpPerspective(a, M.astype(np.float64), (W, H), flags=interp)
 
 
+EDGE_ON = 0.105  # |cos| of a letter's turn under which it is drawn as wall only (within ~6 deg of edge-on)
+
+
 def _letter_layers(g: Glyphs, W: int, H: int, lay: Layout):
     font, chars, xs, m = layout(g)
     total_h = m["ascent"] + m["descent"]
@@ -214,6 +217,7 @@ def _letter_layers(g: Glyphs, W: int, H: int, lay: Layout):
 
     face = np.zeros((H, W), np.float32)
     ids = np.zeros((H, W), np.int32)
+    turns = {}  # letter -> (rx, ry) degrees: flip X / spin Y of the letter, its group and the word, summed
     centres, boxes = {}, {}
     for i, ch in enumerate(chars):
         bb = font.getbbox(ch)
@@ -243,6 +247,9 @@ def _letter_layers(g: Glyphs, W: int, H: int, lay: Layout):
             pt, ang = path.at(s_centre + (cx - (ox + m["width"] / 2)))
             M = _affine(math.degrees(ang), 1, 1, cx, mid_y, pt[0] - cx, pt[1] - mid_y) @ M
         M = word_M @ M
+        turn = [sum(d.get(k, 0.0) for d in (lt, lt.get("group", {}), g.word or {})) for k in ("rx", "ry")]
+        if any(turn):
+            turns[i] = tuple(turn)
         if not np.allclose(M, np.eye(3)):
             a = _warp(a, M, W, H)
         ids[a > 0.5] = i + 1
@@ -253,7 +260,8 @@ def _letter_layers(g: Glyphs, W: int, H: int, lay: Layout):
             P = _free(g.word, (xs_.min(), ys_.min(), xs_.max() + 1, ys_.max() + 1))
             face = _warp(face, P, W, H)
             ids = _warp(ids.astype(np.float32), P, W, H, cv2.INTER_NEAREST).astype(np.int32)
-    geo = {"ox": ox, "baseline": baseline, "mid_y": mid_y, "path": path, "s_centre": s_centre, "word_M": word_M}
+    geo = {"ox": ox, "baseline": baseline, "mid_y": mid_y, "path": path, "s_centre": s_centre, "word_M": word_M,
+           "turns": turns}
     return face, ids, m, geo, chars
 
 
@@ -356,17 +364,43 @@ def render_title(g: Glyphs, look: Look3D | None = None, shadow: Shadow | None = 
         yy, xx = np.nonzero(fm)
         centroid = np.array([xx.mean(), yy.mean()]) if len(xx) else np.array([W / 2, H / 2])
         dist = max(float(np.linalg.norm(vp - centroid)), 1.0)
-    steps = [k / 2 for k in range(2 * look.extrude, 0, -1)] if lay.vanish else range(look.extrude, 0, -1)
-    for k in steps:
-        if lay.vanish:  # shrink toward the VP so the centroid travels k px
-            s = max(0.0, 1 - k / dist)
-            M = np.float32([[s, 0, (1 - s) * vp[0]], [0, s, (1 - s) * vp[1]]])
-        else:
-            M = np.float32([[1, 0, dx * k], [0, 1, dy * k]])
-        sh = cv2.warpAffine(fm, M, (W, H), flags=cv2.INTER_NEAREST)
-        newpix = (sh > 0) & (sides == 0)
-        sides[newpix] = 1
-        side_depth[newpix] = 1 - k / max(look.extrude, 1)
+    turns = geo["turns"] if not lay.vanish else {}
+    wall = np.zeros_like(face)  # 0..1: how far a side pixel's wall has turned to face the camera
+    facing = np.ones_like(face)  # |cos| of each face pixel's turn: a letter turning away darkens
+    # letters turned by flip X / spin Y extrude along their own depth axis (a solid card: edge-on, the extrusion
+    # is the wall you see); the rest share the title's extrusion direction
+    passes = [(fm * ~np.isin(ids, [i + 1 for i in turns]), (dx, dy), 0.0)] if turns else [(fm, (dx, dy), 0.0)]
+    for i, (rx, ry) in turns.items():
+        ax, ay = math.radians(rx), math.radians(ry)
+        zx, zy, zz = math.sin(ay), math.cos(ay) * math.sin(ax), math.cos(ay) * math.cos(ax)
+        own = ids == i + 1
+        # the wall grows from the letter's soft coverage near its own pixels: a near edge-on letter is a hairline
+        # whose anti-aliased pixels mostly fall under the 0.5 face threshold (a dashed line would sweep stripes)
+        near = cv2.dilate(own.astype(np.uint8), np.ones((5, 5), np.uint8)) > 0
+        mask = ((face > 0.05) & near).astype(np.float32)
+        facing[own] = 0.7 + 0.3 * abs(zz)
+        if abs(zz) < EDGE_ON:  # edge-on: no face to see, the sliver becomes wall too
+            fm[own] = 0
+        passes.append((mask, (zx + zz * dx, zy + zz * dy), math.hypot(zx, zy)))
+    for mask, (vx, vy), turned in passes:
+        if not mask.any():
+            continue
+        if lay.vanish:
+            steps = [k / 2 for k in range(2 * look.extrude, 0, -1)]
+        else:  # sub-pixel steps when the vector is longer than 1 px per unit of depth, so the wall has no gaps
+            n = max(1, math.ceil(look.extrude * max(1.0, math.hypot(vx, vy)) - 1e-6))  # hypot(cos, sin) > 1 by ulp
+            steps = [look.extrude * j / n for j in range(n, -1 if turned else 0, -1)]  # a turned sliver is wall too
+        for k in steps:
+            if lay.vanish:  # shrink toward the VP so the centroid travels k px
+                s = max(0.0, 1 - k / dist)
+                M = np.float32([[s, 0, (1 - s) * vp[0]], [0, s, (1 - s) * vp[1]]])
+            else:
+                M = np.float32([[1, 0, vx * k], [0, 1, vy * k]])
+            sh = cv2.warpAffine(mask, M, (W, H), flags=cv2.INTER_NEAREST)
+            newpix = (sh > 0) & (sides == 0)
+            sides[newpix] = 1
+            side_depth[newpix] = 1 - k / max(look.extrude, 1)
+            wall[newpix] = turned
     sides = sides * (1 - fm)
     silhouette = np.clip(fm + sides, 0, 1)
 
@@ -391,10 +425,13 @@ def render_title(g: Glyphs, look: Look3D | None = None, shadow: Shadow | None = 
     c2 = _rgb(look.face2) if look.face2 else c1
     base = c1[None, None] * (1 - t[..., None]) + c2[None, None] * t[..., None]
     base = np.broadcast_to(base, (H, W, 3))
-    face_rgb = np.clip(base * (0.55 + 0.45 * lam[..., None]) + spec[..., None] + rim[..., None], 0, 1)
+    face_rgb = np.clip(base * (0.55 + 0.45 * lam[..., None]) * facing[..., None] + spec[..., None] + rim[..., None],
+                       0, 1)
 
     sc = _rgb(look.side)
-    side_rgb = sc[None, None] * (0.55 + 0.45 * side_depth[..., None])
+    # a wall turned toward the camera is evenly lit (no depth falloff) and brighter than a receding side
+    lit = (0.55 + 0.45 * side_depth) * (1 - wall) + (0.8 + 0.2 * side_depth) * wall
+    side_rgb = np.clip(sc[None, None] * lit[..., None] * (1 + 0.25 * wall[..., None]), 0, 1)
     if wrap is not None and lay.wrap_shade:
         ws = wrap[2][y0:y1, x0:x1, None]
         face_rgb = np.clip(face_rgb * ws, 0, 1)
