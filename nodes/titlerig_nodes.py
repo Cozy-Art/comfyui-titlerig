@@ -185,7 +185,7 @@ class TitleRigAnimate:
             "start": ("FLOAT", {"default": 0.0, "min": 0, "max": 600, "step": 0.01}),
             "fps": ("FLOAT", {"default": 24.0, "min": 1, "max": 120, "step": 1}),
             "hold": ("FLOAT", {"default": 0.6, "min": 0, "max": 60, "step": 0.05, "tooltip": "seconds of rest at the end"}),
-            "seed": ("INT", {"default": 0, "min": 0, "max": 2 ** 31 - 1}),
+            "shuffle_seed": ("INT", {"default": 0, "min": 0, "max": 2 ** 31 - 1, "tooltip": "random order only"}),
             "letters": ("STRING", {"default": "all", "tooltip": 'which letters: all · 0,2,5-7 (character indices) · '
                                    'word:2 (1-based). With target "word" the selection moves as one rigid group'}),
             "influence": ("FLOAT", {"default": 1.0, "min": 0, "max": 4, "step": 0.01,
@@ -199,10 +199,10 @@ class TitleRigAnimate:
             "drive": ("TITLERIG_CURVE", {"tooltip": "per-frame 0..1 curve (e.g. TitleRig Audio React) replaces time + easing"}),
         }}
 
-    def build(self, effect, target, direction, easing, duration, stagger, order, amount, start, fps, hold, seed,
+    def build(self, effect, target, direction, easing, duration, stagger, order, amount, start, fps, hold, shuffle_seed,
               letters="all", influence=1.0, response="follow", retrigger="restart", anim=None, drive=None):
         tr = Track(effect=effect, target=target, direction=direction, easing=easing, duration=duration,
-                   stagger=stagger, order=order, amount=amount or None, start=start, seed=seed,
+                   stagger=stagger, order=order, amount=amount or None, start=start, seed=shuffle_seed,
                    letters=letters, influence=influence, response=response, retrigger=retrigger,
                    drive=None if drive is None else drive["values"])
         if drive is not None:
