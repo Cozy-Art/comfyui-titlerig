@@ -1,0 +1,1523 @@
+{
+  "id": "9bc39578-9bdc-4173-aaf9-4946ceef2f9c",
+  "revision": 0,
+  "last_node_id": 18,
+  "last_link_id": 17,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "TitleRigText",
+      "pos": [
+        100,
+        130
+      ],
+      "size": [
+        270,
+        202
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "text",
+          "name": "text",
+          "type": "STRING",
+          "widget": {
+            "name": "text"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "font",
+          "name": "font",
+          "type": "COMBO",
+          "widget": {
+            "name": "font"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "size",
+          "name": "size",
+          "type": "INT",
+          "widget": {
+            "name": "size"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "tracking",
+          "name": "tracking",
+          "type": "FLOAT",
+          "widget": {
+            "name": "tracking"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "kerning_json",
+          "name": "kerning_json",
+          "shape": 7,
+          "type": "STRING",
+          "widget": {
+            "name": "kerning_json"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "letters_json",
+          "name": "letters_json",
+          "shape": 7,
+          "type": "STRING",
+          "widget": {
+            "name": "letters_json"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "word_json",
+          "name": "word_json",
+          "shape": 7,
+          "type": "STRING",
+          "widget": {
+            "name": "word_json"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "glyphs",
+          "name": "glyphs",
+          "type": "TITLERIG_GLYPHS",
+          "links": [
+            1,
+            2,
+            14
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "TitleRigText"
+      },
+      "widgets_values": [
+        "TITLERIG",
+        "Anton-Regular",
+        200,
+        4,
+        "{}",
+        "{}",
+        "{}"
+      ],
+      "widgets_values_named": {
+        "text": "TITLERIG",
+        "font": "Anton-Regular",
+        "size": 200,
+        "tracking": 4,
+        "kerning_json": "{}",
+        "letters_json": "{}",
+        "word_json": "{}"
+      }
+    },
+    {
+      "id": 4,
+      "type": "TitleRigLayout",
+      "pos": [
+        100,
+        462
+      ],
+      "size": [
+        270,
+        514
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "mode",
+          "name": "mode",
+          "type": "COMBO",
+          "widget": {
+            "name": "mode"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "bend",
+          "name": "bend",
+          "type": "FLOAT",
+          "widget": {
+            "name": "bend"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "align",
+          "name": "align",
+          "type": "FLOAT",
+          "widget": {
+            "name": "align"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "bulge",
+          "name": "bulge",
+          "type": "FLOAT",
+          "widget": {
+            "name": "bulge"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "tilt_x",
+          "name": "tilt_x",
+          "type": "FLOAT",
+          "widget": {
+            "name": "tilt_x"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "tilt_y",
+          "name": "tilt_y",
+          "type": "FLOAT",
+          "widget": {
+            "name": "tilt_y"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "fov",
+          "name": "fov",
+          "type": "FLOAT",
+          "widget": {
+            "name": "fov"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "vanish",
+          "name": "vanish",
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "vanish"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "vp_x",
+          "name": "vp_x",
+          "type": "FLOAT",
+          "widget": {
+            "name": "vp_x"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "vp_y",
+          "name": "vp_y",
+          "type": "FLOAT",
+          "widget": {
+            "name": "vp_y"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "flag_amp",
+          "name": "flag_amp",
+          "type": "FLOAT",
+          "widget": {
+            "name": "flag_amp"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "flag_wavelength",
+          "name": "flag_wavelength",
+          "type": "FLOAT",
+          "widget": {
+            "name": "flag_wavelength"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "flag_phase",
+          "name": "flag_phase",
+          "type": "FLOAT",
+          "widget": {
+            "name": "flag_phase"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "flag_shade",
+          "name": "flag_shade",
+          "type": "FLOAT",
+          "widget": {
+            "name": "flag_shade"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "wrap_radius",
+          "name": "wrap_radius",
+          "shape": 7,
+          "type": "FLOAT",
+          "widget": {
+            "name": "wrap_radius"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "wrap_phase",
+          "name": "wrap_phase",
+          "shape": 7,
+          "type": "FLOAT",
+          "widget": {
+            "name": "wrap_phase"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "wrap_tilt",
+          "name": "wrap_tilt",
+          "shape": 7,
+          "type": "FLOAT",
+          "widget": {
+            "name": "wrap_tilt"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "wrap_repeat",
+          "name": "wrap_repeat",
+          "shape": 7,
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "wrap_repeat"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "wrap_shade",
+          "name": "wrap_shade",
+          "shape": 7,
+          "type": "FLOAT",
+          "widget": {
+            "name": "wrap_shade"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "curve_json",
+          "name": "curve_json",
+          "shape": 7,
+          "type": "STRING",
+          "widget": {
+            "name": "curve_json"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "layout",
+          "name": "layout",
+          "type": "TITLERIG_LAYOUT",
+          "links": [
+            5,
+            17
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "TitleRigLayout"
+      },
+      "widgets_values": [
+        "arc",
+        0.15,
+        0.5,
+        0,
+        0,
+        0,
+        50,
+        false,
+        0.5,
+        1.4,
+        0,
+        420,
+        0,
+        0.5,
+        0.32,
+        0,
+        15,
+        true,
+        0.6,
+        ""
+      ],
+      "widgets_values_named": {
+        "mode": "arc",
+        "bend": 0.15,
+        "align": 0.5,
+        "bulge": 0,
+        "tilt_x": 0,
+        "tilt_y": 0,
+        "fov": 50,
+        "vanish": false,
+        "vp_x": 0.5,
+        "vp_y": 1.4,
+        "flag_amp": 0,
+        "flag_wavelength": 420,
+        "flag_phase": 0,
+        "flag_shade": 0.5,
+        "wrap_radius": 0.32,
+        "wrap_phase": 0,
+        "wrap_tilt": 15,
+        "wrap_repeat": true,
+        "wrap_shade": 0.6,
+        "curve_json": ""
+      }
+    },
+    {
+      "id": 5,
+      "type": "TitleRigStylePreset",
+      "pos": [
+        470,
+        130
+      ],
+      "size": [
+        270,
+        282
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "glyphs",
+          "name": "glyphs",
+          "shape": 7,
+          "type": "TITLERIG_GLYPHS",
+          "link": 1
+        },
+        {
+          "localized_name": "preset",
+          "name": "preset",
+          "type": "COMBO",
+          "widget": {
+            "name": "preset"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "target",
+          "name": "target",
+          "type": "COMBO",
+          "widget": {
+            "name": "target"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "colour_words",
+          "name": "colour_words",
+          "type": "STRING",
+          "widget": {
+            "name": "colour_words"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "text",
+          "name": "text",
+          "type": "STRING",
+          "widget": {
+            "name": "text"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "format",
+          "name": "format",
+          "type": "COMBO",
+          "widget": {
+            "name": "format"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "audio",
+          "name": "audio",
+          "type": "COMBO",
+          "widget": {
+            "name": "audio"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "frame_count",
+          "name": "frame_count",
+          "shape": 7,
+          "type": "INT",
+          "widget": {
+            "name": "frame_count"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "positive",
+          "name": "positive",
+          "type": "STRING",
+          "links": [
+            11
+          ]
+        },
+        {
+          "localized_name": "negative",
+          "name": "negative",
+          "type": "STRING",
+          "links": null
+        },
+        {
+          "localized_name": "look",
+          "name": "look",
+          "type": "TITLERIG_LOOK",
+          "links": [
+            3,
+            15
+          ]
+        },
+        {
+          "localized_name": "shadow",
+          "name": "shadow",
+          "type": "TITLERIG_SHADOW",
+          "links": [
+            4,
+            16
+          ]
+        },
+        {
+          "localized_name": "settings",
+          "name": "settings",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "title": "Style Preset (Ben-Day Pop)",
+      "properties": {
+        "Node name for S&R": "TitleRigStylePreset"
+      },
+      "widgets_values": [
+        "Ben-Day Pop",
+        "recraft_v4_vector",
+        "",
+        "TITLE",
+        "prose",
+        "own_track",
+        121
+      ],
+      "widgets_values_named": {
+        "preset": "Ben-Day Pop",
+        "target": "recraft_v4_vector",
+        "colour_words": "",
+        "text": "TITLE",
+        "format": "prose",
+        "audio": "own_track",
+        "frame_count": 121
+      }
+    },
+    {
+      "id": 6,
+      "type": "TitleRigRender",
+      "pos": [
+        840,
+        130
+      ],
+      "size": [
+        400,
+        576
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "glyphs",
+          "name": "glyphs",
+          "type": "TITLERIG_GLYPHS",
+          "link": 2
+        },
+        {
+          "localized_name": "look",
+          "name": "look",
+          "shape": 7,
+          "type": "TITLERIG_LOOK",
+          "link": 3
+        },
+        {
+          "localized_name": "shadow",
+          "name": "shadow",
+          "shape": 7,
+          "type": "TITLERIG_SHADOW",
+          "link": 4
+        },
+        {
+          "localized_name": "layout",
+          "name": "layout",
+          "shape": 7,
+          "type": "TITLERIG_LAYOUT",
+          "link": 5
+        },
+        {
+          "localized_name": "width",
+          "name": "width",
+          "type": "INT",
+          "widget": {
+            "name": "width"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "height",
+          "name": "height",
+          "type": "INT",
+          "widget": {
+            "name": "height"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "guide_lines",
+          "name": "guide_lines",
+          "shape": 7,
+          "type": "STRING",
+          "widget": {
+            "name": "guide_lines"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "beauty",
+          "name": "beauty",
+          "type": "IMAGE",
+          "links": [
+            6
+          ]
+        },
+        {
+          "localized_name": "alpha",
+          "name": "alpha",
+          "type": "MASK",
+          "links": null
+        },
+        {
+          "localized_name": "depth",
+          "name": "depth",
+          "type": "IMAGE",
+          "links": null
+        },
+        {
+          "localized_name": "edges",
+          "name": "edges",
+          "type": "IMAGE",
+          "links": null
+        },
+        {
+          "localized_name": "normals",
+          "name": "normals",
+          "type": "IMAGE",
+          "links": null
+        },
+        {
+          "localized_name": "face",
+          "name": "face",
+          "type": "MASK",
+          "links": null
+        },
+        {
+          "localized_name": "sides",
+          "name": "sides",
+          "type": "MASK",
+          "links": null
+        },
+        {
+          "localized_name": "highlight",
+          "name": "highlight",
+          "type": "MASK",
+          "links": null
+        },
+        {
+          "localized_name": "shadow",
+          "name": "shadow",
+          "type": "MASK",
+          "links": null
+        },
+        {
+          "localized_name": "letter_ids",
+          "name": "letter_ids",
+          "type": "IMAGE",
+          "links": null
+        },
+        {
+          "localized_name": "guides",
+          "name": "guides",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Rig: depth + alpha",
+      "properties": {
+        "Node name for S&R": "TitleRigRender"
+      },
+      "widgets_values": [
+        1344,
+        768,
+        "none",
+        ""
+      ],
+      "widgets_values_named": {
+        "width": 1344,
+        "height": 768,
+        "guide_lines": "none",
+        "titlerig_preview": ""
+      }
+    },
+    {
+      "id": 10,
+      "type": "RecraftVectorizeImageNode",
+      "pos": [
+        1340,
+        130
+      ],
+      "size": [
+        198.2203125,
+        26
+      ],
+      "flags": {},
+      "order": 9,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "image",
+          "name": "image",
+          "type": "IMAGE",
+          "link": 6
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "SVG",
+          "name": "SVG",
+          "type": "SVG",
+          "links": [
+            7
+          ]
+        }
+      ],
+      "title": "Recraft vectorize — API (paid) — NOT part of the open-weights entry. Never run from tests or CI.",
+      "properties": {
+        "Node name for S&R": "RecraftVectorizeImageNode"
+      },
+      "color": "#432",
+      "bgcolor": "#653"
+    },
+    {
+      "id": 11,
+      "type": "SaveSVGNode",
+      "pos": [
+        2123.2232421875,
+        130
+      ],
+      "size": [
+        270,
+        58
+      ],
+      "flags": {},
+      "order": 11,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "svg",
+          "name": "svg",
+          "type": "SVG",
+          "link": 7
+        },
+        {
+          "localized_name": "filename_prefix",
+          "name": "filename_prefix",
+          "type": "STRING",
+          "widget": {
+            "name": "filename_prefix"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "svg",
+          "name": "svg",
+          "type": "SVG",
+          "links": null
+        }
+      ],
+      "properties": {},
+      "widgets_values": [
+        "titlerig/recraft_vectorized"
+      ],
+      "widgets_values_named": {
+        "filename_prefix": "titlerig/recraft_vectorized"
+      }
+    },
+    {
+      "id": 12,
+      "type": "RecraftColorRGB",
+      "pos": [
+        100,
+        1106
+      ],
+      "size": [
+        270,
+        106
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "recraft_color",
+          "name": "recraft_color",
+          "shape": 7,
+          "type": "RECRAFT_COLOR",
+          "link": null
+        },
+        {
+          "localized_name": "r",
+          "name": "r",
+          "type": "INT",
+          "widget": {
+            "name": "r"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "g",
+          "name": "g",
+          "type": "INT",
+          "widget": {
+            "name": "g"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "b",
+          "name": "b",
+          "type": "INT",
+          "widget": {
+            "name": "b"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "recraft_color",
+          "name": "recraft_color",
+          "type": "RECRAFT_COLOR",
+          "links": [
+            8
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "RecraftColorRGB"
+      },
+      "widgets_values": [
+        255,
+        212,
+        0
+      ],
+      "widgets_values_named": {
+        "r": 255,
+        "g": 212,
+        "b": 0
+      }
+    },
+    {
+      "id": 13,
+      "type": "RecraftColorRGB",
+      "pos": [
+        470,
+        542
+      ],
+      "size": [
+        270,
+        106
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "recraft_color",
+          "name": "recraft_color",
+          "shape": 7,
+          "type": "RECRAFT_COLOR",
+          "link": 8
+        },
+        {
+          "localized_name": "r",
+          "name": "r",
+          "type": "INT",
+          "widget": {
+            "name": "r"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "g",
+          "name": "g",
+          "type": "INT",
+          "widget": {
+            "name": "g"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "b",
+          "name": "b",
+          "type": "INT",
+          "widget": {
+            "name": "b"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "recraft_color",
+          "name": "recraft_color",
+          "type": "RECRAFT_COLOR",
+          "links": [
+            9
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "RecraftColorRGB"
+      },
+      "widgets_values": [
+        225,
+        29,
+        72
+      ],
+      "widgets_values_named": {
+        "r": 225,
+        "g": 29,
+        "b": 72
+      }
+    },
+    {
+      "id": 14,
+      "type": "RecraftColorRGB",
+      "pos": [
+        100,
+        1342
+      ],
+      "size": [
+        270,
+        106
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "recraft_color",
+          "name": "recraft_color",
+          "shape": 7,
+          "type": "RECRAFT_COLOR",
+          "link": null
+        },
+        {
+          "localized_name": "r",
+          "name": "r",
+          "type": "INT",
+          "widget": {
+            "name": "r"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "g",
+          "name": "g",
+          "type": "INT",
+          "widget": {
+            "name": "g"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "b",
+          "name": "b",
+          "type": "INT",
+          "widget": {
+            "name": "b"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "recraft_color",
+          "name": "recraft_color",
+          "type": "RECRAFT_COLOR",
+          "links": [
+            10
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "RecraftColorRGB"
+      },
+      "widgets_values": [
+        253,
+        224,
+        71
+      ],
+      "widgets_values_named": {
+        "r": 253,
+        "g": 224,
+        "b": 71
+      }
+    },
+    {
+      "id": 15,
+      "type": "RecraftControls",
+      "pos": [
+        840,
+        1204
+      ],
+      "size": [
+        235.599609375,
+        46
+      ],
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "colors",
+          "name": "colors",
+          "shape": 7,
+          "type": "RECRAFT_COLOR",
+          "link": 9
+        },
+        {
+          "localized_name": "background_color",
+          "name": "background_color",
+          "shape": 7,
+          "type": "RECRAFT_COLOR",
+          "link": 10
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "recraft_controls",
+          "name": "recraft_controls",
+          "type": "RECRAFT_CONTROLS",
+          "links": [
+            12
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "RecraftControls"
+      }
+    },
+    {
+      "id": 16,
+      "type": "RecraftV4TextToVectorNode",
+      "pos": [
+        1340,
+        286
+      ],
+      "size": [
+        683.2232421875,
+        330
+      ],
+      "flags": {},
+      "order": 10,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "recraft_controls",
+          "name": "recraft_controls",
+          "shape": 7,
+          "type": "RECRAFT_CONTROLS",
+          "link": 12
+        },
+        {
+          "localized_name": "style_reference0",
+          "name": "style_references.style_reference0",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": null
+        },
+        {
+          "localized_name": "prompt",
+          "name": "prompt",
+          "type": "STRING",
+          "widget": {
+            "name": "prompt"
+          },
+          "link": 11
+        },
+        {
+          "localized_name": "negative_prompt",
+          "name": "negative_prompt",
+          "type": "STRING",
+          "widget": {
+            "name": "negative_prompt"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "model",
+          "name": "model",
+          "type": "COMFY_DYNAMICCOMBO_V3",
+          "widget": {
+            "name": "model"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "size",
+          "name": "model.size",
+          "type": "COMBO",
+          "widget": {
+            "name": "model.size"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "n",
+          "name": "n",
+          "type": "INT",
+          "widget": {
+            "name": "n"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "seed",
+          "name": "seed",
+          "type": "INT",
+          "widget": {
+            "name": "seed"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "style_id",
+          "name": "style_id",
+          "shape": 7,
+          "type": "STRING",
+          "widget": {
+            "name": "style_id"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "style_match",
+          "name": "style_match",
+          "shape": 7,
+          "type": "COMBO",
+          "widget": {
+            "name": "style_match"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "SVG",
+          "name": "SVG",
+          "type": "SVG",
+          "links": [
+            13
+          ]
+        },
+        {
+          "localized_name": "style_id",
+          "name": "style_id",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "title": "Recraft V4 vector — API (paid) — NOT part of the open-weights entry. Never run from tests or CI.",
+      "properties": {
+        "Node name for S&R": "RecraftV4TextToVectorNode"
+      },
+      "widgets_values": [
+        "",
+        "",
+        "recraftv4_1_vector",
+        "1536x768",
+        1,
+        42,
+        "randomize",
+        "",
+        "precise"
+      ],
+      "widgets_values_named": {
+        "prompt": "",
+        "negative_prompt": "",
+        "model": "recraftv4_1_vector",
+        "model.size": "1536x768",
+        "n": 1,
+        "seed": 42,
+        "control_after_generate": "randomize",
+        "style_id": "",
+        "style_match": "precise"
+      },
+      "color": "#432",
+      "bgcolor": "#653"
+    },
+    {
+      "id": 17,
+      "type": "SaveSVGNode",
+      "pos": [
+        2123.2232421875,
+        318
+      ],
+      "size": [
+        270,
+        58
+      ],
+      "flags": {},
+      "order": 12,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "svg",
+          "name": "svg",
+          "type": "SVG",
+          "link": 13
+        },
+        {
+          "localized_name": "filename_prefix",
+          "name": "filename_prefix",
+          "type": "STRING",
+          "widget": {
+            "name": "filename_prefix"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "svg",
+          "name": "svg",
+          "type": "SVG",
+          "links": null
+        }
+      ],
+      "properties": {},
+      "widgets_values": [
+        "titlerig/recraft_v4_vector"
+      ],
+      "widgets_values_named": {
+        "filename_prefix": "titlerig/recraft_v4_vector"
+      }
+    },
+    {
+      "id": 18,
+      "type": "TitleRigSVGExport",
+      "pos": [
+        840,
+        836
+      ],
+      "size": [
+        270,
+        238
+      ],
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "glyphs",
+          "name": "glyphs",
+          "type": "TITLERIG_GLYPHS",
+          "link": 14
+        },
+        {
+          "localized_name": "look",
+          "name": "look",
+          "shape": 7,
+          "type": "TITLERIG_LOOK",
+          "link": 15
+        },
+        {
+          "localized_name": "shadow",
+          "name": "shadow",
+          "shape": 7,
+          "type": "TITLERIG_SHADOW",
+          "link": 16
+        },
+        {
+          "localized_name": "layout",
+          "name": "layout",
+          "shape": 7,
+          "type": "TITLERIG_LAYOUT",
+          "link": 17
+        },
+        {
+          "localized_name": "width",
+          "name": "width",
+          "type": "INT",
+          "widget": {
+            "name": "width"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "height",
+          "name": "height",
+          "type": "INT",
+          "widget": {
+            "name": "height"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "filename_prefix",
+          "name": "filename_prefix",
+          "type": "STRING",
+          "widget": {
+            "name": "filename_prefix"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "supersample",
+          "name": "supersample",
+          "type": "INT",
+          "widget": {
+            "name": "supersample"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "side_tones",
+          "name": "side_tones",
+          "type": "INT",
+          "widget": {
+            "name": "side_tones"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "background",
+          "name": "background",
+          "type": "STRING",
+          "widget": {
+            "name": "background"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "svg",
+          "name": "svg",
+          "type": "STRING",
+          "links": null
+        },
+        {
+          "localized_name": "path",
+          "name": "path",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "title": "Open alternative: TitleRig SVG Export (free)",
+      "properties": {
+        "Node name for S&R": "TitleRigSVGExport"
+      },
+      "widgets_values": [
+        1344,
+        768,
+        "titlerig/rig_vector",
+        2,
+        4,
+        ""
+      ],
+      "widgets_values_named": {
+        "width": 1344,
+        "height": 768,
+        "filename_prefix": "titlerig/rig_vector",
+        "supersample": 2,
+        "side_tones": 4,
+        "background": ""
+      }
+    }
+  ],
+  "links": [
+    [
+      1,
+      1,
+      0,
+      5,
+      0,
+      "TITLERIG_GLYPHS"
+    ],
+    [
+      2,
+      1,
+      0,
+      6,
+      0,
+      "TITLERIG_GLYPHS"
+    ],
+    [
+      3,
+      5,
+      2,
+      6,
+      1,
+      "TITLERIG_LOOK"
+    ],
+    [
+      4,
+      5,
+      3,
+      6,
+      2,
+      "TITLERIG_SHADOW"
+    ],
+    [
+      5,
+      4,
+      0,
+      6,
+      3,
+      "TITLERIG_LAYOUT"
+    ],
+    [
+      6,
+      6,
+      0,
+      10,
+      0,
+      "IMAGE"
+    ],
+    [
+      7,
+      10,
+      0,
+      11,
+      0,
+      "SVG"
+    ],
+    [
+      8,
+      12,
+      0,
+      13,
+      0,
+      "RECRAFT_COLOR"
+    ],
+    [
+      9,
+      13,
+      0,
+      15,
+      0,
+      "RECRAFT_COLOR"
+    ],
+    [
+      10,
+      14,
+      0,
+      15,
+      1,
+      "RECRAFT_COLOR"
+    ],
+    [
+      11,
+      5,
+      0,
+      16,
+      2,
+      "STRING"
+    ],
+    [
+      12,
+      15,
+      0,
+      16,
+      0,
+      "RECRAFT_CONTROLS"
+    ],
+    [
+      13,
+      16,
+      0,
+      17,
+      0,
+      "SVG"
+    ],
+    [
+      14,
+      1,
+      0,
+      18,
+      0,
+      "TITLERIG_GLYPHS"
+    ],
+    [
+      15,
+      5,
+      2,
+      18,
+      1,
+      "TITLERIG_LOOK"
+    ],
+    [
+      16,
+      5,
+      3,
+      18,
+      2,
+      "TITLERIG_SHADOW"
+    ],
+    [
+      17,
+      4,
+      0,
+      18,
+      3,
+      "TITLERIG_LAYOUT"
+    ]
+  ],
+  "groups": [],
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 0.44537149988388897,
+      "offset": [
+        415.19622395833335,
+        696.9241030092592
+      ]
+    }
+  },
+  "version": 0.4
+}

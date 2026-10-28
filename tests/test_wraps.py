@@ -61,3 +61,12 @@ def test_wraps_keep_pass_contract(mode):
     for k, a in p.items():
         assert a.shape[:2] == (320, 640) and a.dtype == np.float32 and a.min() >= 0 and a.max() <= 1.0001, k
     assert p["face"].sum() > 300 and (p["face"] * p["sides"]).sum() == 0
+
+
+def test_sphere_repeat_has_no_seam_on_the_back_meridian():
+    # phase 180 turns the back meridian to face the camera; 200 + 60 px copies don't divide the 804 px equator
+    mx, _, _ = wrap_maps(800, 320, Layout(mode="sphere", wrap_radius=0.4, wrap_phase=180), 200, 400, 160, 60)
+    row = mx[160][mx[160] >= 0]
+    d = np.abs(np.diff(row))
+    jumps = d[d > 20]  # copy boundaries: each must be one whole period (equator / 3), the back meridian included
+    assert len(jumps) >= 1 and np.allclose(jumps, 2 * np.pi * 128 / 3, atol=5)

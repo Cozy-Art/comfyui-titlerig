@@ -1,5 +1,5 @@
 {
-  "id": "6c6f9825-a2fe-4f65-b7e1-d66234b180af",
+  "id": "e6f3badb-10a1-4eb2-a075-31ae34f2e340",
   "revision": 0,
   "last_node_id": 29,
   "last_link_id": 17,
@@ -1763,7 +1763,7 @@
       ],
       "size": [
         400,
-        512
+        536
       ],
       "flags": {},
       "order": 11,
@@ -1817,6 +1817,16 @@
           "type": "INT",
           "widget": {
             "name": "height"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "pad_ltx",
+          "name": "pad_ltx",
+          "shape": 7,
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "pad_ltx"
           },
           "link": null
         }
@@ -1875,11 +1885,13 @@
       "widgets_values": [
         960,
         544,
+        false,
         ""
       ],
       "widgets_values_named": {
         "width": 960,
         "height": 544,
+        "pad_ltx": false,
         "titlerig_preview": ""
       }
     },
@@ -2250,8 +2262,8 @@
     "ds": {
       "scale": 0.9,
       "offset": [
-        40,
-        40
+        416,
+        110
       ]
     }
   },

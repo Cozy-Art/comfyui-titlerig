@@ -18,6 +18,8 @@ this file says where things stand and what a fresh session should know before to
 | Spell-Lock v1 (P2) | warp-snap + spill / hole repair against the rig alpha, shadow protection, drift score | `render/spell_lock.py` |
 | Canvas preview (P2) | live preview widget on Render / Render Animation: pass chips, guides, frame scrubber, dark + light palettes | `web/titlerig_preview.js`, `nodes/preview.py` |
 | Workflows (P1c) | rig-only and audio-react example workflows (no models, CPU) | `workflows/` |
+| AI workflows (build night) | LTX-2 depth IC-LoRA video, FLUX.1 Depth still, FLUX.2-dev still; bonus API FLUX 3 + Recraft (never run). Validated structurally, by ComfyUI's own validator (placeholder model files) and by CPU dry runs of the rig half | `workflows/`, `workflows/README.md` |
+| Demo media | four hero clips (MP4 + GIF), 2×2 `hero.gif`, preview widget dark + light screenshots | `docs/media/`, `examples/hero_clips.py` |
 | ComfyUI | 12 nodes load in a CPU ComfyUI; both workflows run headless and round-trip through the frontend | see "Environment" |
 
 Nodes (all under **TitleRig**): Text, Look 3D, Shadow, Layout, Render, Animate, Audio React, Render Animation,
@@ -31,6 +33,7 @@ Style Preset, Magnet, SVG Export, Spell-Lock.
   - `workflows/run_headless.py` runs both workflows to success.
   - `workflows/to_ui.js --verify` loads each UI file in the real frontend, builds the prompt and runs it.
   - `tests/e2e/preview_check.js` checks the preview widget: it appears, updates on widget changes, the chips toggle, the scrubber works, and both palettes render.
+- **Workflow checks:** `workflows/validate.py` (structure vs `/object_info`), `workflows/comfy_validate.py` (ComfyUI accepts the 3 AI graphs with empty model files, then they're cancelled), `workflows/api/dryrun/*.json` (the AI node swapped for the rig beauty; LTX dry run 121 frames + audio in 95 s at half res).
 - **Not verified against real models:**
   - No FLUX / LTX generation has been run. Paid APIs are off-limits, and there are no local weights or GPU here.
   - The Style Preset prompts follow the skills but are untested on the models.
@@ -46,7 +49,7 @@ Style Preset, Magnet, SVG Export, Spell-Lock.
   - The `edges` input is accepted but unused (drift is measured on silhouettes).
 - **Flip X / spin Y:** a letter turning edge-on keeps its extrusion, so it reads as a flat bar for a frame or two.
 - **SVG export:** faces carry their gradient, not the raster bevel lighting (Chrome Slam's emboss highlights are lost).
-- **Wraps:** front faces only (no back-side letters); cube is a band (no top or bottom face); sphere text is not
+- **Wraps:** the globe in `sphere_ticker` is drawn by the demo script, not the rig (the rig renders only the letters). Front faces only (no back-side letters); cube is a band (no top or bottom face); sphere text is not
   designed for the poles.
 - **Magnet:** the magnet word always draws in front of the title, in Anton, with a fixed look (`MAGNET_LOOK`).
 - **Audio:**
@@ -54,7 +57,8 @@ Style Preset, Magnet, SVG Export, Spell-Lock.
   - On real music, `mids` can pick up hats. Lower `sensitivity` or use `spectrum`.
 - **Render Animation:**
   - Outputs only beauty, alpha, depth, edges and letter_ids. All 11 passes × N frames would be several GB at 720p.
-  - It doesn't pad to LTX's `8n + 1` frame rule. Style Preset's settings report the snapped count.
+  - `pad_ltx` holds the last frame up to LTX's `8n + 1` frame count (off by default).
+  - Memory: about 10 GB RAM for 121 frames at 1280×720 (all passes are preallocated). Keep LTX clips to about 5 s on small machines.
 - **Speed:** about 0.5 s per 720p frame on CPU (4 threads in Render Animation). The canvas preview "plays" at render speed.
 - **Preview:**
   - Audio-driven tracks show their rest pose, because there's no audio until the workflow runs.
@@ -90,10 +94,8 @@ Style Preset, Magnet, SVG Export, Spell-Lock.
 
 ## Next
 
-- **Backlog:** only P3 is left. It's optional, separate and API-only: Recraft vectorize via ComfyUI's partner nodes, never in the open-weights entry.
-- **The contest entry still needs the PRD's AI workflows**, which aren't in the CLAUDE.md backlog yet:
-  - (1) FLUX still: rig depth / canny → composite with alpha → PNG.
-  - (2) the animated hero: LTX-2.3 + depth IC-LoRA → Spell-Lock → MP4.
+Build night is tracked in the CLAUDE.md backlog ("Build night"). Workflows, demo media and the README are done. Still to do:
 
-  Both need model weights, which this sandbox can't run, so they can be authored and validated structurally but not executed here.
-- **Demo video / README polish** for submission.
+1. **First real GPU run** of `titlerig_ltx2_animated.json` and `titlerig_flux_still.json` (by the user, on Comfy Cloud or Runpod). Try Spell-Lock on the real output. Tune `max_shift` and the LTX settings if needed.
+2. **Cutout text node** (queued by the user): one image or video inside the letters, another outside.
+3. **After build night (nice to have):** P3 Recraft.

@@ -57,6 +57,8 @@ def test_every_target_quotes_text_and_says_what_is_there(name, target):
     assert "BADD" in pos and "ASS" in pos
     assert not NEGATION.search(pos), pos
     assert (neg == "") == (target != "ltx23_video")
+    if target == "flux1_depth":
+        assert "image 1" not in pos  # depth conditioning, no reference image
 
 
 def test_colour_words_replace_hex():
@@ -164,3 +166,21 @@ def test_presets_show_structural_variety():
     for n in flat_no_shadow:
         p = render_title(Glyphs(text="AB", size=80), *looks[n], 300, 160)
         assert p["sides"].sum() == 0 and p["shadow"].sum() == 0
+
+
+def test_pad_frames_holds_last_frame():
+    import numpy as np
+    from render.animate import pad_frames
+    from render.presets import ltx_frames
+    p = {"a": np.arange(10).reshape(10, 1).astype(np.float32), "b": np.zeros((10, 2, 2), np.float32)}
+    q = pad_frames(p, ltx_frames(10))
+    assert q["a"].shape[0] == 17 and q["b"].shape[0] == 17 and (q["a"][10:] == 9).all()
+    assert pad_frames(p, 5)["a"].shape[0] == 10  # never trims
+
+
+def test_recraft_vector_prompt_follows_model_skills_template():
+    pos, neg = build_prompt("Chrome Slam", "TITLERIG", target="recraft_v4_vector")
+    assert pos.startswith('Flat vector title lockup of the word "TITLERIG"') and neg == ""
+    assert "Strict three-colour system" in pos and "48 pixels" in pos and "#" in pos
+    flat, _ = build_prompt("Holo Foil", "TITLERIG", target="recraft_v4_vector")
+    assert "extrusion" not in flat  # Holo Foil has no extrusion

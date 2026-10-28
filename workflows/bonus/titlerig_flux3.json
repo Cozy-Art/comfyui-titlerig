@@ -1,0 +1,1366 @@
+{
+  "id": "d4134d94-8c05-4042-952d-9f4b48e32c39",
+  "revision": 0,
+  "last_node_id": 96,
+  "last_link_id": 18,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "TitleRigText",
+      "pos": [
+        100,
+        130
+      ],
+      "size": [
+        270,
+        202
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "text",
+          "name": "text",
+          "type": "STRING",
+          "widget": {
+            "name": "text"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "font",
+          "name": "font",
+          "type": "COMBO",
+          "widget": {
+            "name": "font"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "size",
+          "name": "size",
+          "type": "INT",
+          "widget": {
+            "name": "size"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "tracking",
+          "name": "tracking",
+          "type": "FLOAT",
+          "widget": {
+            "name": "tracking"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "kerning_json",
+          "name": "kerning_json",
+          "shape": 7,
+          "type": "STRING",
+          "widget": {
+            "name": "kerning_json"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "letters_json",
+          "name": "letters_json",
+          "shape": 7,
+          "type": "STRING",
+          "widget": {
+            "name": "letters_json"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "word_json",
+          "name": "word_json",
+          "shape": 7,
+          "type": "STRING",
+          "widget": {
+            "name": "word_json"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "glyphs",
+          "name": "glyphs",
+          "type": "TITLERIG_GLYPHS",
+          "links": [
+            1,
+            2
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "TitleRigText"
+      },
+      "widgets_values": [
+        "TITLERIG",
+        "Anton-Regular",
+        200,
+        4,
+        "{}",
+        "{}",
+        "{}"
+      ],
+      "widgets_values_named": {
+        "text": "TITLERIG",
+        "font": "Anton-Regular",
+        "size": 200,
+        "tracking": 4,
+        "kerning_json": "{}",
+        "letters_json": "{}",
+        "word_json": "{}"
+      }
+    },
+    {
+      "id": 4,
+      "type": "TitleRigLayout",
+      "pos": [
+        100,
+        462
+      ],
+      "size": [
+        270,
+        514
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "mode",
+          "name": "mode",
+          "type": "COMBO",
+          "widget": {
+            "name": "mode"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "bend",
+          "name": "bend",
+          "type": "FLOAT",
+          "widget": {
+            "name": "bend"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "align",
+          "name": "align",
+          "type": "FLOAT",
+          "widget": {
+            "name": "align"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "bulge",
+          "name": "bulge",
+          "type": "FLOAT",
+          "widget": {
+            "name": "bulge"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "tilt_x",
+          "name": "tilt_x",
+          "type": "FLOAT",
+          "widget": {
+            "name": "tilt_x"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "tilt_y",
+          "name": "tilt_y",
+          "type": "FLOAT",
+          "widget": {
+            "name": "tilt_y"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "fov",
+          "name": "fov",
+          "type": "FLOAT",
+          "widget": {
+            "name": "fov"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "vanish",
+          "name": "vanish",
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "vanish"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "vp_x",
+          "name": "vp_x",
+          "type": "FLOAT",
+          "widget": {
+            "name": "vp_x"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "vp_y",
+          "name": "vp_y",
+          "type": "FLOAT",
+          "widget": {
+            "name": "vp_y"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "flag_amp",
+          "name": "flag_amp",
+          "type": "FLOAT",
+          "widget": {
+            "name": "flag_amp"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "flag_wavelength",
+          "name": "flag_wavelength",
+          "type": "FLOAT",
+          "widget": {
+            "name": "flag_wavelength"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "flag_phase",
+          "name": "flag_phase",
+          "type": "FLOAT",
+          "widget": {
+            "name": "flag_phase"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "flag_shade",
+          "name": "flag_shade",
+          "type": "FLOAT",
+          "widget": {
+            "name": "flag_shade"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "wrap_radius",
+          "name": "wrap_radius",
+          "shape": 7,
+          "type": "FLOAT",
+          "widget": {
+            "name": "wrap_radius"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "wrap_phase",
+          "name": "wrap_phase",
+          "shape": 7,
+          "type": "FLOAT",
+          "widget": {
+            "name": "wrap_phase"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "wrap_tilt",
+          "name": "wrap_tilt",
+          "shape": 7,
+          "type": "FLOAT",
+          "widget": {
+            "name": "wrap_tilt"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "wrap_repeat",
+          "name": "wrap_repeat",
+          "shape": 7,
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "wrap_repeat"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "wrap_shade",
+          "name": "wrap_shade",
+          "shape": 7,
+          "type": "FLOAT",
+          "widget": {
+            "name": "wrap_shade"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "curve_json",
+          "name": "curve_json",
+          "shape": 7,
+          "type": "STRING",
+          "widget": {
+            "name": "curve_json"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "layout",
+          "name": "layout",
+          "type": "TITLERIG_LAYOUT",
+          "links": [
+            5
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "TitleRigLayout"
+      },
+      "widgets_values": [
+        "arc",
+        0.15,
+        0.5,
+        0,
+        0,
+        0,
+        50,
+        false,
+        0.5,
+        1.4,
+        0,
+        420,
+        0,
+        0.5,
+        0.32,
+        0,
+        15,
+        true,
+        0.6,
+        ""
+      ],
+      "widgets_values_named": {
+        "mode": "arc",
+        "bend": 0.15,
+        "align": 0.5,
+        "bulge": 0,
+        "tilt_x": 0,
+        "tilt_y": 0,
+        "fov": 50,
+        "vanish": false,
+        "vp_x": 0.5,
+        "vp_y": 1.4,
+        "flag_amp": 0,
+        "flag_wavelength": 420,
+        "flag_phase": 0,
+        "flag_shade": 0.5,
+        "wrap_radius": 0.32,
+        "wrap_phase": 0,
+        "wrap_tilt": 15,
+        "wrap_repeat": true,
+        "wrap_shade": 0.6,
+        "curve_json": ""
+      }
+    },
+    {
+      "id": 5,
+      "type": "TitleRigStylePreset",
+      "pos": [
+        470,
+        130
+      ],
+      "size": [
+        270,
+        282
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "glyphs",
+          "name": "glyphs",
+          "shape": 7,
+          "type": "TITLERIG_GLYPHS",
+          "link": 1
+        },
+        {
+          "localized_name": "preset",
+          "name": "preset",
+          "type": "COMBO",
+          "widget": {
+            "name": "preset"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "target",
+          "name": "target",
+          "type": "COMBO",
+          "widget": {
+            "name": "target"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "colour_words",
+          "name": "colour_words",
+          "type": "STRING",
+          "widget": {
+            "name": "colour_words"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "text",
+          "name": "text",
+          "type": "STRING",
+          "widget": {
+            "name": "text"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "format",
+          "name": "format",
+          "type": "COMBO",
+          "widget": {
+            "name": "format"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "audio",
+          "name": "audio",
+          "type": "COMBO",
+          "widget": {
+            "name": "audio"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "frame_count",
+          "name": "frame_count",
+          "shape": 7,
+          "type": "INT",
+          "widget": {
+            "name": "frame_count"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "positive",
+          "name": "positive",
+          "type": "STRING",
+          "links": [
+            6
+          ]
+        },
+        {
+          "localized_name": "negative",
+          "name": "negative",
+          "type": "STRING",
+          "links": null
+        },
+        {
+          "localized_name": "look",
+          "name": "look",
+          "type": "TITLERIG_LOOK",
+          "links": [
+            3
+          ]
+        },
+        {
+          "localized_name": "shadow",
+          "name": "shadow",
+          "type": "TITLERIG_SHADOW",
+          "links": [
+            4
+          ]
+        },
+        {
+          "localized_name": "settings",
+          "name": "settings",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "title": "Style Preset (Chrome Slam)",
+      "properties": {
+        "Node name for S&R": "TitleRigStylePreset"
+      },
+      "widgets_values": [
+        "Chrome Slam",
+        "flux3",
+        "",
+        "TITLE",
+        "prose",
+        "own_track",
+        121
+      ],
+      "widgets_values_named": {
+        "preset": "Chrome Slam",
+        "target": "flux3",
+        "colour_words": "",
+        "text": "TITLE",
+        "format": "prose",
+        "audio": "own_track",
+        "frame_count": 121
+      }
+    },
+    {
+      "id": 6,
+      "type": "TitleRigRender",
+      "pos": [
+        840,
+        130
+      ],
+      "size": [
+        400,
+        576
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "glyphs",
+          "name": "glyphs",
+          "type": "TITLERIG_GLYPHS",
+          "link": 2
+        },
+        {
+          "localized_name": "look",
+          "name": "look",
+          "shape": 7,
+          "type": "TITLERIG_LOOK",
+          "link": 3
+        },
+        {
+          "localized_name": "shadow",
+          "name": "shadow",
+          "shape": 7,
+          "type": "TITLERIG_SHADOW",
+          "link": 4
+        },
+        {
+          "localized_name": "layout",
+          "name": "layout",
+          "shape": 7,
+          "type": "TITLERIG_LAYOUT",
+          "link": 5
+        },
+        {
+          "localized_name": "width",
+          "name": "width",
+          "type": "INT",
+          "widget": {
+            "name": "width"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "height",
+          "name": "height",
+          "type": "INT",
+          "widget": {
+            "name": "height"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "guide_lines",
+          "name": "guide_lines",
+          "shape": 7,
+          "type": "STRING",
+          "widget": {
+            "name": "guide_lines"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "beauty",
+          "name": "beauty",
+          "type": "IMAGE",
+          "links": [
+            7
+          ]
+        },
+        {
+          "localized_name": "alpha",
+          "name": "alpha",
+          "type": "MASK",
+          "links": [
+            9,
+            12
+          ]
+        },
+        {
+          "localized_name": "depth",
+          "name": "depth",
+          "type": "IMAGE",
+          "links": [
+            18
+          ]
+        },
+        {
+          "localized_name": "edges",
+          "name": "edges",
+          "type": "IMAGE",
+          "links": [
+            10
+          ]
+        },
+        {
+          "localized_name": "normals",
+          "name": "normals",
+          "type": "IMAGE",
+          "links": null
+        },
+        {
+          "localized_name": "face",
+          "name": "face",
+          "type": "MASK",
+          "links": null
+        },
+        {
+          "localized_name": "sides",
+          "name": "sides",
+          "type": "MASK",
+          "links": null
+        },
+        {
+          "localized_name": "highlight",
+          "name": "highlight",
+          "type": "MASK",
+          "links": null
+        },
+        {
+          "localized_name": "shadow",
+          "name": "shadow",
+          "type": "MASK",
+          "links": [
+            11
+          ]
+        },
+        {
+          "localized_name": "letter_ids",
+          "name": "letter_ids",
+          "type": "IMAGE",
+          "links": null
+        },
+        {
+          "localized_name": "guides",
+          "name": "guides",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Rig: depth + alpha",
+      "properties": {
+        "Node name for S&R": "TitleRigRender"
+      },
+      "widgets_values": [
+        1344,
+        768,
+        "none",
+        ""
+      ],
+      "widgets_values_named": {
+        "width": 1344,
+        "height": 768,
+        "guide_lines": "none",
+        "titlerig_preview": ""
+      }
+    },
+    {
+      "id": 10,
+      "type": "Flux3ImageNode",
+      "pos": [
+        1340,
+        130
+      ],
+      "size": [
+        661.17734375,
+        272
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "image_1",
+          "name": "images.image_1",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": 7
+        },
+        {
+          "localized_name": "image_2",
+          "name": "images.image_2",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": null
+        },
+        {
+          "localized_name": "bounding_boxes",
+          "name": "bounding_boxes",
+          "shape": 7,
+          "type": "ARRAY",
+          "link": null
+        },
+        {
+          "localized_name": "prompt",
+          "name": "prompt",
+          "type": "STRING",
+          "widget": {
+            "name": "prompt"
+          },
+          "link": 6
+        },
+        {
+          "localized_name": "aspect_ratio",
+          "name": "aspect_ratio",
+          "type": "COMBO",
+          "widget": {
+            "name": "aspect_ratio"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "resolution",
+          "name": "resolution",
+          "type": "COMBO",
+          "widget": {
+            "name": "resolution"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "grounding",
+          "name": "grounding",
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "grounding"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "safety_tolerance",
+          "name": "safety_tolerance",
+          "type": "INT",
+          "widget": {
+            "name": "safety_tolerance"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "seed",
+          "name": "seed",
+          "type": "INT",
+          "widget": {
+            "name": "seed"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "IMAGE",
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            8,
+            15
+          ]
+        }
+      ],
+      "title": "FLUX 3 Image — API (paid) — NOT part of the open-weights entry. Never run from tests or CI.",
+      "properties": {
+        "Node name for S&R": "Flux3ImageNode"
+      },
+      "widgets_values": [
+        "",
+        "auto",
+        "2K",
+        false,
+        2,
+        42,
+        "randomize"
+      ],
+      "widgets_values_named": {
+        "prompt": "",
+        "aspect_ratio": "auto",
+        "resolution": "2K",
+        "grounding": false,
+        "safety_tolerance": 2,
+        "seed": 42,
+        "control_after_generate": "randomize"
+      },
+      "color": "#432",
+      "bgcolor": "#653"
+    },
+    {
+      "id": 90,
+      "type": "TitleRigSpellLock",
+      "pos": [
+        2101.17734375,
+        130
+      ],
+      "size": [
+        270,
+        166
+      ],
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "images",
+          "name": "images",
+          "type": "IMAGE",
+          "link": 8
+        },
+        {
+          "localized_name": "alpha",
+          "name": "alpha",
+          "type": "MASK",
+          "link": 9
+        },
+        {
+          "localized_name": "edges",
+          "name": "edges",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": 10
+        },
+        {
+          "localized_name": "shadow",
+          "name": "shadow",
+          "shape": 7,
+          "type": "MASK",
+          "link": 11
+        },
+        {
+          "localized_name": "strength",
+          "name": "strength",
+          "type": "FLOAT",
+          "widget": {
+            "name": "strength"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "tolerance",
+          "name": "tolerance",
+          "type": "INT",
+          "widget": {
+            "name": "tolerance"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "ring",
+          "name": "ring",
+          "type": "INT",
+          "widget": {
+            "name": "ring"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "images",
+          "name": "images",
+          "type": "IMAGE",
+          "links": [
+            13,
+            16
+          ]
+        },
+        {
+          "localized_name": "fix_mask",
+          "name": "fix_mask",
+          "type": "MASK",
+          "links": null
+        },
+        {
+          "localized_name": "drift",
+          "name": "drift",
+          "type": "FLOAT",
+          "links": null
+        },
+        {
+          "localized_name": "report",
+          "name": "report",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "TitleRigSpellLock"
+      },
+      "widgets_values": [
+        1,
+        2,
+        24
+      ],
+      "widgets_values_named": {
+        "strength": 1,
+        "tolerance": 2,
+        "ring": 24
+      }
+    },
+    {
+      "id": 91,
+      "type": "InvertMask",
+      "pos": [
+        1340,
+        532
+      ],
+      "size": [
+        140,
+        26
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "mask",
+          "name": "mask",
+          "type": "MASK",
+          "link": 12
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "MASK",
+          "name": "MASK",
+          "type": "MASK",
+          "links": [
+            14
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "InvertMask"
+      }
+    },
+    {
+      "id": 92,
+      "type": "JoinImageWithAlpha",
+      "pos": [
+        2471.17734375,
+        130
+      ],
+      "size": [
+        185.8609375,
+        46
+      ],
+      "flags": {},
+      "order": 9,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "image",
+          "name": "image",
+          "type": "IMAGE",
+          "link": 13
+        },
+        {
+          "localized_name": "alpha",
+          "name": "alpha",
+          "type": "MASK",
+          "link": 14
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "IMAGE",
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            17
+          ]
+        }
+      ],
+      "title": "Title cut-out (alpha)",
+      "properties": {
+        "Node name for S&R": "JoinImageWithAlpha"
+      }
+    },
+    {
+      "id": 93,
+      "type": "SaveImage",
+      "pos": [
+        2101.17734375,
+        426
+      ],
+      "size": [
+        270,
+        58
+      ],
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "images",
+          "name": "images",
+          "type": "IMAGE",
+          "link": 15
+        },
+        {
+          "localized_name": "filename_prefix",
+          "name": "filename_prefix",
+          "type": "STRING",
+          "widget": {
+            "name": "filename_prefix"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "images",
+          "name": "images",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "AI raw",
+      "properties": {},
+      "widgets_values": [
+        "titlerig/flux3_raw"
+      ],
+      "widgets_values_named": {
+        "filename_prefix": "titlerig/flux3_raw"
+      }
+    },
+    {
+      "id": 94,
+      "type": "SaveImage",
+      "pos": [
+        2471.17734375,
+        306
+      ],
+      "size": [
+        270,
+        58
+      ],
+      "flags": {},
+      "order": 10,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "images",
+          "name": "images",
+          "type": "IMAGE",
+          "link": 16
+        },
+        {
+          "localized_name": "filename_prefix",
+          "name": "filename_prefix",
+          "type": "STRING",
+          "widget": {
+            "name": "filename_prefix"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "images",
+          "name": "images",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Spell-Locked",
+      "properties": {},
+      "widgets_values": [
+        "titlerig/flux3_spell_locked"
+      ],
+      "widgets_values_named": {
+        "filename_prefix": "titlerig/flux3_spell_locked"
+      }
+    },
+    {
+      "id": 95,
+      "type": "SaveImage",
+      "pos": [
+        2841.17734375,
+        130
+      ],
+      "size": [
+        270,
+        58
+      ],
+      "flags": {},
+      "order": 11,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "images",
+          "name": "images",
+          "type": "IMAGE",
+          "link": 17
+        },
+        {
+          "localized_name": "filename_prefix",
+          "name": "filename_prefix",
+          "type": "STRING",
+          "widget": {
+            "name": "filename_prefix"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "images",
+          "name": "images",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Transparent PNG",
+      "properties": {},
+      "widgets_values": [
+        "titlerig/flux3_cutout"
+      ],
+      "widgets_values_named": {
+        "filename_prefix": "titlerig/flux3_cutout"
+      }
+    },
+    {
+      "id": 96,
+      "type": "SaveImage",
+      "pos": [
+        1340,
+        688
+      ],
+      "size": [
+        270,
+        58
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "images",
+          "name": "images",
+          "type": "IMAGE",
+          "link": 18
+        },
+        {
+          "localized_name": "filename_prefix",
+          "name": "filename_prefix",
+          "type": "STRING",
+          "widget": {
+            "name": "filename_prefix"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "images",
+          "name": "images",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Control: rig depth",
+      "properties": {},
+      "widgets_values": [
+        "titlerig/flux3_control_depth"
+      ],
+      "widgets_values_named": {
+        "filename_prefix": "titlerig/flux3_control_depth"
+      }
+    }
+  ],
+  "links": [
+    [
+      1,
+      1,
+      0,
+      5,
+      0,
+      "TITLERIG_GLYPHS"
+    ],
+    [
+      2,
+      1,
+      0,
+      6,
+      0,
+      "TITLERIG_GLYPHS"
+    ],
+    [
+      3,
+      5,
+      2,
+      6,
+      1,
+      "TITLERIG_LOOK"
+    ],
+    [
+      4,
+      5,
+      3,
+      6,
+      2,
+      "TITLERIG_SHADOW"
+    ],
+    [
+      5,
+      4,
+      0,
+      6,
+      3,
+      "TITLERIG_LAYOUT"
+    ],
+    [
+      7,
+      6,
+      0,
+      10,
+      0,
+      "IMAGE"
+    ],
+    [
+      6,
+      5,
+      0,
+      10,
+      3,
+      "STRING"
+    ],
+    [
+      8,
+      10,
+      0,
+      90,
+      0,
+      "IMAGE"
+    ],
+    [
+      9,
+      6,
+      1,
+      90,
+      1,
+      "MASK"
+    ],
+    [
+      10,
+      6,
+      3,
+      90,
+      2,
+      "IMAGE"
+    ],
+    [
+      11,
+      6,
+      8,
+      90,
+      3,
+      "MASK"
+    ],
+    [
+      12,
+      6,
+      1,
+      91,
+      0,
+      "MASK"
+    ],
+    [
+      13,
+      90,
+      0,
+      92,
+      0,
+      "IMAGE"
+    ],
+    [
+      14,
+      91,
+      0,
+      92,
+      1,
+      "MASK"
+    ],
+    [
+      15,
+      10,
+      0,
+      93,
+      0,
+      "IMAGE"
+    ],
+    [
+      16,
+      90,
+      0,
+      94,
+      0,
+      "IMAGE"
+    ],
+    [
+      17,
+      92,
+      0,
+      95,
+      0,
+      "IMAGE"
+    ],
+    [
+      18,
+      6,
+      2,
+      96,
+      0,
+      "IMAGE"
+    ]
+  ],
+  "groups": [],
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 0.3631161971830985,
+      "offset": [
+        1558.5454545454545,
+        288.66666666666674
+      ]
+    }
+  },
+  "version": 0.4
+}

@@ -5,11 +5,12 @@ import json
 
 import numpy as np
 
-from ..render.presets import AUDIO_MODES as PRESET_AUDIO, FORMATS, PRESET_NAMES, ltx23_settings, TARGETS as PROMPT_TARGETS, build_prompt, flux2_settings, flux3_settings, suggested_look
+from ..render.presets import AUDIO_MODES as PRESET_AUDIO, FORMATS, PRESET_NAMES, ltx23_settings, ltx_frames, TARGETS as PROMPT_TARGETS, build_prompt, flux2_settings, flux3_settings, suggested_look
 from ..render.magnet import PATHS as MAGNET_PATHS, POLARITIES, Magnet
 from ..render.svg import rig_svg
 from ..render.spell_lock import spell_lock_batch
 from ..render.audio import AUDIO_MODES, BANDS, audio_curve, curve_preview
+from ..render.animate import pad_frames
 from ..render.animate import DIRECTIONS, EASINGS, EFFECTS, ORDERS, RESPONSES, RETRIGGERS, TARGETS, Anim, Track, render_frames
 from ..render import LAYOUT_MODES, SHADOW_TEXTURES, Glyphs, Layout, Look3D, Shadow, bundled_fonts, render_title
 
@@ -441,16 +442,21 @@ class TitleRigRenderAnimation:
             "look": ("TITLERIG_LOOK",),
             "shadow": ("TITLERIG_SHADOW",),
             "layout": ("TITLERIG_LAYOUT",),
+            "pad_ltx": ("BOOLEAN", {"default": False, "tooltip": "pad to LTX's 8n+1 frame rule by holding the last "
+                        "frame, so depth guide, Spell-Lock alpha and audio stay aligned"}),
         }}
 
-    def render(self, glyphs, anim, width, height, look=None, shadow=None, layout=None):
+    def render(self, glyphs, anim, width, height, look=None, shadow=None, layout=None, pad_ltx=False):
         p = render_frames(anim, glyphs, look, shadow, width, height, layout,
                           passes=("beauty", "alpha", "depth", "edges", "letter_ids"))
+        if pad_ltx:
+            p = pad_frames(p, ltx_frames(p["beauty"].shape[0]))
         import torch
 
-        t = lambda a: torch.from_numpy(np.ascontiguousarray(a)).float()  # noqa: E731
-        return (t(p["beauty"][..., :3]), t(p["alpha"]), t(p["depth"]), t(p["edges"]), t(p["letter_ids"]),
-                int(p["beauty"].shape[0]), float(anim.fps))
+        t = lambda a: torch.from_numpy(np.ascontiguousarray(a, np.float32))  # noqa: E731  (no copy when contiguous)
+        beauty = t(p.pop("beauty")[..., :3])  # the one copy: RGB out of RGBA, then the RGBA frames are freed
+        return (beauty, t(p["alpha"]), t(p["depth"]), t(p["edges"]), t(p["letter_ids"]),
+                int(beauty.shape[0]), float(anim.fps))
 
 
 NODE_CLASS_MAPPINGS = {
