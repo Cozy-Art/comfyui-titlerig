@@ -33,7 +33,13 @@ Full PRD: https://claude.ai/artifact/2qzTkJzmj6nwPUjcdNAad4 (summary in docs/PRD
   - [x] Bonus API workflows, built but never run: `workflows/bonus/titlerig_flux3.json`, `workflows/bonus/titlerig_recraft_vector.json`
   - [x] Demo assets in `docs/media/`: Chrome Slam flip-in, Ben-Day Pop halftone on the beat, ticker on a spinning sphere, Magnet repel-and-snap-back, preview widget dark + light
   - [x] README polish: hero GIF, pitch, node list, install, workflows table (open vs API), credits
+  - [x] `docs/BUILD_NIGHT.md` runbook: Comfy Cloud path + Mac fallback (`examples/export_for_cloud.py`, `titlerig_cloud_ltx2`, `examples/spell_lock_video.py`), Runpod one-paste `scripts/runpod_setup.sh`, first-run checklists, questions for Comfy
+  - [x] Flip X / spin Y edge-on: letters turn as solid cards (extrusion wall), Chrome Slam re-rendered
+  - [x] Demo kit: `docs/demo/SCRIPT.md` (75 s script + shot list) and `examples/build_demo.py` (TitleRig cards, cut to the beat, slots)
+  - [x] Fresh-install test as a judge (README steps only); example inputs auto-seeded; README install check
+  - [x] `docs/SUBMIT.md` submission checklist (confirm form fields on the contest page)
   - [ ] First real GPU run of both AI workflows (by the user on build night); try Spell-Lock on real output
+  - [ ] Fill `docs/demo/slots/`, build the video, upload, submit by Oct 30 7am PT (docs/SUBMIT.md)
 - [x] Cutout text node: an `inside` image / video masked to the letters (rig alpha, per frame), an `outside` image / video everywhere else; mask from faces / faces + extrusion / silhouette + shadow; fit cover / contain / stretch; feather; optional outline stroke; optional rig shading on top
 - [ ] Nice to have, after build night — P3 (optional, separate workflow, API — never in the open-weights entry): Recraft vectorize / vector generation via ComfyUI's Recraft partner nodes
 - [x] Install ComfyUI (CPU) in the sandbox, confirm nodes load and the rig-only workflow runs headless

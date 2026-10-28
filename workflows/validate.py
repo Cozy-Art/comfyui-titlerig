@@ -15,7 +15,7 @@ import urllib.request
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 MODEL_INPUTS = ("ckpt_name", "lora_name", "unet_name", "vae_name", "clip_name", "clip_name1", "clip_name2",
-                "text_encoder", "model_name", "audio")
+                "text_encoder", "model_name", "audio", "file")
 
 
 def _spec_type(spec):

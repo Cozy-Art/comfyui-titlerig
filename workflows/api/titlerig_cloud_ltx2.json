@@ -1,0 +1,518 @@
+{
+  "30": {
+    "class_type": "ImageScaleBy",
+    "inputs": {
+      "image": [
+        "11",
+        0
+      ],
+      "upscale_method": "lanczos",
+      "scale_by": 0.5
+    },
+    "_meta": {
+      "title": "Depth guide at half res (stage 1)"
+    }
+  },
+  "31": {
+    "class_type": "ImageFromBatch",
+    "inputs": {
+      "image": [
+        "11",
+        0
+      ],
+      "batch_index": 0,
+      "length": 1
+    },
+    "_meta": {
+      "title": "First frame (bypassed)"
+    }
+  },
+  "40": {
+    "class_type": "CheckpointLoaderSimple",
+    "inputs": {
+      "ckpt_name": "ltx-2-19b-dev-fp8.safetensors"
+    }
+  },
+  "41": {
+    "class_type": "LoraLoaderModelOnly",
+    "inputs": {
+      "model": [
+        "40",
+        0
+      ],
+      "lora_name": "ltx-2-19b-ic-lora-depth-control.safetensors",
+      "strength_model": 1.0
+    },
+    "_meta": {
+      "title": "Depth Control IC-LoRA (strength 1.0)"
+    }
+  },
+  "42": {
+    "class_type": "LoraLoaderModelOnly",
+    "inputs": {
+      "model": [
+        "41",
+        0
+      ],
+      "lora_name": "ltx-2-19b-distilled-lora-384.safetensors",
+      "strength_model": 1.0
+    },
+    "_meta": {
+      "title": "Distilled LoRA (stage 2)"
+    }
+  },
+  "43": {
+    "class_type": "LTXVAudioVAELoader",
+    "inputs": {
+      "ckpt_name": "ltx-2-19b-dev-fp8.safetensors"
+    }
+  },
+  "44": {
+    "class_type": "LTXAVTextEncoderLoader",
+    "inputs": {
+      "text_encoder": "gemma_3_12B_it_fp4_mixed.safetensors",
+      "ckpt_name": "ltx-2-19b-dev-fp8.safetensors",
+      "device": "default"
+    }
+  },
+  "45": {
+    "class_type": "LatentUpscaleModelLoader",
+    "inputs": {
+      "model_name": "ltx-2-spatial-upscaler-x2-1.0.safetensors"
+    }
+  },
+  "46": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "text": "The 3D title \"TITLERIG\" holds the centre of the frame while its letters move exactly as the control video drives them, each one made of mirror-polished chrome with crisp studio reflections along each bevel. A deep cobalt studio sweep fills the space behind the title, and reflections slide across the chrome. The camera stays locked in a straight-on medium frame on the title. Hard key light from the upper left with a bright rim on every edge plays across the letters, and the letter faces stay #F4F6FB and the extrusion walls #3B4252. By the final moment the title settles crisp and fully legible.",
+      "clip": [
+        "44",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Prompt (paste prompt.txt)"
+    }
+  },
+  "47": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "text": "blurry, low quality, still frame, frames, watermark, overlay, has blurbox, has subtitles",
+      "clip": [
+        "44",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Negative (template, minus 'titles')"
+    }
+  },
+  "48": {
+    "class_type": "LTXVConditioning",
+    "inputs": {
+      "positive": [
+        "46",
+        0
+      ],
+      "negative": [
+        "47",
+        0
+      ],
+      "frame_rate": 24.0
+    }
+  },
+  "49": {
+    "class_type": "GetImageSize",
+    "inputs": {
+      "image": [
+        "30",
+        0
+      ]
+    }
+  },
+  "50": {
+    "class_type": "EmptyLTXVLatentVideo",
+    "inputs": {
+      "width": [
+        "49",
+        0
+      ],
+      "height": [
+        "49",
+        1
+      ],
+      "length": [
+        "49",
+        2
+      ],
+      "batch_size": 1
+    }
+  },
+  "51": {
+    "class_type": "LTXVImgToVideoInplace",
+    "inputs": {
+      "vae": [
+        "40",
+        2
+      ],
+      "image": [
+        "31",
+        0
+      ],
+      "latent": [
+        "50",
+        0
+      ],
+      "strength": 1.0,
+      "bypass": true
+    }
+  },
+  "52": {
+    "class_type": "LTXVAddGuide",
+    "inputs": {
+      "positive": [
+        "48",
+        0
+      ],
+      "negative": [
+        "48",
+        1
+      ],
+      "vae": [
+        "40",
+        2
+      ],
+      "latent": [
+        "51",
+        0
+      ],
+      "image": [
+        "30",
+        0
+      ],
+      "frame_idx": 0,
+      "strength": 1.0
+    },
+    "_meta": {
+      "title": "Rig depth guide"
+    }
+  },
+  "53": {
+    "class_type": "LTXVEmptyLatentAudio",
+    "inputs": {
+      "frames_number": [
+        "49",
+        2
+      ],
+      "frame_rate": 24,
+      "batch_size": 1,
+      "audio_vae": [
+        "43",
+        0
+      ]
+    }
+  },
+  "54": {
+    "class_type": "LTXVConcatAVLatent",
+    "inputs": {
+      "video_latent": [
+        "52",
+        2
+      ],
+      "audio_latent": [
+        "53",
+        0
+      ]
+    }
+  },
+  "55": {
+    "class_type": "LTXVScheduler",
+    "inputs": {
+      "steps": 20,
+      "max_shift": 2.05,
+      "base_shift": 0.95,
+      "stretch": true,
+      "terminal": 0.1,
+      "latent": [
+        "54",
+        0
+      ]
+    }
+  },
+  "56": {
+    "class_type": "RandomNoise",
+    "inputs": {
+      "noise_seed": 42
+    }
+  },
+  "57": {
+    "class_type": "CFGGuider",
+    "inputs": {
+      "model": [
+        "41",
+        0
+      ],
+      "positive": [
+        "52",
+        0
+      ],
+      "negative": [
+        "52",
+        1
+      ],
+      "cfg": 3.0
+    }
+  },
+  "58": {
+    "class_type": "KSamplerSelect",
+    "inputs": {
+      "sampler_name": "euler"
+    }
+  },
+  "59": {
+    "class_type": "SamplerCustomAdvanced",
+    "inputs": {
+      "noise": [
+        "56",
+        0
+      ],
+      "guider": [
+        "57",
+        0
+      ],
+      "sampler": [
+        "58",
+        0
+      ],
+      "sigmas": [
+        "55",
+        0
+      ],
+      "latent_image": [
+        "54",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Stage 1 (dev, half res)"
+    }
+  },
+  "60": {
+    "class_type": "LTXVSeparateAVLatent",
+    "inputs": {
+      "av_latent": [
+        "59",
+        0
+      ]
+    }
+  },
+  "61": {
+    "class_type": "LTXVCropGuides",
+    "inputs": {
+      "positive": [
+        "52",
+        0
+      ],
+      "negative": [
+        "52",
+        1
+      ],
+      "latent": [
+        "60",
+        0
+      ]
+    }
+  },
+  "62": {
+    "class_type": "LTXVLatentUpsampler",
+    "inputs": {
+      "samples": [
+        "61",
+        2
+      ],
+      "upscale_model": [
+        "45",
+        0
+      ],
+      "vae": [
+        "40",
+        2
+      ]
+    }
+  },
+  "63": {
+    "class_type": "LTXVImgToVideoInplace",
+    "inputs": {
+      "vae": [
+        "40",
+        2
+      ],
+      "image": [
+        "31",
+        0
+      ],
+      "latent": [
+        "62",
+        0
+      ],
+      "strength": 1.0,
+      "bypass": true
+    }
+  },
+  "64": {
+    "class_type": "LTXVConcatAVLatent",
+    "inputs": {
+      "video_latent": [
+        "63",
+        0
+      ],
+      "audio_latent": [
+        "60",
+        1
+      ]
+    }
+  },
+  "65": {
+    "class_type": "CFGGuider",
+    "inputs": {
+      "model": [
+        "42",
+        0
+      ],
+      "positive": [
+        "61",
+        0
+      ],
+      "negative": [
+        "61",
+        1
+      ],
+      "cfg": 1.0
+    }
+  },
+  "66": {
+    "class_type": "KSamplerSelect",
+    "inputs": {
+      "sampler_name": "gradient_estimation"
+    }
+  },
+  "67": {
+    "class_type": "ManualSigmas",
+    "inputs": {
+      "sigmas": "0.909375, 0.725, 0.421875, 0.0"
+    }
+  },
+  "68": {
+    "class_type": "RandomNoise",
+    "inputs": {
+      "noise_seed": 42
+    }
+  },
+  "69": {
+    "class_type": "SamplerCustomAdvanced",
+    "inputs": {
+      "noise": [
+        "68",
+        0
+      ],
+      "guider": [
+        "65",
+        0
+      ],
+      "sampler": [
+        "66",
+        0
+      ],
+      "sigmas": [
+        "67",
+        0
+      ],
+      "latent_image": [
+        "64",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Stage 2 (distilled, x2 upscale)"
+    }
+  },
+  "70": {
+    "class_type": "LTXVSeparateAVLatent",
+    "inputs": {
+      "av_latent": [
+        "69",
+        1
+      ]
+    }
+  },
+  "71": {
+    "class_type": "VAEDecodeTiled",
+    "inputs": {
+      "samples": [
+        "70",
+        0
+      ],
+      "vae": [
+        "40",
+        2
+      ],
+      "tile_size": 512,
+      "overlap": 64,
+      "temporal_size": 4096,
+      "temporal_overlap": 8
+    },
+    "_meta": {
+      "title": "LTX frames"
+    }
+  },
+  "10": {
+    "class_type": "LoadVideo",
+    "inputs": {
+      "file": "depth.mp4"
+    },
+    "_meta": {
+      "title": "Rig depth video (export_for_cloud.py)"
+    }
+  },
+  "11": {
+    "class_type": "GetVideoComponents",
+    "inputs": {
+      "video": [
+        "10",
+        0
+      ]
+    }
+  },
+  "83": {
+    "class_type": "CreateVideo",
+    "inputs": {
+      "images": [
+        "71",
+        0
+      ],
+      "fps": [
+        "11",
+        2
+      ],
+      "audio": [
+        "11",
+        1
+      ]
+    }
+  },
+  "84": {
+    "class_type": "SaveVideo",
+    "inputs": {
+      "video": [
+        "83",
+        0
+      ],
+      "filename_prefix": "titlerig/ltx2_cloud",
+      "format": "mp4",
+      "format.codec": "h264"
+    },
+    "_meta": {
+      "title": "LTX result + your track (Spell-Lock it at home)"
+    }
+  }
+}

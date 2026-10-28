@@ -92,9 +92,20 @@ python -m pip install -r comfyui-titlerig/requirements.txt
 
 ComfyUI Manager also installs the requirements into the right environment when you install from a git URL.
 
-Restart ComfyUI; the nodes appear under **TitleRig**, and the live preview widget loads from `web/`. The renderer is CPU-only, so the rig itself needs no GPU. It works with numpy 1.26 or 2.x. OpenCV is pinned below 4.12 so it never forces a numpy upgrade.
+Restart ComfyUI. Then:
+- The 13 nodes appear under **TitleRig**, and the live preview widget loads from `web/`.
+- The workflows appear under **Templates → Extensions → comfyui-titlerig**.
+- On first load, TitleRig copies its example beat track into `ComfyUI/input/`, so the audio template runs straight away. It never overwrites a file you already have.
+
+The renderer is CPU-only, so the rig itself needs no GPU. It works with numpy 1.26 or 2.x. OpenCV is pinned below 4.12, because 4.12 and later force numpy 2.
+
+If your environment already has `opencv-python` (non-headless) from another node pack, TitleRig works with it too, and you can leave it as it is.
+
+**Check the install:** open **Templates → comfyui-titlerig → titlerig_rig_only** and press **Run**. It needs no models and writes a still and an animation to `output/titlerig/`. The LTX-2 and FLUX templates need model files first; see [`workflows/README.md`](workflows/README.md) or [`docs/BUILD_NIGHT.md`](docs/BUILD_NIGHT.md).
 
 ## Try it without ComfyUI
+
+The MP4 and GIF demos need [ffmpeg](https://ffmpeg.org/) on your PATH (`brew install ffmpeg` on a Mac).
 
 ```bash
 pip install -r requirements.txt pytest
@@ -103,6 +114,7 @@ python examples/animate_demo.py    # effect grid → examples/out/animate_grid.g
 python examples/audio_demo.py      # audio-reactive clips (+ MP4 with sound if ffmpeg is installed)
 python examples/free_transform_demo.py  # skew / taper / corner pin sheet + sound-driven clip
 python examples/hero_clips.py      # the four demo clips + hero.gif → docs/media/
+python examples/build_demo.py --fast  # the 75 s demo video (docs/demo/SCRIPT.md)
 python -m pytest -q
 ```
 

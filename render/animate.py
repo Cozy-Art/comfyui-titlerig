@@ -263,6 +263,13 @@ def _raw_value(tr: Track, rank: int, frame: int, fps: float, pos: float | None) 
     return 1.0 - e if tr.direction == "in" else e
 
 
+def _edge_cos(deg: float) -> float:
+    """cos of a turn, kept to a sliver (never 0) so an edge-on letter still has every stroke to extrude its wall
+    from; the renderer hides the face of a letter that close to edge-on and shows only the wall."""
+    c = math.cos(math.radians(deg))
+    return math.copysign(max(abs(c), 0.04), c)
+
+
 def _apply(d: dict, effect: str, amount: float, v: float, corners=None) -> None:
     if effect in ("skew_x", "skew_y"):
         d[effect] = d.get(effect, 0.0) + amount * v
@@ -271,10 +278,12 @@ def _apply(d: dict, effect: str, amount: float, v: float, corners=None) -> None:
     elif effect == "corner_pin":
         c = np.asarray(corners if corners is not None else DEFAULT_CORNERS, np.float64).reshape(4, 2)
         d["corners"] = np.asarray(d.get("corners", np.zeros((4, 2))), np.float64) + c * amount / 100.0 * v
-    elif effect == "flip_x":
-        d["sy"] = d.get("sy", 1.0) * math.cos(math.radians(amount * v))
+    elif effect == "flip_x":  # rx / ry keep the turn itself, so the renderer can show the card's edge wall
+        d["sy"] = d.get("sy", 1.0) * _edge_cos(amount * v)
+        d["rx"] = d.get("rx", 0.0) + amount * v
     elif effect == "spin_y":
-        d["sx"] = d.get("sx", 1.0) * math.cos(math.radians(amount * v))
+        d["sx"] = d.get("sx", 1.0) * _edge_cos(amount * v)
+        d["ry"] = d.get("ry", 0.0) + amount * v
     elif effect == "roll_z":
         d["rot"] = d.get("rot", 0.0) + amount * v
     elif effect == "pop":

@@ -6,3 +6,5 @@ examples/out/
 *.webm
 .DS_Store
 !docs/media/*.mp4
+docs/demo/slots/*
+!docs/demo/slots/README.md
