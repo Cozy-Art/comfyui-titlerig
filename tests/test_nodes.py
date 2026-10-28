@@ -7,6 +7,7 @@ import sys
 import pytest
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, ROOT)
 
 
 @pytest.fixture(scope="module")
@@ -67,3 +68,16 @@ def test_render_nodes_return_tensors(pack):
     (a,) = m["TitleRigAnimate"]().build(**{**_defaults(m["TitleRigAnimate"]), "fps": 8.0, "duration": 0.25})
     o = m["TitleRigRenderAnimation"]().render(g, a, 160, 96)
     assert o[0].shape[1:] == (96, 160, 3) and o[0].shape[0] == o[5] > 1 and isinstance(o[0], torch.Tensor)
+
+
+def test_audio_react_node_drives_animate(pack):
+    pytest.importorskip("torch")
+    import numpy as np
+    from render.audio import synth_beat  # noqa: E402
+    mono, _ = synth_beat(2.0, 120, 22050)
+    m = pack.NODE_CLASS_MAPPINGS
+    kw = _defaults(m["TitleRigAudioReact"])
+    curve, prev, n, onsets = m["TitleRigAudioReact"]().analyse(audio={"waveform": mono[None, None], "sample_rate": 22050}, **kw)
+    assert n == 48 and prev.shape[0] == 1 and onsets
+    (a,) = m["TitleRigAnimate"]().build(**{**_defaults(m["TitleRigAnimate"]), "drive": curve})
+    assert a.n_frames(3) == 48 and np.allclose(a.tracks[0].drive, curve["values"])

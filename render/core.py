@@ -141,7 +141,14 @@ def _letter_layers(g: Glyphs, W: int, H: int, lay: Layout):
 
     face = np.zeros((H, W), np.float32)
     ids = np.zeros((H, W), np.int32)
-    n = len(chars)
+    centres = {}
+    for i, ch in enumerate(chars):
+        bb = font.getbbox(ch)
+        centres[i] = (ox + xs[i] + (bb[0] + bb[2]) / 2, oy + (bb[1] + bb[3]) / 2)
+    groups = {}  # rigid letter groups (Animate target "word" on a letter selection) pivot on their mean centre
+    for i, lt in g.letters.items():
+        if "group" in lt and i in centres:
+            groups.setdefault(lt["group"].get("id"), []).append(centres[i])
     for i, ch in enumerate(chars):
         if not ch.strip():
             continue
@@ -149,10 +156,11 @@ def _letter_layers(g: Glyphs, W: int, H: int, lay: Layout):
         layer = Image.new("L", (W, H), 0)
         ImageDraw.Draw(layer).text((ox + xs[i], oy), ch, font=font, fill=255)
         a = np.asarray(layer, np.float32) / 255.0
-        bb = font.getbbox(ch)
-        cx = ox + xs[i] + (bb[0] + bb[2]) / 2
-        cy = oy + (bb[1] + bb[3]) / 2
+        cx, cy = centres[i]
         M = _tf(lt, cx, cy) if lt else np.eye(3)
+        if "group" in lt:
+            gx, gy = np.mean(groups[lt["group"].get("id")], axis=0)
+            M = _tf(lt["group"], gx, gy) @ M
         if lay.bulge:
             u = (cx - ox) / max(m["width"], 1.0)
             M = _affine(0, 1.0, bulge_scale(u, lay.bulge), cx, mid_y) @ M

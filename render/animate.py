@@ -15,14 +15,25 @@ import numpy as np
 from .core import Glyphs, Look3D, Shadow, render_title
 from .geometry import Layout
 
-EFFECTS = ("flip_x", "spin_y", "roll_z", "pop", "drop", "slide", "wave")
-EASINGS = ("linear", "in_out", "out", "back", "elastic", "bounce")
+LETTER_EFFECTS = ("flip_x", "spin_y", "roll_z", "pop", "drop", "slide", "squash", "shake")
+SHADOW_EFFECTS = ("shadow_length", "shadow_angle", "shadow_opacity", "shadow_softness")
+LOOK_EFFECTS = ("extrude", "light")
+LAYOUT_EFFECTS = ("wave", "tilt_x", "tilt_y", "bend")
+EFFECTS = LETTER_EFFECTS + LAYOUT_EFFECTS + SHADOW_EFFECTS + LOOK_EFFECTS
+EASINGS = ("linear", "in", "out", "in_out", "sine", "expo", "back", "elastic", "bounce", "spring", "steps")
+RESPONSES = ("follow", "trigger")
+RETRIGGERS = ("restart", "finish", "layer")
 ORDERS = ("forward", "reverse", "center_out", "edges_in", "random")
 DIRECTIONS = ("in", "out", "loop")
 TARGETS = ("letters", "word")
-# amount at v = 1: degrees for flip/spin/roll/wave, % shrink for pop (negative grows), px for drop/slide
+# amount at v = 1: degrees for flip/spin/roll/wave/shadow_angle, % shrink for pop and % fade for
+# shadow_opacity (negative grows / darkens), px for drop/slide/shadow_length/shadow_softness
 DEFAULT_AMOUNT = {"flip_x": 90.0, "spin_y": 360.0, "roll_z": 180.0, "pop": 100.0, "drop": 420.0, "slide": 700.0,
-                  "wave": 360.0}
+                  "wave": 360.0, "shadow_length": 60.0, "shadow_angle": 45.0, "shadow_opacity": 100.0,
+                  "shadow_softness": 12.0, "squash": 35.0, "shake": 12.0, "extrude": 30.0, "light": 90.0,
+                  "tilt_x": 30.0, "tilt_y": 30.0, "bend": 50.0}
+# squash: % squash (negative = stretch tall), shake: px jitter, extrude: px depth, light: deg of key-light sweep,
+# tilt_x/tilt_y: deg, bend: % of full arc bend
 
 
 # ------------------------------------------------------------------------------------------------ easing
@@ -48,6 +59,16 @@ def ease(name: str, p: float) -> float:
         return 0.0 if p <= 0.0 else 1.0
     if name == "linear":
         return p
+    if name == "in":
+        return p ** 3
+    if name == "sine":
+        return -(math.cos(math.pi * p) - 1) / 2
+    if name == "expo":
+        return 1 - 2 ** (-10 * p)
+    if name == "spring":  # damped spring: overshoots, rings twice, settles exactly at 1
+        return 1 - math.exp(-6 * p) * math.cos(4.5 * math.pi * p) * (1 - p)
+    if name == "steps":  # stop-motion: 4 held poses
+        return math.floor(p * 4) / 4
     if name == "in_out":
         return 4 * p ** 3 if p < 0.5 else 1 - (-2 * p + 2) ** 3 / 2
     if name == "out":
@@ -77,7 +98,11 @@ class Track:
     amount: float | None = None        # None = DEFAULT_AMOUNT[effect]
     start: float = 0.0                 # s
     seed: int = 0
-    drive: np.ndarray | None = None    # optional per-frame curve (0..1); replaces time + easing when set
+    drive: np.ndarray | None = None    # per-frame curve (n,) or spectrum (bands, n), 0..1; replaces time + easing
+    letters: str = "all"               # which letters: "all", "0,2,5-7" (char indices), "word:2" (1-based words)
+    influence: float = 1.0             # dial: scales how far the track pushes (0 = off, 2 = double)
+    response: str = "follow"           # drive only: follow the curve, or "trigger": every hit replays the easing
+    retrigger: str = "restart"         # trigger: restart on every hit | finish the current one first | layer (max)
 
     def amt(self) -> float:
         return DEFAULT_AMOUNT[self.effect] if self.amount is None else self.amount
@@ -93,7 +118,7 @@ class Anim:
         ends = [0.0]
         for t in self.tracks:
             if t.drive is not None:
-                ends.append(len(t.drive) / self.fps)
+                ends.append(np.shape(t.drive)[-1] / self.fps)
             elif t.direction == "loop":
                 ends.append(t.start + t.duration + t.stagger * max(n_letters - 1, 0))
             else:
@@ -101,9 +126,37 @@ class Anim:
         return max(1, int(round(max(ends) * self.fps)))
 
 
-def letter_ranks(text: str, order: str, seed: int = 0) -> dict[int, int]:
-    """Stagger rank per visible letter index (spaces are skipped)."""
-    idx = [i for i, c in enumerate(text) if c.strip()]
+def select_letters(text: str, spec: str = "all") -> list[int]:
+    """Visible letter indices picked by spec: "all", "0,2,5-7" (character indices), "word:2" or "word:1,3"."""
+    vis = [i for i, c in enumerate(text) if c.strip()]
+    spec = (spec or "all").strip().lower()
+    if spec in ("all", "*"):
+        return vis
+    if spec.startswith("word:"):
+        words, cur, k = {}, [], 1
+        for i, c in enumerate(text + " "):
+            if c.strip():
+                cur.append(i)
+            elif cur:
+                words[k], cur, k = cur, [], k + 1
+        want = {int(w) for w in spec[5:].split(",") if w.strip()}
+        return [i for w in sorted(want) for i in words.get(w, [])]
+    picked = set()
+    for part in spec.split(","):
+        part = part.strip()
+        if not part:
+            continue
+        if "-" in part:
+            a, b = (int(x) for x in part.split("-", 1))
+            picked.update(range(min(a, b), max(a, b) + 1))
+        else:
+            picked.add(int(part))
+    return [i for i in vis if i in picked]
+
+
+def letter_ranks(text: str, order: str, seed: int = 0, select: str = "all") -> dict[int, int]:
+    """Stagger rank per selected visible letter index (spaces are skipped)."""
+    idx = select_letters(text, select)
     n = len(idx)
     if order == "forward":
         keys = list(range(n))
@@ -122,11 +175,76 @@ def letter_ranks(text: str, order: str, seed: int = 0) -> dict[int, int]:
     return {i: int(k) for i, k in zip(idx, keys)}
 
 
-def track_value(tr: Track, rank: int, frame: int, fps: float) -> float:
-    """Offset fraction v for one letter (rank) at one frame."""
+def track_value(tr: Track, rank: int, frame: int, fps: float, pos: float | None = None) -> float:
+    """Offset fraction v (times the influence dial) for one letter at one frame.
+
+    pos (0..1, left to right) picks a row of a spectrum drive; None averages the rows (word / shadow targets)."""
+    return tr.influence * _raw_value(tr, rank, frame, fps, pos)
+
+
+def hits(curve: np.ndarray, threshold: float = 0.5) -> list[tuple[int, float]]:
+    """(frame, strength) wherever the curve rises through `threshold` (its peak value within the rise)."""
+    out, f, n = [], 1, len(curve)
+    if n and curve[0] >= threshold:
+        out.append((0, float(curve[0])))
+    while f < n:
+        if curve[f] >= threshold > curve[f - 1]:
+            g = f
+            while g + 1 < n and curve[g + 1] >= curve[g]:
+                g += 1
+            out.append((f, float(curve[g])))
+        f += 1
+    return out
+
+
+def _triggered(tr: Track, d: np.ndarray, f: int, fps: float, row: int) -> float:
+    """Each hit replays the track's easing over `duration`, scaled by the hit's strength.
+
+    in: jump on the hit, ease back to rest (bounce / elastic / back / spring settle with character)
+    out: ease up to the hit's strength and hold until the next hit. loop: one full 0 -> 1 cycle per hit."""
+    key = row  # the drive never changes for a track, so its hit list is cached per spectrum row (-1 = mean)
+    cache = tr.__dict__.setdefault("_hits", {})
+    if key not in cache:
+        hs = hits(d)
+        if tr.retrigger == "finish":  # drop hits that land while the previous one is still playing
+            kept, busy_until = [], -1.0
+            for h in hs:
+                if h[0] >= busy_until:
+                    kept.append(h)
+                    busy_until = h[0] + tr.duration * fps
+            hs = kept
+        cache[key] = hs
+    live = [h for h in cache[key] if h[0] <= f]
+    if not live:
+        return 0.0
+    if tr.retrigger != "layer":
+        live = live[-1:]
+    else:  # every hit still playing contributes; the strongest wins, so motion never snaps back
+        live = [h for h in live if (f - h[0]) <= tr.duration * fps] or live[-1:]
+    best = 0.0
+    for h0, strength in live:
+        e = ease(tr.easing, (f - h0) / max(tr.duration * fps, 1e-6))
+        val = strength * (1.0 - e) if tr.direction == "in" else strength * e
+        best = val if abs(val) > abs(best) else best
+    return best
+
+
+def _raw_value(tr: Track, rank: int, frame: int, fps: float, pos: float | None) -> float:
     if tr.drive is not None:
+        d = np.asarray(tr.drive)
+        row = -1
+        if d.ndim == 2:
+            if pos is None:
+                d = d.mean(axis=0)
+            else:
+                row = int(round(min(max(pos, 0.0), 1.0) * (len(d) - 1)))
+                d = d[row]
         f = frame - int(round(tr.stagger * rank * fps))
-        return float(tr.drive[min(max(f, 0), len(tr.drive) - 1)]) if f >= 0 else 0.0
+        if f < 0:
+            return 0.0
+        if tr.response == "trigger":
+            return _triggered(tr, d, min(f, len(d) - 1), fps, row)
+        return float(d[min(f, len(d) - 1)])
     t = frame / fps - tr.start - tr.stagger * rank
     if tr.direction == "loop":
         if t < 0:
@@ -149,26 +267,93 @@ def _apply(d: dict, effect: str, amount: float, v: float) -> None:
         d["dy"] = d.get("dy", 0.0) - amount * v
     elif effect == "slide":
         d["dx"] = d.get("dx", 0.0) - amount * v
+    elif effect == "squash":  # squash & stretch, volume-preserving-ish
+        k = amount / 100.0 * v
+        d["sy"] = d.get("sy", 1.0) * max(0.05, 1.0 - k)
+        d["sx"] = d.get("sx", 1.0) * max(0.05, 1.0 + 0.6 * k)
+    elif effect == "shadow_length":
+        d.length = max(0.0, d.length + amount * v)
+        d.on = d.on or d.length > 0
+    elif effect == "shadow_angle":
+        d.angle += amount * v
+    elif effect == "shadow_opacity":
+        d.opacity = float(np.clip(d.opacity - amount / 100.0 * v, 0, 1))
+    elif effect == "shadow_softness":
+        d.softness = max(0.0, d.softness + amount * v)
+    elif effect == "extrude":
+        d.extrude = max(0, int(round(d.extrude + amount * v)))
+    elif effect == "light":
+        d.light_angle = d.light_angle + amount * v
+    elif effect == "wave":
+        d.flag_phase += amount * v
+    elif effect == "tilt_x":
+        d.tilt_x += amount * v
+    elif effect == "tilt_y":
+        d.tilt_y += amount * v
+    elif effect == "bend":
+        d.bend = float(np.clip(d.bend + amount / 100.0 * v, -1, 1))
     else:
         raise ValueError(f"unknown effect: {effect}")
 
 
-def pose(anim: Anim, g: Glyphs, lay: Layout, frame: int) -> tuple[Glyphs, Layout]:
-    """Glyphs + Layout for one frame: per-letter / word transforms layered on top of the user's own."""
+def _shake(d: dict, amount: float, v: float, seed: int, frame: int, i: int) -> None:
+    rng = np.random.default_rng((seed * 1_000_003 + frame * 7919 + i) & 0x7FFFFFFF)
+    jx, jy = rng.uniform(-1, 1, 2)
+    d["dx"] = d.get("dx", 0.0) + amount * v * jx
+    d["dy"] = d.get("dy", 0.0) + amount * v * jy
+
+
+def pose(anim: Anim, g: Glyphs, lay: Layout, frame: int, shadow: Shadow | None = None, look: Look3D | None = None):
+    """(Glyphs, Layout, Shadow, Look3D) for one frame: animated transforms on top of the user's own settings.
+
+    target "word" moves the selected letters as one rigid group (the whole word when letters="all")."""
     g = copy.deepcopy(g)
     lay = replace(lay)
+    shadow = replace(shadow or Shadow())
+    look = replace(look or Look3D())
     for tr in anim.tracks:
         amount = tr.amt()
-        if tr.effect == "wave":  # ripples the flag: animates the layout's flag phase
-            lay.flag_phase += amount * track_value(tr, 0, frame, anim.fps)
+        if tr.effect in LAYOUT_EFFECTS:  # wave ripples the flag phase; tilt / bend move the whole layout
+            if tr.effect == "bend" and lay.mode != "arc":
+                lay.mode = "arc"
+            _apply(lay, tr.effect, amount, track_value(tr, 0, frame, anim.fps))
+            continue
+        if tr.effect in SHADOW_EFFECTS:
+            _apply(shadow, tr.effect, amount, track_value(tr, 0, frame, anim.fps))
+            continue
+        if tr.effect in LOOK_EFFECTS:
+            _apply(look, tr.effect, amount, track_value(tr, 0, frame, anim.fps))
             continue
         if tr.target == "word":
-            _apply(g.word, tr.effect, amount, track_value(tr, 0, frame, anim.fps))
+            v = track_value(tr, 0, frame, anim.fps)
+            sel = select_letters(g.text, tr.letters)
+            if sel == select_letters(g.text, "all"):
+                tgt = [g.word]
+            else:  # rigid group: one transform about the group's centre, stored apart from per-letter ones
+                gid = ",".join(map(str, sel))
+                tgt = [g.letters.setdefault(i, {}).setdefault("group", {"id": gid}) for i in sel]
+            if tr.effect == "shake":
+                rng_v = {}
+                _shake(rng_v, amount, v, tr.seed, frame, -1)
+                for d in tgt:
+                    d["dx"] = d.get("dx", 0.0) + rng_v["dx"]
+                    d["dy"] = d.get("dy", 0.0) + rng_v["dy"]
+            else:
+                _apply(tgt[0], tr.effect, amount, v)
+                for d in tgt[1:]:  # group members share the first member's group transform
+                    d.update({k: val for k, val in tgt[0].items() if k != "id"})
             continue
-        for i, r in letter_ranks(g.text, tr.order, tr.seed).items():
+        ranks = letter_ranks(g.text, tr.order, tr.seed, tr.letters)
+        order = sorted(ranks)
+        for j, i in enumerate(order):
+            pos = j / max(len(order) - 1, 1)
             g.letters.setdefault(i, {})
-            _apply(g.letters[i], tr.effect, amount, track_value(tr, r, frame, anim.fps))
-    return g, lay
+            v = track_value(tr, ranks[i], frame, anim.fps, pos)
+            if tr.effect == "shake":
+                _shake(g.letters[i], amount, v, tr.seed, frame, i)
+            else:
+                _apply(g.letters[i], tr.effect, amount, v)
+    return g, lay, shadow, look
 
 
 ANIM_PASSES = ("beauty", "alpha", "depth", "edges")
@@ -182,8 +367,8 @@ def render_frames(anim: Anim, g: Glyphs, look: Look3D | None = None, shadow: Sha
     n = anim.n_frames(sum(1 for c in g.text if c.strip()))
 
     def one(f):
-        gf, lf = pose(anim, g, lay, f)
-        p = render_title(gf, look, shadow, width, height, lf, guides="all" if "guides" in passes else "none")
+        gf, lf, sf, kf = pose(anim, g, lay, f, shadow, look)
+        p = render_title(gf, kf, sf, width, height, lf, guides="all" if "guides" in passes else "none")
         return {k: p[k] for k in passes}
 
     with ThreadPoolExecutor(max_workers=max(1, workers)) as ex:

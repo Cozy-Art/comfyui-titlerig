@@ -5,7 +5,8 @@ import json
 
 import numpy as np
 
-from ..render.animate import DIRECTIONS, EASINGS, EFFECTS, ORDERS, TARGETS, Anim, Track, render_frames
+from ..render.audio import AUDIO_MODES, BANDS, audio_curve, curve_preview
+from ..render.animate import DIRECTIONS, EASINGS, EFFECTS, ORDERS, RESPONSES, RETRIGGERS, TARGETS, Anim, Track, render_frames
 from ..render import LAYOUT_MODES, SHADOW_TEXTURES, Glyphs, Layout, Look3D, Shadow, bundled_fonts, render_title
 
 CAT = "TitleRig"
@@ -177,26 +178,72 @@ class TitleRigAnimate:
             "stagger": ("FLOAT", {"default": 0.06, "min": 0, "max": 5, "step": 0.005, "tooltip": "seconds between letters"}),
             "order": (list(ORDERS), {"default": "forward"}),
             "amount": ("FLOAT", {"default": 0.0, "min": -5000, "max": 5000, "step": 1,
-                                 "tooltip": "0 = effect default. deg for flip/spin/roll/wave, % shrink for pop "
-                                            "(negative grows), px for drop/slide"}),
+                                 "tooltip": "0 = effect default. deg: flip/spin/roll/wave/shadow_angle · "
+                                            "% shrink: pop, % fade: shadow_opacity (negative grows/darkens) · "
+                                            "px: drop/slide/shake/extrude/shadow_length/shadow_softness · "
+                                            "% squash (negative stretches) · deg: light/tilt_x/tilt_y · % bend"}),
             "start": ("FLOAT", {"default": 0.0, "min": 0, "max": 600, "step": 0.01}),
             "fps": ("FLOAT", {"default": 24.0, "min": 1, "max": 120, "step": 1}),
             "hold": ("FLOAT", {"default": 0.6, "min": 0, "max": 60, "step": 0.05, "tooltip": "seconds of rest at the end"}),
             "seed": ("INT", {"default": 0, "min": 0, "max": 2 ** 31 - 1}),
+            "letters": ("STRING", {"default": "all", "tooltip": 'which letters: all · 0,2,5-7 (character indices) · '
+                                   'word:2 (1-based). With target "word" the selection moves as one rigid group'}),
+            "influence": ("FLOAT", {"default": 1.0, "min": 0, "max": 4, "step": 0.01,
+                                    "tooltip": "dial: how hard this track (or the sound driving it) pushes"}),
+            "response": (list(RESPONSES), {"default": "follow", "tooltip": "with a drive curve: follow it, or "
+                         "trigger = every hit replays the easing over duration (bounce / elastic / spring on each beat)"}),
+            "retrigger": (list(RETRIGGERS), {"default": "restart", "tooltip": "trigger: a new hit restarts the easing, "
+                          "waits for the current one to finish (keeps bounces tidy on busy music), or layers (max)"}),
         }, "optional": {
             "anim": ("TITLERIG_ANIM", {"tooltip": "chain: tracks from an earlier Animate node"}),
             "drive": ("TITLERIG_CURVE", {"tooltip": "per-frame 0..1 curve (e.g. TitleRig Audio React) replaces time + easing"}),
         }}
 
     def build(self, effect, target, direction, easing, duration, stagger, order, amount, start, fps, hold, seed,
-              anim=None, drive=None):
+              letters="all", influence=1.0, response="follow", retrigger="restart", anim=None, drive=None):
         tr = Track(effect=effect, target=target, direction=direction, easing=easing, duration=duration,
                    stagger=stagger, order=order, amount=amount or None, start=start, seed=seed,
+                   letters=letters, influence=influence, response=response, retrigger=retrigger,
                    drive=None if drive is None else drive["values"])
         if drive is not None:
             fps = drive["fps"]
         tracks = list(anim.tracks) if anim is not None else []
         return (Anim(tracks + [tr], fps=fps, hold=hold),)
+
+
+class TitleRigAudioReact:
+    """AUDIO -> per-frame 0..1 drive curve (beats and/or loudness) for TitleRig Animate's `drive` input."""
+    CATEGORY = CAT
+    RETURN_TYPES = ("TITLERIG_CURVE", "IMAGE", "INT", "STRING")
+    RETURN_NAMES = ("curve", "preview", "frame_count", "onsets")
+    FUNCTION = "analyse"
+
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {"required": {
+            "audio": ("AUDIO",),
+            "fps": ("FLOAT", {"default": 24.0, "min": 1, "max": 120, "step": 1}),
+            "band": (list(BANDS), {"default": "bass"}),
+            "mode": (list(AUDIO_MODES), {"default": "beats"}),
+            "sensitivity": ("FLOAT", {"default": 0.5, "min": 0, "max": 1, "step": 0.01, "tooltip": "higher catches quieter hits"}),
+            "attack": ("FLOAT", {"default": 0.0, "min": 0, "max": 5, "step": 0.01, "tooltip": "seconds to rise"}),
+            "release": ("FLOAT", {"default": 0.25, "min": 0, "max": 5, "step": 0.01, "tooltip": "seconds to fall"}),
+            "start": ("FLOAT", {"default": 0.0, "min": 0, "max": 36000, "step": 0.01}),
+            "max_seconds": ("FLOAT", {"default": 0.0, "min": 0, "max": 36000, "step": 0.1, "tooltip": "0 = to the end"}),
+        }, "optional": {
+            "spectrum_bands": ("INT", {"default": 12, "min": 2, "max": 64,
+                                       "tooltip": "spectrum mode: bands spread across the letters, lows on the left"}),
+        }}
+
+    def analyse(self, audio, fps, band, mode, sensitivity, attack, release, start, max_seconds, spectrum_bands=12):
+        wf = audio["waveform"]
+        wf = wf.detach().cpu().numpy() if hasattr(wf, "detach") else np.asarray(wf)
+        c = audio_curve(wf, int(audio["sample_rate"]), fps, band, mode, sensitivity, attack, release, start, max_seconds,
+                        bands=spectrum_bands)
+        import torch
+
+        prev = torch.from_numpy(curve_preview(c)).unsqueeze(0)
+        return (c, prev, len(c["values"]), ", ".join(f"{t:.3f}" for t in c["onsets"]))
 
 
 class TitleRigRenderAnimation:
@@ -236,6 +283,7 @@ NODE_CLASS_MAPPINGS = {
     "TitleRigRender": TitleRigRender,
     "TitleRigAnimate": TitleRigAnimate,
     "TitleRigRenderAnimation": TitleRigRenderAnimation,
+    "TitleRigAudioReact": TitleRigAudioReact,
 }
 NODE_DISPLAY_NAME_MAPPINGS = {
     "TitleRigText": "TitleRig Text",
@@ -245,4 +293,5 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "TitleRigRender": "TitleRig Render",
     "TitleRigAnimate": "TitleRig Animate",
     "TitleRigRenderAnimation": "TitleRig Render Animation",
+    "TitleRigAudioReact": "TitleRig Audio React",
 }
