@@ -60,12 +60,38 @@ AUDIO in (numpy only, no extra deps) → onsets by band spectral flux + peak-rel
 
 ## Install
 
+Install the requirements into **ComfyUI's own Python**, not your system Python. A bare `pip` usually points at the system Python. Installing there leaves ComfyUI without the packages and can break other tools on your machine.
+
+**ComfyUI Desktop** (macOS / Windows; the base folder is usually `~/Documents/ComfyUI`):
+
+```bash
+cd ~/Documents/ComfyUI/custom_nodes
+git clone https://github.com/Cozy-Art/comfyui-titlerig
+cd ..
+.venv/bin/python -m pip install -r custom_nodes/comfyui-titlerig/requirements.txt
+```
+
+On Windows the last line is `.venv\Scripts\python -m pip install -r custom_nodes\comfyui-titlerig\requirements.txt`.
+
+**Windows portable:**
+
+```bash
+cd ComfyUI_windows_portable
+git clone https://github.com/Cozy-Art/comfyui-titlerig ComfyUI/custom_nodes/comfyui-titlerig
+python_embeded\python.exe -m pip install -r ComfyUI/custom_nodes/comfyui-titlerig/requirements.txt
+```
+
+**Manual install** (a git clone of ComfyUI): activate the venv or conda env you start ComfyUI with, then:
+
 ```bash
 cd ComfyUI/custom_nodes
 git clone https://github.com/Cozy-Art/comfyui-titlerig
-pip install -r comfyui-titlerig/requirements.txt
+python -m pip install -r comfyui-titlerig/requirements.txt
 ```
-Restart ComfyUI; the nodes appear under **TitleRig**, and the live preview widget loads from `web/`. The renderer is CPU-only — no GPU needed for the rig itself.
+
+ComfyUI Manager also installs the requirements into the right environment when you install from a git URL.
+
+Restart ComfyUI; the nodes appear under **TitleRig**, and the live preview widget loads from `web/`. The renderer is CPU-only, so the rig itself needs no GPU. It works with numpy 1.26 or 2.x. OpenCV is pinned below 4.12 so it never forces a numpy upgrade.
 
 ## Try it without ComfyUI
 
