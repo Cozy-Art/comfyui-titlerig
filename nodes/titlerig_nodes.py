@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import json
 
-from ..render import SHADOW_TEXTURES, Glyphs, Look3D, Shadow, bundled_fonts, render_title
+from ..render import LAYOUT_MODES, SHADOW_TEXTURES, Glyphs, Layout, Look3D, Shadow, bundled_fonts, render_title
 
 CAT = "TitleRig"
 
@@ -92,6 +92,41 @@ class TitleRigShadow:
                        texture=texture, texture_scale=texture_scale, texture_angle=texture_angle, opacity=opacity),)
 
 
+class TitleRigLayout:
+    CATEGORY = CAT
+    RETURN_TYPES = ("TITLERIG_LAYOUT",)
+    RETURN_NAMES = ("layout",)
+    FUNCTION = "build"
+
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {"required": {
+            "mode": (list(LAYOUT_MODES), {"default": "flat"}),
+            "bend": ("FLOAT", {"default": 0.4, "min": -1, "max": 1, "step": 0.01, "tooltip": "arc: + rainbow, - smile"}),
+            "align": ("FLOAT", {"default": 0.5, "min": 0, "max": 1, "step": 0.01, "tooltip": "arc: text centre along the curve"}),
+            "bulge": ("FLOAT", {"default": 0.0, "min": -1, "max": 1, "step": 0.01, "tooltip": "+ swell the middle, - pinch"}),
+            "tilt_x": ("FLOAT", {"default": 0.0, "min": -80, "max": 80, "step": 0.5, "tooltip": "+ leans the top away"}),
+            "tilt_y": ("FLOAT", {"default": 0.0, "min": -80, "max": 80, "step": 0.5, "tooltip": "+ swings the right side away"}),
+            "fov": ("FLOAT", {"default": 50.0, "min": 5, "max": 150, "step": 1}),
+            "vanish": ("BOOLEAN", {"default": False, "tooltip": "extrusion converges on the vanishing point"}),
+            "vp_x": ("FLOAT", {"default": 0.5, "min": -2, "max": 3, "step": 0.01}),
+            "vp_y": ("FLOAT", {"default": 1.4, "min": -2, "max": 3, "step": 0.01}),
+            "flag_amp": ("FLOAT", {"default": 0.0, "min": 0, "max": 200, "step": 0.5}),
+            "flag_wavelength": ("FLOAT", {"default": 420.0, "min": 20, "max": 4000, "step": 1}),
+            "flag_phase": ("FLOAT", {"default": 0.0, "min": -3600, "max": 3600, "step": 1}),
+            "flag_shade": ("FLOAT", {"default": 0.5, "min": 0, "max": 1, "step": 0.05}),
+        }, "optional": {
+            "curve_json": ("STRING", {"default": "", "tooltip": "arc: custom cubic bezier [[x,y]x4] in 0..1 canvas coords"}),
+        }}
+
+    def build(self, mode, bend, align, bulge, tilt_x, tilt_y, fov, vanish, vp_x, vp_y,
+              flag_amp, flag_wavelength, flag_phase, flag_shade, curve_json=""):
+        curve = tuple(map(tuple, json.loads(curve_json))) if curve_json.strip() else None
+        return (Layout(mode=mode, bend=bend, curve=curve, align=align, bulge=bulge, tilt_x=tilt_x, tilt_y=tilt_y,
+                       fov=fov, vanish=vanish, vp_x=vp_x, vp_y=vp_y, flag_amp=flag_amp,
+                       flag_wavelength=flag_wavelength, flag_phase=flag_phase, flag_shade=flag_shade),)
+
+
 class TitleRigRender:
     CATEGORY = CAT
     RETURN_TYPES = ("IMAGE", "MASK", "IMAGE", "IMAGE", "IMAGE", "MASK", "MASK", "MASK", "MASK", "IMAGE", "IMAGE")
@@ -108,10 +143,11 @@ class TitleRigRender:
         }, "optional": {
             "look": ("TITLERIG_LOOK",),
             "shadow": ("TITLERIG_SHADOW",),
+            "layout": ("TITLERIG_LAYOUT",),
         }}
 
-    def render(self, glyphs, width, height, look=None, shadow=None):
-        p = render_title(glyphs, look, shadow, width, height)
+    def render(self, glyphs, width, height, look=None, shadow=None, layout=None):
+        p = render_title(glyphs, look, shadow, width, height, layout)
         b = p["beauty"]
         return (_t(b[..., :3]), _t(p["alpha"], True), _t(p["depth"]), _t(p["edges"]), _t(p["normals"]),
                 _t(p["face"], True), _t(p["sides"], True), _t(p["highlight"], True), _t(p["shadow"], True),
@@ -122,11 +158,13 @@ NODE_CLASS_MAPPINGS = {
     "TitleRigText": TitleRigText,
     "TitleRigLook3D": TitleRigLook3D,
     "TitleRigShadow": TitleRigShadow,
+    "TitleRigLayout": TitleRigLayout,
     "TitleRigRender": TitleRigRender,
 }
 NODE_DISPLAY_NAME_MAPPINGS = {
     "TitleRigText": "TitleRig Text",
     "TitleRigLook3D": "TitleRig Look 3D",
     "TitleRigShadow": "TitleRig Shadow",
+    "TitleRigLayout": "TitleRig Layout",
     "TitleRigRender": "TitleRig Render",
 }

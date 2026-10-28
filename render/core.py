@@ -17,6 +17,9 @@ import numpy as np
 from PIL import Image, ImageDraw, ImageFont
 from scipy import ndimage
 
+from .geometry import (ArcPath, Layout, bend_curve, bulge_scale, flag_maps, flag_shading,
+                       tilt_homography)
+
 FONT_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "fonts")
 SHADOW_TEXTURES = ("solid", "halftone", "stripes", "checker", "noise", "pixel", "gradient")
 
@@ -49,7 +52,8 @@ class Glyphs:
     size: int = 220
     tracking: float = 0.0                                   # px added between every pair
     kerning: dict[int, float] = field(default_factory=dict)  # pair index i -> px between letter i and i+1
-    letters: dict[int, dict] = field(default_factory=dict)   # i -> {scale, rot, dx, dy, space_l, space_r}
+    letters: dict[int, dict] = field(default_factory=dict)   # i -> {scale, sx, sy, rot, dx, dy, space_l, space_r}
+    word: dict = field(default_factory=dict)                 # whole-word {scale, sx, sy, rot, dx, dy} about the centre
 
 
 @dataclass
@@ -101,13 +105,42 @@ def layout(g: Glyphs):
     return font, chars, xs, metrics
 
 
-def _letter_layers(g: Glyphs, W: int, H: int):
+def _affine(rot=0.0, sx=1.0, sy=1.0, cx=0.0, cy=0.0, dx=0.0, dy=0.0) -> np.ndarray:
+    """3x3: scale (sx, sy) then rotate `rot` degrees clockwise about (cx, cy), then translate."""
+    r = math.radians(rot)
+    c, s = math.cos(r), math.sin(r)
+    A = np.array([[c * sx, -s * sy, 0], [s * sx, c * sy, 0], [0, 0, 1]], np.float64)
+    T = np.array([[1, 0, cx + dx], [0, 1, cy + dy], [0, 0, 1]], np.float64)
+    Ti = np.array([[1, 0, -cx], [0, 1, -cy], [0, 0, 1]], np.float64)
+    return T @ A @ Ti
+
+
+def _tf(d: dict, cx: float, cy: float) -> np.ndarray:
+    s = d.get("scale", 1.0)
+    return _affine(d.get("rot", 0.0), s * d.get("sx", 1.0), s * d.get("sy", 1.0), cx, cy, d.get("dx", 0.0), d.get("dy", 0.0))
+
+
+def _letter_layers(g: Glyphs, W: int, H: int, lay: Layout):
     font, chars, xs, m = layout(g)
     total_h = m["ascent"] + m["descent"]
     ox = (W - m["width"]) / 2.0
     oy = (H - total_h) / 2.0
+    baseline = oy + m["ascent"]
+    cap_h = m["ascent"] - m["cap_top"]
+    mid_y = baseline - cap_h / 2  # optical centre of the caps: bulge / word transforms pivot here
+
+    path = None
+    if lay.mode == "arc":
+        if lay.curve is not None:
+            path = ArcPath(np.asarray(lay.curve, np.float64) * np.array([W, H]))
+        else:
+            path = ArcPath(bend_curve(lay.bend, max(m["width"], 1.0), W / 2, mid_y))
+    s_centre = (lay.align * path.length) if path is not None else 0.0
+    word_M = _tf(g.word, W / 2, mid_y) if g.word else np.eye(3)
+
     face = np.zeros((H, W), np.float32)
     ids = np.zeros((H, W), np.int32)
+    n = len(chars)
     for i, ch in enumerate(chars):
         if not ch.strip():
             continue
@@ -115,19 +148,23 @@ def _letter_layers(g: Glyphs, W: int, H: int):
         layer = Image.new("L", (W, H), 0)
         ImageDraw.Draw(layer).text((ox + xs[i], oy), ch, font=font, fill=255)
         a = np.asarray(layer, np.float32) / 255.0
-        s, rot = lt.get("scale", 1.0), lt.get("rot", 0.0)
-        if s != 1.0 or rot or lt.get("dx") or lt.get("dy"):
-            bb = font.getbbox(ch)
-            cx = ox + xs[i] + (bb[0] + bb[2]) / 2
-            cy = oy + (bb[1] + bb[3]) / 2
-            M = cv2.getRotationMatrix2D((cx, cy), -rot, s)
-            M[0, 2] += lt.get("dx", 0.0)
-            M[1, 2] += lt.get("dy", 0.0)
-            a = cv2.warpAffine(a, M, (W, H), flags=cv2.INTER_LINEAR)
+        bb = font.getbbox(ch)
+        cx = ox + xs[i] + (bb[0] + bb[2]) / 2
+        cy = oy + (bb[1] + bb[3]) / 2
+        M = _tf(lt, cx, cy) if lt else np.eye(3)
+        if lay.bulge:
+            u = (cx - ox) / max(m["width"], 1.0)
+            M = _affine(0, 1.0, bulge_scale(u, lay.bulge), cx, mid_y) @ M
+        if path is not None:
+            pt, ang = path.at(s_centre + (cx - (ox + m["width"] / 2)))
+            M = _affine(math.degrees(ang), 1, 1, cx, mid_y, pt[0] - cx, pt[1] - mid_y) @ M
+        M = word_M @ M
+        if not np.allclose(M, np.eye(3)):
+            a = cv2.warpAffine(a, M[:2].astype(np.float32), (W, H), flags=cv2.INTER_LINEAR)
         ids[a > 0.5] = i + 1
         face = np.maximum(face, a)
-    baseline = oy + m["ascent"]
-    return face, ids, m, ox, baseline, chars
+    geo = {"ox": ox, "baseline": baseline, "mid_y": mid_y, "path": path, "s_centre": s_centre, "word_M": word_M}
+    return face, ids, m, geo, chars
 
 
 def _bevel_height(face: np.ndarray, bevel: float, profile: str) -> np.ndarray:
@@ -177,20 +214,35 @@ def _texture(kind: str, H: int, W: int, scale: float, angle: float, intensity: n
 
 
 def render_title(g: Glyphs, look: Look3D | None = None, shadow: Shadow | None = None,
-                 width: int = 1280, height: int = 720) -> dict[str, np.ndarray]:
+                 width: int = 1280, height: int = 720, lay: Layout | None = None) -> dict[str, np.ndarray]:
     look = look or Look3D()
     shadow = shadow or Shadow()
+    lay = lay or Layout()
     W, H = width, height
-    face, ids, m, ox, baseline, chars = _letter_layers(g, W, H)
+    face, ids, m, geo, chars = _letter_layers(g, W, H, lay)
+    if lay.flag_amp:
+        mx, my = flag_maps(W, H, lay)
+        face = cv2.remap(face, mx, my, cv2.INTER_LINEAR, borderValue=0)
+        ids = cv2.remap(ids.astype(np.float32), mx, my, cv2.INTER_NEAREST, borderValue=0).astype(np.int32)
     fm = (face > 0.5).astype(np.float32)
 
-    # extrusion: stack offset copies receding along extrude_angle
+    # extrusion: stack copies receding along extrude_angle, or converging on a vanishing point
     ea = math.radians(look.extrude_angle)
     dx, dy = math.cos(ea), math.sin(ea)
     sides = np.zeros_like(face)
     side_depth = np.zeros_like(face)
-    for k in range(look.extrude, 0, -1):
-        M = np.float32([[1, 0, dx * k], [0, 1, dy * k]])
+    vp = np.array([lay.vp_x * W, lay.vp_y * H])
+    if lay.vanish:
+        yy, xx = np.nonzero(fm)
+        centroid = np.array([xx.mean(), yy.mean()]) if len(xx) else np.array([W / 2, H / 2])
+        dist = max(float(np.linalg.norm(vp - centroid)), 1.0)
+    steps = [k / 2 for k in range(2 * look.extrude, 0, -1)] if lay.vanish else range(look.extrude, 0, -1)
+    for k in steps:
+        if lay.vanish:  # shrink toward the VP so the centroid travels k px
+            s = max(0.0, 1 - k / dist)
+            M = np.float32([[s, 0, (1 - s) * vp[0]], [0, s, (1 - s) * vp[1]]])
+        else:
+            M = np.float32([[1, 0, dx * k], [0, 1, dy * k]])
         sh = cv2.warpAffine(fm, M, (W, H), flags=cv2.INTER_NEAREST)
         newpix = (sh > 0) & (sides == 0)
         sides[newpix] = 1
@@ -220,6 +272,10 @@ def render_title(g: Glyphs, look: Look3D | None = None, shadow: Shadow | None = 
 
     sc = _rgb(look.side)
     side_rgb = sc[None, None] * (0.55 + 0.45 * side_depth[..., None])
+    if lay.flag_amp and lay.flag_shade:
+        shade = flag_shading(W, lay)[None, :, None]
+        face_rgb = np.clip(face_rgb * shade, 0, 1)
+        side_rgb = np.clip(side_rgb * shade, 0, 1)
 
     # shadow: silhouette pushed along shadow angle, textured, kept behind the letters
     shadow_mask = np.zeros_like(face)
@@ -254,9 +310,11 @@ def render_title(g: Glyphs, look: Look3D | None = None, shadow: Shadow | None = 
     palette[0] = 0
     letter_ids = palette[ids]
 
-    guides = draw_guides(W, H, ox, baseline, m)
+    guides = draw_guides(W, H, geo["ox"], geo["baseline"], m, path=geo["path"], s_centre=geo["s_centre"], mid_y=geo["mid_y"])
+    if lay.flag_amp:
+        guides = cv2.remap(guides, mx, my, cv2.INTER_LINEAR, borderValue=0)
 
-    return {
+    out = {
         "beauty": beauty,
         "alpha": silhouette.astype(np.float32),
         "depth": np.repeat(depth[..., None], 3, 2).astype(np.float32),
@@ -269,10 +327,38 @@ def render_title(g: Glyphs, look: Look3D | None = None, shadow: Shadow | None = 
         "letter_ids": letter_ids,
         "guides": guides,
     }
+    if lay.tilt_x or lay.tilt_y:
+        Hm = tilt_homography(W, H, lay.tilt_x, lay.tilt_y, lay.fov)
+        for k, a in out.items():
+            interp = cv2.INTER_NEAREST if k in ("face", "sides", "alpha", "letter_ids") else cv2.INTER_LINEAR
+            out[k] = cv2.warpPerspective(a, Hm, (W, H), flags=interp, borderValue=0).astype(np.float32)
+    return out
 
 
-def draw_guides(W: int, H: int, ox: float, baseline: float, m: dict, color=(0.56, 0.57, 1.0)) -> np.ndarray:
-    """Dashed type guides (RGBA): ascender, cap line, x-height, baseline (solid-ish), descender."""
+def _dashed(d: ImageDraw.ImageDraw, pts: np.ndarray, dash: float, gap: float, fill, width=2):
+    """Dashed polyline: walk the points, toggling pen every dash/gap px of arc length."""
+    on, left = True, dash
+    for p, q in zip(pts[:-1], pts[1:]):
+        seg = q - p
+        L = float(np.hypot(*seg))
+        pos = 0.0
+        while L - pos > 1e-6:
+            step = min(left, L - pos)
+            a, b = p + seg * (pos / L), p + seg * ((pos + step) / L)
+            if on:
+                d.line([tuple(a), tuple(b)], fill=fill, width=width)
+            pos += step
+            left -= step
+            if left <= 1e-6:
+                on = not on
+                left = dash if on else gap
+
+
+def draw_guides(W: int, H: int, ox: float, baseline: float, m: dict, color=(0.56, 0.57, 1.0),
+                path: ArcPath | None = None, s_centre: float = 0.0, mid_y: float = 0.0) -> np.ndarray:
+    """Dashed type guides (RGBA): ascender, cap line, x-height, baseline (long dashes), descender.
+
+    With an arc path the guides follow the curve, offset along its normal."""
     img = Image.new("RGBA", (W, H), (0, 0, 0, 0))
     d = ImageDraw.Draw(img)
     top = baseline - m["ascent"]
@@ -287,7 +373,13 @@ def draw_guides(W: int, H: int, ox: float, baseline: float, m: dict, color=(0.56
     x0, x1 = max(0, int(ox - 40)), min(W, int(ox + m["width"] + 40))
     for name, y in lines.items():
         dash = 14 if name != "baseline" else 40
-        for x in range(x0, x1, dash + 8):
-            d.line([(x, y), (min(x + dash, x1), y)], fill=c + (230 if name == "baseline" else 150,), width=2)
+        fill = c + (230 if name == "baseline" else 150,)
+        if path is not None:
+            half = m["width"] / 2 + 40
+            pts = path.polyline(mid_y - y, s_centre - half, s_centre + half, 240)
+            _dashed(d, pts, dash, 8, fill)
+            d.text((pts[-1][0] + 6, pts[-1][1] - 8), name, fill=c + (200,))
+            continue
+        _dashed(d, np.array([[x0, y], [x1, y]], np.float64), dash, 8, fill)
         d.text((x1 + 6, y - 8), name, fill=c + (200,))
     return np.asarray(img, np.float32) / 255.0
