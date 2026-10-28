@@ -1,0 +1,314 @@
+{
+  "1": {
+    "class_type": "TitleRigText",
+    "inputs": {
+      "text": "TITLERIG",
+      "font": "Anton-Regular",
+      "size": 200,
+      "tracking": 4.0,
+      "kerning_json": "{}",
+      "letters_json": "{}"
+    }
+  },
+  "4": {
+    "class_type": "TitleRigLayout",
+    "inputs": {
+      "mode": "arc",
+      "bend": 0.15,
+      "align": 0.5,
+      "bulge": 0.0,
+      "tilt_x": 0.0,
+      "tilt_y": 0.0,
+      "fov": 50.0,
+      "vanish": false,
+      "vp_x": 0.5,
+      "vp_y": 1.4,
+      "flag_amp": 0.0,
+      "flag_wavelength": 420.0,
+      "flag_phase": 0.0,
+      "flag_shade": 0.5,
+      "curve_json": ""
+    }
+  },
+  "5": {
+    "class_type": "TitleRigStylePreset",
+    "inputs": {
+      "preset": "Chrome Slam",
+      "target": "flux1_depth",
+      "colour_words": "",
+      "text": "TITLE",
+      "format": "prose",
+      "audio": "own_track",
+      "glyphs": [
+        "1",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Style Preset (Chrome Slam)"
+    }
+  },
+  "6": {
+    "class_type": "TitleRigRender",
+    "inputs": {
+      "glyphs": [
+        "1",
+        0
+      ],
+      "width": 1344,
+      "height": 768,
+      "look": [
+        "5",
+        2
+      ],
+      "shadow": [
+        "5",
+        3
+      ],
+      "layout": [
+        "4",
+        0
+      ],
+      "guide_lines": "none"
+    },
+    "_meta": {
+      "title": "Rig: depth + alpha"
+    }
+  },
+  "10": {
+    "class_type": "UNETLoader",
+    "inputs": {
+      "unet_name": "flux1-dev-fp8.safetensors",
+      "weight_dtype": "default"
+    }
+  },
+  "11": {
+    "class_type": "LoraLoaderModelOnly",
+    "inputs": {
+      "model": [
+        "10",
+        0
+      ],
+      "lora_name": "flux1-depth-dev-lora.safetensors",
+      "strength_model": 1.0
+    },
+    "_meta": {
+      "title": "FLUX.1 Depth [dev] LoRA"
+    }
+  },
+  "12": {
+    "class_type": "DualCLIPLoader",
+    "inputs": {
+      "clip_name1": "clip_l.safetensors",
+      "clip_name2": "t5xxl_fp16.safetensors",
+      "type": "flux",
+      "device": "default"
+    }
+  },
+  "13": {
+    "class_type": "VAELoader",
+    "inputs": {
+      "vae_name": "ae.safetensors"
+    }
+  },
+  "14": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "text": [
+        "5",
+        0
+      ],
+      "clip": [
+        "12",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Prompt (from Style Preset)"
+    }
+  },
+  "15": {
+    "class_type": "FluxGuidance",
+    "inputs": {
+      "conditioning": [
+        "14",
+        0
+      ],
+      "guidance": 10.0
+    }
+  },
+  "16": {
+    "class_type": "ConditioningZeroOut",
+    "inputs": {
+      "conditioning": [
+        "14",
+        0
+      ]
+    }
+  },
+  "17": {
+    "class_type": "InstructPixToPixConditioning",
+    "inputs": {
+      "positive": [
+        "15",
+        0
+      ],
+      "negative": [
+        "16",
+        0
+      ],
+      "vae": [
+        "13",
+        0
+      ],
+      "pixels": [
+        "6",
+        2
+      ]
+    },
+    "_meta": {
+      "title": "Depth conditioning (rig depth)"
+    }
+  },
+  "18": {
+    "class_type": "KSampler",
+    "inputs": {
+      "model": [
+        "11",
+        0
+      ],
+      "seed": 42,
+      "steps": 20,
+      "cfg": 1.0,
+      "sampler_name": "euler",
+      "scheduler": "normal",
+      "positive": [
+        "17",
+        0
+      ],
+      "negative": [
+        "17",
+        1
+      ],
+      "latent_image": [
+        "17",
+        2
+      ],
+      "denoise": 1.0
+    }
+  },
+  "19": {
+    "class_type": "VAEDecode",
+    "inputs": {
+      "samples": [
+        "18",
+        0
+      ],
+      "vae": [
+        "13",
+        0
+      ]
+    }
+  },
+  "90": {
+    "class_type": "TitleRigSpellLock",
+    "inputs": {
+      "images": [
+        "19",
+        0
+      ],
+      "alpha": [
+        "6",
+        1
+      ],
+      "strength": 1.0,
+      "tolerance": 2,
+      "ring": 24,
+      "edges": [
+        "6",
+        3
+      ],
+      "shadow": [
+        "6",
+        8
+      ]
+    }
+  },
+  "91": {
+    "class_type": "InvertMask",
+    "inputs": {
+      "mask": [
+        "6",
+        1
+      ]
+    }
+  },
+  "92": {
+    "class_type": "JoinImageWithAlpha",
+    "inputs": {
+      "image": [
+        "90",
+        0
+      ],
+      "alpha": [
+        "91",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Title cut-out (alpha)"
+    }
+  },
+  "93": {
+    "class_type": "SaveImage",
+    "inputs": {
+      "images": [
+        "19",
+        0
+      ],
+      "filename_prefix": "titlerig/flux1_depth_raw"
+    },
+    "_meta": {
+      "title": "AI raw"
+    }
+  },
+  "94": {
+    "class_type": "SaveImage",
+    "inputs": {
+      "images": [
+        "90",
+        0
+      ],
+      "filename_prefix": "titlerig/flux1_depth_spell_locked"
+    },
+    "_meta": {
+      "title": "Spell-Locked"
+    }
+  },
+  "95": {
+    "class_type": "SaveImage",
+    "inputs": {
+      "images": [
+        "92",
+        0
+      ],
+      "filename_prefix": "titlerig/flux1_depth_cutout"
+    },
+    "_meta": {
+      "title": "Transparent PNG"
+    }
+  },
+  "96": {
+    "class_type": "SaveImage",
+    "inputs": {
+      "images": [
+        "6",
+        2
+      ],
+      "filename_prefix": "titlerig/flux1_depth_control_depth"
+    },
+    "_meta": {
+      "title": "Control: rig depth"
+    }
+  }
+}

@@ -16,7 +16,7 @@ from dataclasses import dataclass, field
 
 from .core import Look3D, Shadow
 
-TARGETS = ("flux2_dev", "flux3", "ltx23_video")
+TARGETS = ("flux2_dev", "flux1_depth", "flux3", "ltx23_video", "recraft_v4_vector")
 FORMATS = ("prose", "json")
 AUDIO_MODES = ("own_track", "generate")
 LTX_LOCAL_NEGATIVE = "pc game, console game, video game, cartoon, childish, ugly"  # shipped default (skill)
@@ -281,6 +281,25 @@ def build_prompt(preset: str, text: str, colour_words: str = "", target: str = "
     p = PRESETS[preset]
     colours = colour_words.strip() or p.palette_words
     quoted = text.replace("'", "\u2019").replace('"', "\u201d")
+    if target == "recraft_v4_vector":  # docs/MODEL-SKILLS.md template (Recraft V4 rules: geometry, no negative)
+        look = Look3D(**p.look)
+        cols = [look.face.upper(), (look.side if look.extrude > 0 else look.face2 or look.side).upper(),
+                p.backdrop.upper()]
+        ext = "three-quarter extrusion" if look.extrude > 0 else "flat letter faces"
+        pos = (f'Flat vector title lockup of the word "{quoted}" in bold block letters. Keep the letterforms, spacing '
+               f"and {ext} from the source image. Strict three-colour system: {cols[0]}, {cols[1]} and {cols[2]} on "
+               f"a transparent ground. Uniform edge geometry, crisp corners"
+               + (", the extrusion built from flat stepped facets" if look.extrude > 0 else "")
+               + ". Remains legible at 48 pixels wide. The title is the only text.")
+        return pos, ""
+    if target == "flux1_depth":  # FLUX.1 Depth [dev]: the rig depth map IS the conditioning, no reference image
+        deep, kind = _depth(p)
+        parts = [f"{p.lead} {kind} reading '{quoted}', centred, with {p.detail}.",
+                 f"{_colours(p, colour_words)}: {p.background}."]
+        if p.camera:
+            parts.append(f"{p.camera}.")
+        parts.append(f"{p.lighting.capitalize()}.")
+        return " ".join(parts), ""
     if target == "flux2_dev":
         if fmt == "json":
             return json.dumps(flux2_structured(p, quoted, colour_words), ensure_ascii=False), ""

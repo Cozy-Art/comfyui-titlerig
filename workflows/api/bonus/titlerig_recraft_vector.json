@@ -1,0 +1,204 @@
+{
+  "1": {
+    "class_type": "TitleRigText",
+    "inputs": {
+      "text": "TITLERIG",
+      "font": "Anton-Regular",
+      "size": 200,
+      "tracking": 4.0,
+      "kerning_json": "{}",
+      "letters_json": "{}"
+    }
+  },
+  "4": {
+    "class_type": "TitleRigLayout",
+    "inputs": {
+      "mode": "arc",
+      "bend": 0.15,
+      "align": 0.5,
+      "bulge": 0.0,
+      "tilt_x": 0.0,
+      "tilt_y": 0.0,
+      "fov": 50.0,
+      "vanish": false,
+      "vp_x": 0.5,
+      "vp_y": 1.4,
+      "flag_amp": 0.0,
+      "flag_wavelength": 420.0,
+      "flag_phase": 0.0,
+      "flag_shade": 0.5,
+      "curve_json": ""
+    }
+  },
+  "5": {
+    "class_type": "TitleRigStylePreset",
+    "inputs": {
+      "preset": "Ben-Day Pop",
+      "target": "recraft_v4_vector",
+      "colour_words": "",
+      "text": "TITLE",
+      "format": "prose",
+      "audio": "own_track",
+      "glyphs": [
+        "1",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Style Preset (Ben-Day Pop)"
+    }
+  },
+  "6": {
+    "class_type": "TitleRigRender",
+    "inputs": {
+      "glyphs": [
+        "1",
+        0
+      ],
+      "width": 1344,
+      "height": 768,
+      "look": [
+        "5",
+        2
+      ],
+      "shadow": [
+        "5",
+        3
+      ],
+      "layout": [
+        "4",
+        0
+      ],
+      "guide_lines": "none"
+    },
+    "_meta": {
+      "title": "Rig: depth + alpha"
+    }
+  },
+  "10": {
+    "class_type": "RecraftVectorizeImageNode",
+    "inputs": {
+      "image": [
+        "6",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Recraft vectorize \u2014 API (paid) \u2014 NOT part of the open-weights entry. Never run from tests or CI."
+    }
+  },
+  "11": {
+    "class_type": "SaveSVGNode",
+    "inputs": {
+      "svg": [
+        "10",
+        0
+      ],
+      "filename_prefix": "titlerig/recraft_vectorized"
+    }
+  },
+  "12": {
+    "class_type": "RecraftColorRGB",
+    "inputs": {
+      "r": 255,
+      "g": 212,
+      "b": 0
+    }
+  },
+  "13": {
+    "class_type": "RecraftColorRGB",
+    "inputs": {
+      "r": 225,
+      "g": 29,
+      "b": 72,
+      "recraft_color": [
+        "12",
+        0
+      ]
+    }
+  },
+  "14": {
+    "class_type": "RecraftColorRGB",
+    "inputs": {
+      "r": 253,
+      "g": 224,
+      "b": 71
+    }
+  },
+  "15": {
+    "class_type": "RecraftControls",
+    "inputs": {
+      "colors": [
+        "13",
+        0
+      ],
+      "background_color": [
+        "14",
+        0
+      ]
+    }
+  },
+  "16": {
+    "class_type": "RecraftV4TextToVectorNode",
+    "inputs": {
+      "prompt": [
+        "5",
+        0
+      ],
+      "negative_prompt": "",
+      "model": "recraftv4_1_vector",
+      "model.size": "1536x768",
+      "n": 1,
+      "seed": 42,
+      "style_id": "",
+      "style_match": "precise",
+      "recraft_controls": [
+        "15",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Recraft V4 vector \u2014 API (paid) \u2014 NOT part of the open-weights entry. Never run from tests or CI."
+    }
+  },
+  "17": {
+    "class_type": "SaveSVGNode",
+    "inputs": {
+      "svg": [
+        "16",
+        0
+      ],
+      "filename_prefix": "titlerig/recraft_v4_vector"
+    }
+  },
+  "18": {
+    "class_type": "TitleRigSVGExport",
+    "inputs": {
+      "glyphs": [
+        "1",
+        0
+      ],
+      "width": 1344,
+      "height": 768,
+      "filename_prefix": "titlerig/rig_vector",
+      "supersample": 2,
+      "side_tones": 4,
+      "background": "",
+      "look": [
+        "5",
+        2
+      ],
+      "shadow": [
+        "5",
+        3
+      ],
+      "layout": [
+        "4",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Open alternative: TitleRig SVG Export (free)"
+    }
+  }
+}

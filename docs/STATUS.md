@@ -18,6 +18,7 @@ this file says where things stand and what a fresh session should know before to
 | Spell-Lock v1 (P2) | warp-snap + spill / hole repair against the rig alpha, shadow protection, drift score | `render/spell_lock.py` |
 | Canvas preview (P2) | live preview widget on Render / Render Animation: pass chips, guides, frame scrubber, dark + light palettes | `web/titlerig_preview.js`, `nodes/preview.py` |
 | Workflows (P1c) | rig-only and audio-react example workflows (no models, CPU) | `workflows/` |
+| AI workflows (build night) | LTX-2 depth IC-LoRA video, FLUX.1 Depth still, FLUX.2-dev still; bonus API FLUX 3 + Recraft (never run). Validated structurally, by ComfyUI's own validator (placeholder model files) and by CPU dry runs of the rig half | `workflows/`, `workflows/README.md` |
 | ComfyUI | 12 nodes load in a CPU ComfyUI; both workflows run headless and round-trip through the frontend | see "Environment" |
 
 Nodes (all under **TitleRig**): Text, Look 3D, Shadow, Layout, Render, Animate, Audio React, Render Animation,
@@ -31,6 +32,7 @@ Style Preset, Magnet, SVG Export, Spell-Lock.
   - `workflows/run_headless.py` runs both workflows to success.
   - `workflows/to_ui.js --verify` loads each UI file in the real frontend, builds the prompt and runs it.
   - `tests/e2e/preview_check.js` checks the preview widget: it appears, updates on widget changes, the chips toggle, the scrubber works, and both palettes render.
+- **Workflow checks:** `workflows/validate.py` (structure vs `/object_info`), `workflows/comfy_validate.py` (ComfyUI accepts the 3 AI graphs with empty model files, then they're cancelled), `workflows/api/dryrun/*.json` (the AI node swapped for the rig beauty; LTX dry run 121 frames + audio in 95 s at half res).
 - **Not verified against real models:**
   - No FLUX / LTX generation has been run. Paid APIs are off-limits, and there are no local weights or GPU here.
   - The Style Preset prompts follow the skills but are untested on the models.
@@ -54,7 +56,8 @@ Style Preset, Magnet, SVG Export, Spell-Lock.
   - On real music, `mids` can pick up hats. Lower `sensitivity` or use `spectrum`.
 - **Render Animation:**
   - Outputs only beauty, alpha, depth, edges and letter_ids. All 11 passes × N frames would be several GB at 720p.
-  - It doesn't pad to LTX's `8n + 1` frame rule. Style Preset's settings report the snapped count.
+  - `pad_ltx` holds the last frame up to LTX's `8n + 1` frame count (off by default).
+  - Memory: about 10 GB RAM for 121 frames at 1280×720 (all passes are preallocated). Keep LTX clips to about 5 s on small machines.
 - **Speed:** about 0.5 s per 720p frame on CPU (4 threads in Render Animation). The canvas preview "plays" at render speed.
 - **Preview:**
   - Audio-driven tracks show their rest pose, because there's no audio until the workflow runs.
@@ -101,4 +104,5 @@ Build night is tracked in the CLAUDE.md backlog ("Build night"). In order:
 2. **Bonus API workflows** (FLUX 3, Recraft vector): built, never run, clearly marked API.
 3. **Demo assets** in `docs/media/` for the submission video.
 4. **README polish.**
-5. **After build night (nice to have):** P3 Recraft.
+5. **Cutout text node** (queued by the user): one image or video inside the letters, another outside.
+6. **After build night (nice to have):** P3 Recraft.

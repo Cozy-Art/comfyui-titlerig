@@ -1,0 +1,179 @@
+{
+  "1": {
+    "class_type": "TitleRigText",
+    "inputs": {
+      "text": "TITLERIG",
+      "font": "Anton-Regular",
+      "size": 200,
+      "tracking": 4.0,
+      "kerning_json": "{}",
+      "letters_json": "{}"
+    }
+  },
+  "4": {
+    "class_type": "TitleRigLayout",
+    "inputs": {
+      "mode": "arc",
+      "bend": 0.15,
+      "align": 0.5,
+      "bulge": 0.0,
+      "tilt_x": 0.0,
+      "tilt_y": 0.0,
+      "fov": 50.0,
+      "vanish": false,
+      "vp_x": 0.5,
+      "vp_y": 1.4,
+      "flag_amp": 0.0,
+      "flag_wavelength": 420.0,
+      "flag_phase": 0.0,
+      "flag_shade": 0.5,
+      "curve_json": ""
+    }
+  },
+  "5": {
+    "class_type": "TitleRigStylePreset",
+    "inputs": {
+      "preset": "Chrome Slam",
+      "target": "flux1_depth",
+      "colour_words": "",
+      "text": "TITLE",
+      "format": "prose",
+      "audio": "own_track",
+      "glyphs": [
+        "1",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Style Preset (Chrome Slam)"
+    }
+  },
+  "6": {
+    "class_type": "TitleRigRender",
+    "inputs": {
+      "glyphs": [
+        "1",
+        0
+      ],
+      "width": 672,
+      "height": 384,
+      "look": [
+        "5",
+        2
+      ],
+      "shadow": [
+        "5",
+        3
+      ],
+      "layout": [
+        "4",
+        0
+      ],
+      "guide_lines": "none"
+    },
+    "_meta": {
+      "title": "Rig: depth + alpha"
+    }
+  },
+  "90": {
+    "class_type": "TitleRigSpellLock",
+    "inputs": {
+      "images": [
+        "6",
+        0
+      ],
+      "alpha": [
+        "6",
+        1
+      ],
+      "strength": 1.0,
+      "tolerance": 2,
+      "ring": 24,
+      "edges": [
+        "6",
+        3
+      ],
+      "shadow": [
+        "6",
+        8
+      ]
+    }
+  },
+  "91": {
+    "class_type": "InvertMask",
+    "inputs": {
+      "mask": [
+        "6",
+        1
+      ]
+    }
+  },
+  "92": {
+    "class_type": "JoinImageWithAlpha",
+    "inputs": {
+      "image": [
+        "90",
+        0
+      ],
+      "alpha": [
+        "91",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Title cut-out (alpha)"
+    }
+  },
+  "93": {
+    "class_type": "SaveImage",
+    "inputs": {
+      "images": [
+        "6",
+        0
+      ],
+      "filename_prefix": "titlerig/dryrun_flux1_depth_raw"
+    },
+    "_meta": {
+      "title": "AI raw"
+    }
+  },
+  "94": {
+    "class_type": "SaveImage",
+    "inputs": {
+      "images": [
+        "90",
+        0
+      ],
+      "filename_prefix": "titlerig/dryrun_flux1_depth_spell_locked"
+    },
+    "_meta": {
+      "title": "Spell-Locked"
+    }
+  },
+  "95": {
+    "class_type": "SaveImage",
+    "inputs": {
+      "images": [
+        "92",
+        0
+      ],
+      "filename_prefix": "titlerig/dryrun_flux1_depth_cutout"
+    },
+    "_meta": {
+      "title": "Transparent PNG"
+    }
+  },
+  "96": {
+    "class_type": "SaveImage",
+    "inputs": {
+      "images": [
+        "6",
+        2
+      ],
+      "filename_prefix": "titlerig/dryrun_flux1_depth_control_depth"
+    },
+    "_meta": {
+      "title": "Control: rig depth"
+    }
+  }
+}

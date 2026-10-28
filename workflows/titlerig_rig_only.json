@@ -1,5 +1,5 @@
 {
-  "id": "f3fa1d13-5c1d-4ac5-9456-e7d82d37a8ba",
+  "id": "77b1ec7b-47d0-487e-89ac-fce8f32730eb",
   "revision": 0,
   "last_node_id": 13,
   "last_link_id": 15,
@@ -1433,7 +1433,7 @@
       ],
       "size": [
         400,
-        512
+        536
       ],
       "flags": {},
       "order": 10,
@@ -1487,6 +1487,16 @@
           "type": "INT",
           "widget": {
             "name": "height"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "pad_ltx",
+          "name": "pad_ltx",
+          "shape": 7,
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "pad_ltx"
           },
           "link": null
         }
@@ -1545,11 +1555,13 @@
       "widgets_values": [
         960,
         544,
+        false,
         ""
       ],
       "widgets_values_named": {
         "width": 960,
         "height": 544,
+        "pad_ltx": false,
         "titlerig_preview": ""
       }
     },
@@ -1862,10 +1874,10 @@
   "config": {},
   "extra": {
     "ds": {
-      "scale": 0.4239465570400822,
+      "scale": 0.148690555077847,
       "offset": [
-        40,
-        40
+        1423.2097656249998,
+        2113.95720486111
       ]
     }
   },

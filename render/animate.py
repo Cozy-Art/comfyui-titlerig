@@ -438,6 +438,28 @@ def render_frames(anim: Anim, g: Glyphs, look: Look3D | None = None, shadow: Sha
     """Render every frame; returns {pass: (N, H, W[, C]) float32}. Frames render in parallel threads."""
     lay = lay or Layout()
     n = anim.n_frames(sum(1 for c in g.text if c.strip()))
+    out: dict[str, np.ndarray] = {}
+
+    def one(f):  # write each frame straight into preallocated arrays: no frame list + stack copy (halves peak RAM)
+        fr = render_frame(anim, g, look, shadow, width, height, lay, f, passes)
+        for k in passes:
+            if k not in out:
+                out.setdefault(k, np.empty((n,) + fr[k].shape, np.float32))
+            out[k][f] = fr[k]
+
+    first = render_frame(anim, g, look, shadow, width, height, lay, 0, passes)
+    for k in passes:
+        out[k] = np.empty((n,) + first[k].shape, np.float32)
+        out[k][0] = first[k]
     with ThreadPoolExecutor(max_workers=max(1, workers)) as ex:
-        frames = list(ex.map(lambda f: render_frame(anim, g, look, shadow, width, height, lay, f, passes), range(n)))
-    return {k: np.stack([fr[k] for fr in frames]) for k in passes}
+        list(ex.map(one, range(1, n)))
+    return out
+
+
+def pad_frames(passes: dict[str, np.ndarray], n: int) -> dict[str, np.ndarray]:
+    """Hold the last frame until every pass has n frames (e.g. LTX's 8n+1 rule)."""
+    out = {}
+    for k, v in passes.items():
+        extra = n - v.shape[0]
+        out[k] = np.concatenate([v, np.repeat(v[-1:], extra, 0)]) if extra > 0 else v
+    return out
