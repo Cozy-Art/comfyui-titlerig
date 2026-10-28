@@ -11,6 +11,12 @@ prompts for that model — don't guess syntax from older versions.
 | FLUX 3 video (optional) | FLUX 3 Video | [`skills/video/flux-v3-video`](https://github.com/Cozy-Art/super-skills/tree/main/skills/video/flux-v3-video) | no (API) |
 | Vector (optional) | Recraft V4 Vector / Pro Vector, Recraft vectorize | [`skills/image/recraft-v4`](https://github.com/Cozy-Art/super-skills/tree/main/skills/image/recraft-v4) | no (API) |
 
+**Applied in the TitleRig Style Preset node (`render/presets.py`):**
+- `flux2_dev` follows **flux-2-prompts v1.0.0** (`skills/image/flux-v2`); its schema is vendored in
+  `docs/skills/flux-v2/schema.json` and the node's `settings` output is tested against it.
+- `flux3` follows **flux-3-image-prompts** (`skills/image/flux-v3`); rules in `docs/skills/flux-v3/README.md`.
+- `ltx2_video` is provisional until an LTX-2 skill is added here.
+
 Anything marked "no (API)" lives in its own workflow, is named in the demo video, and never appears in the
 open-weights entry.
 

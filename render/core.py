@@ -335,7 +335,10 @@ def render_title(g: Glyphs, look: Look3D | None = None, shadow: Shadow | None = 
 
     # face lighting
     hgt = _bevel_height(face, look.bevel, look.bevel_profile)
-    n = _normals(hgt)
+    if look.bevel <= 0 or look.bevel_profile == "flat":  # no bevel: a truly flat face (no emboss ring at the edges)
+        n = np.dstack([np.zeros_like(face), np.zeros_like(face), np.ones_like(face)])
+    else:
+        n = _normals(hgt)
     la = math.radians(look.light_angle)
     L = np.array([math.cos(la) * (1 - look.light_height), math.sin(la) * (1 - look.light_height), look.light_height], np.float32)
     L /= np.linalg.norm(L)

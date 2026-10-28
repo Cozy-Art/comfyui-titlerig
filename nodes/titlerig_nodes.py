@@ -5,7 +5,7 @@ import json
 
 import numpy as np
 
-from ..render.presets import PRESET_NAMES, TARGETS as PROMPT_TARGETS, build_prompt, suggested_look
+from ..render.presets import FORMATS, PRESET_NAMES, TARGETS as PROMPT_TARGETS, build_prompt, flux2_settings, flux3_settings, suggested_look
 from ..render.audio import AUDIO_MODES, BANDS, audio_curve, curve_preview
 from ..render.animate import DIRECTIONS, EASINGS, EFFECTS, ORDERS, RESPONSES, RETRIGGERS, TARGETS, Anim, Track, render_frames
 from ..render import LAYOUT_MODES, SHADOW_TEXTURES, Glyphs, Layout, Look3D, Shadow, bundled_fonts, render_title
@@ -139,8 +139,8 @@ class TitleRigLayout:
 class TitleRigStylePreset:
     """Bright, ad-ready style: prompts for the AI pass + a matching rig Look and Shadow."""
     CATEGORY = CAT
-    RETURN_TYPES = ("STRING", "STRING", "TITLERIG_LOOK", "TITLERIG_SHADOW")
-    RETURN_NAMES = ("positive", "negative", "look", "shadow")
+    RETURN_TYPES = ("STRING", "STRING", "TITLERIG_LOOK", "TITLERIG_SHADOW", "STRING")
+    RETURN_NAMES = ("positive", "negative", "look", "shadow", "settings")
     FUNCTION = "build"
 
     @classmethod
@@ -152,14 +152,19 @@ class TitleRigStylePreset:
             "colour_words": ("STRING", {"default": "", "tooltip": "optional, e.g. 'teal and hot pink' (replaces the "
                              "preset's palette words)"}),
             "text": ("STRING", {"default": "TITLE", "tooltip": "used when no glyphs are connected"}),
+            "format": (list(FORMATS), {"default": "prose", "tooltip": "flux2_dev: prose, or a JSON structured prompt "
+                       "(pasted into the prompt string, per the flux-v2 skill)"}),
         }, "optional": {
             "glyphs": ("TITLERIG_GLYPHS", {"tooltip": "take the exact text from the rig"}),
         }}
 
-    def build(self, preset, target, colour_words, text, glyphs=None):
-        pos, neg = build_prompt(preset, glyphs.text if glyphs is not None else text, colour_words, target)
+    def build(self, preset, target, colour_words, text, format="prose", glyphs=None):
+        word = glyphs.text if glyphs is not None else text
+        pos, neg = build_prompt(preset, word, colour_words, target, format)
         look, shadow = suggested_look(preset)
-        return (pos, neg, look, shadow)
+        settings = json.dumps(flux2_settings(word) if target == "flux2_dev" else
+                              flux3_settings() if target == "flux3" else {"target": target, "status": "provisional"})
+        return (pos, neg, look, shadow, settings)
 
 
 class TitleRigRender:

@@ -1,16 +1,24 @@
 """Style presets: bright, ad-ready looks for the AI pass, plus a matching rig Look3D / Shadow.
 
-Prompts follow the pattern in docs/FLUX3.md (from the super-skills flux skills): describe the finished image in
-sentences, most important constraint first, say what IS there, and quote the exact text with its placement.
-FLUX.2 / FLUX 3 ignore negative prompts; the negative string is for models that use one (e.g. LTX-2).
+FLUX.2 prompts follow the flux-2-prompts skill v1.0.0 (super-skills skills/image/flux-v2, see docs/skills/flux-v2):
+front-load the subject and the quoted text, keep it short, describe only what is wanted (no negative prompt), bind
+hex colours to specific objects, lighting last, refer to the rig render as "image 1", Flex settings for typography.
+FLUX 3 prompts follow the flux-3-image-prompts skill (skills/image/flux-v3, see docs/skills/flux-v3): layer order,
+quoted text with placement, image 1 + preserve list, only valid native settings. LTX-2 prompts are provisional
+until checked against an LTX-2 skill.
 """
 from __future__ import annotations
 
+import json
+import re
 from dataclasses import dataclass, field
 
 from .core import Look3D, Shadow
 
 TARGETS = ("flux2_dev", "flux3", "ltx2_video")
+FORMATS = ("prose", "json")
+FLUX2_SKILL_VERSION = "1.0.0"
+FLUX3_FIELDS = ("prompt", "images", "aspect_ratio", "resolution", "safety_tolerance", "grounding", "version")
 NEGATIVE = ("misspelled text, extra letters, missing letters, warped letterforms, duplicate words, watermark, "
             "logo, signature, blurry, low resolution, jpeg artifacts")
 
@@ -28,6 +36,9 @@ class Preset:
     shadow: dict = field(default_factory=dict)    # Shadow overrides
     negative: str = ""                            # extra, preset-specific exclusions
     backdrop: str = "#16161c"                     # preview ground (matches `background` in spirit)
+    lead: str = ""                                # 1-3 word material lead for the first words of the prompt
+    detail: str = ""                              # short material detail after the quoted text
+    camera: str | None = None                     # photographic anchor for real materials (None = graphic style)
 
 
 PRESETS: dict[str, Preset] = {p.name: p for p in [
@@ -37,7 +48,7 @@ PRESETS: dict[str, Preset] = {p.name: p for p in [
            "reflections slide across the chrome as the camera drifts",
            dict(face="#f4f6fb", face2="#7a869a", side="#3b4252", gloss=1.0, rim=0.5),
            dict(texture="stripes", color="#1d4ed8")),
-    Preset("Fuzzy Grass", "dense fuzzy blue grass fibres covering every face and bevel, fine macro detail",
+    Preset("Fuzzy Grass", "dense fuzzy blue grass fibres covering every face, fine macro detail",
            "soft sunny daylight with a warm bounce from below", "a pale sky-blue backdrop with a soft floor shadow",
            ["#38bdf8", "#1e40af", "#e0f2fe"], "cornflower blue fuzz on pale sky",
            "the grass fibres sway in a light breeze",
@@ -119,34 +130,121 @@ _BACKDROPS = {"Chrome Slam": "#1e3a8a", "Fuzzy Grass": "#bae6fd", "Liquid Glass"
 for _n, _b in _BACKDROPS.items():
     PRESETS[_n].backdrop = _b
 
+STUDIO = "Shot on Hasselblad X2D, 90mm f/8, sharp focus"
+_LEADS = {  # name: (lead, detail, camera)
+    "Chrome Slam": ("Mirror-chrome", "crisp studio reflections along each bevel", STUDIO),
+    "Fuzzy Grass": ("Fuzzy blue grass", "dense fibres covering every face", "Shot on Sony A7IV, 90mm macro f/8"),
+    "Liquid Glass": ("Clear refractive glass", "soft caustics on the floor below", STUDIO),
+    "Aero Bubble": ("Glossy aqua plastic", "a bright white gloss streak across the top", STUDIO),
+    "Ben-Day Pop": ("Comic-print", "bold black outlines and Ben-Day halftone dots", None),
+    "Holo Foil": ("Holographic foil", "a rainbow sheen shifting across each letter", STUDIO),
+    "ChromaDepth": ("Glowing neon ChromaDepth", "red in front, through orange and green, to blue behind", None),
+    "Candy Inflatable": ("Inflatable pastel vinyl", "puffed seams and bright highlights", STUDIO),
+    "Op Art Stripe": ("Black and white op-art", "crisp stripes bending around each letter", None),
+    "Vapor Sunset": ("Synthwave lacquer", "a pink-to-purple gradient with a chrome top edge", None),
+    "Low Poly": ("Low-poly faceted", "flat-shaded triangular facets", None),
+    "Cel Toon": ("Cel-shaded cartoon", "two flat tones per face and a thick ink outline", None),
+    "Trailer Title": ("Brushed steel movie-trailer", "glowing ember edges",
+                      "Shot on ARRI Alexa 35, 50mm anamorphic, sharp focus on the letters"),
+}
+EMBOSSED = ("Chrome Slam", "Candy Inflatable")  # the only presets with a raised bevel; the rest are flat-faced
+for _n, (_l, _d, _c) in _LEADS.items():
+    PRESETS[_n].lead, PRESETS[_n].detail, PRESETS[_n].camera = _l, _d, _c
+for _n, _p in PRESETS.items():
+    if _n not in EMBOSSED:
+        _p.look.update(bevel=0.0, bevel_profile="flat")
+
 PRESET_NAMES = tuple(PRESETS)
 
 
-def build_prompt(preset: str, text: str, colour_words: str = "", target: str = "flux2_dev") -> tuple[str, str]:
-    """(positive, negative) prompt for `preset` on the word `text`, written for `target`."""
+_NEGATION = re.compile(r"\b(no|not|without|avoid|don't|never)\b", re.I)
+
+
+def _colours(p: Preset, colour_words: str) -> str:
+    """Hex colours bound to specific objects (skill rule), or the user's colour words when given."""
+    look = Look3D(**p.look)
+    if colour_words.strip():
+        return f"Letters in {colour_words.strip()}"
+    return f"Letter faces {look.face.upper()}, extrusion {look.side.upper()}, background {p.backdrop.upper()}"
+
+
+def flux2_structured(p: Preset, text: str, colour_words: str = "") -> dict:
+    """Skill-format JSON structured prompt (serialised into the prompt string)."""
+    look = Look3D(**p.look)
+    palette = [look.face.upper(), look.side.upper()] if not colour_words.strip() else []
+    subj = {"description": f"{p.lead} 3D title lettering reading '{text}', with {p.detail}",
+            "position": "centred, filling the frame",
+            "action": "letterforms, spacing and extrusion follow image 1 exactly"}
+    if palette:
+        subj["color_palette"] = palette
+    out = {"scene": f"title card: {p.background}", "subjects": [subj],
+           "style": "bright ad-ready 3D lettering" + ("" if p.camera else ", graphic illustration"),
+           "background": p.background + (f", {p.backdrop.upper()}" if not colour_words.strip() else ""),
+           "lighting": p.lighting, "composition": "centred title lockup"}
+    if colour_words.strip():
+        out["style"] += f", colours {colour_words.strip()}"
+    if p.camera:
+        out["camera"] = {"angle": "straight on", "lens": p.camera.split(", ")[1] if ", " in p.camera else p.camera,
+                         "depth_of_field": "sharp focus across every letter"}
+    return out
+
+
+def flux2_settings(text: str, target_mp: float = 1.0) -> dict:
+    """Skill-schema request settings: Flex for typography (steps 50, guidance 8), size from image 1."""
+    return {"variant": "flex", "steps": 50, "guidance": 8.0, "aspect_ratio": "match_input_image", "seed": None,
+            "metadata": {"skill_version": FLUX2_SKILL_VERSION, "generation_intent": "typography_comp",
+                         "variant_rationale": f"Flex for legible typography ('{text}'): 50 steps, guidance 8. "
+                                              "Open-weights local run: flux2-dev in ComfyUI with the TitleRig "
+                                              "render as reference image 1."}}
+
+
+def flux3_settings(final: bool = True) -> dict:
+    """Valid native FLUX 3 fields only; aspect follows image 1 (the rig render). Iterate at 1k, finish at 2k."""
+    return {"images": ["TitleRig beauty pass (image 1)"], "aspect_ratio": "auto",
+            "resolution": "2k" if final else "1k", "grounding": False}
+
+
+def build_prompt(preset: str, text: str, colour_words: str = "", target: str = "flux2_dev",
+                 fmt: str = "prose") -> tuple[str, str]:
+    """(positive, negative) prompt for `preset` on the word `text`, written for `target`.
+
+    FLUX.2 and FLUX 3 take no negative prompt, so negative is empty for them."""
     if preset not in PRESETS:
         raise ValueError(f"unknown preset: {preset}; choose from {PRESET_NAMES}")
     if target not in TARGETS:
         raise ValueError(f"unknown target: {target}; choose from {TARGETS}")
+    if fmt not in FORMATS:
+        raise ValueError(f"unknown format: {fmt}; choose from {FORMATS}")
     p = PRESETS[preset]
     colours = colour_words.strip() or p.palette_words
-    quoted = text.replace('"', "'")
-    if target == "flux3":  # image 1 = the TitleRig beauty pass
-        pos = (f"A glossy studio product shot of 3D title lettering. Keep the exact letterforms, spacing, extrusion "
-               f"depth and camera angle from image 1, and rebuild the letters as {p.material}. "
-               f'The title reads "{quoted}". {p.lighting.capitalize()}. {p.background.capitalize()}. '
-               f"Palette {colours}, {', '.join(p.palette)}.")
-    elif target == "ltx2_video":
-        pos = (f'Bold 3D title lettering that reads "{quoted}", centred in frame, made of {p.material}. '
-               f"The letters keep the exact shapes and motion of the control video. {p.lighting.capitalize()}. "
-               f"{p.background.capitalize()}, {p.motion}. Colours: {colours}. Smooth, high-detail, ad-ready.")
-    else:  # flux2_dev with depth / canny control from the rig
-        pos = (f'Bold 3D title lettering that reads "{quoted}", centred, made of {p.material}. '
-               f"The letters follow the exact shapes, spacing and extrusion of the control image. "
-               f"{p.lighting.capitalize()}. {p.background.capitalize()}. Colours: {colours}. "
-               f"Crisp, bright, ad-ready studio render.")
-    neg = NEGATIVE + (f", {p.negative}" if p.negative else "")
-    return pos, neg
+    quoted = text.replace("'", "\u2019").replace('"', "\u201d")
+    if target == "flux2_dev":
+        if fmt == "json":
+            return json.dumps(flux2_structured(p, quoted, colour_words), ensure_ascii=False), ""
+        parts = [f"{p.lead} 3D title lettering reading '{quoted}', centred, with {p.detail}.",
+                 "Letterforms, spacing and extrusion follow image 1 exactly.",
+                 f"{_colours(p, colour_words)}: {p.background}."]
+        if p.camera:
+            parts.append(f"{p.camera}.")
+        parts.append(f"{p.lighting.capitalize()}.")
+        return " ".join(parts), ""
+    if target == "flux3":  # skill layer order; image 1 = the TitleRig beauty pass
+        look = Look3D(**p.look)
+        kind = "A bright studio product shot of 3D title lettering" if p.camera else "A bright graphic title card"
+        frame = ("Eye-level, straight-on 90mm view with deep focus across every letter" if p.camera
+                 else "Straight-on, flat graphic framing with the title filling the centre")
+        palette = (f"Colours: {colour_words.strip()}" if colour_words.strip() else
+                   f"Letter faces {look.face.upper()}, extrusion walls {look.side.upper()}, "
+                   f"background {p.backdrop.upper()}")
+        pos = (f'{kind}. The title reads "{quoted}" in bold block capitals, centred, and keeps the exact '
+               f"letterforms, spacing, extrusion depth and camera angle of image 1. Every letter is rebuilt as "
+               f"{p.material}. {p.background.capitalize()} sits behind the title. {p.lighting.capitalize()}. "
+               f"{frame}. {palette}, {p.palette_words}.")
+        return pos, ""
+    pos = (f'Bold 3D title lettering that reads "{quoted}", centred in frame, made of {p.material}. '  # ltx2_video
+           f"The letters keep the exact shapes and motion of the control video. {p.lighting.capitalize()}. "
+           f"{p.background.capitalize()}, {p.motion}. Colours: {colours}. Smooth, high-detail, ad-ready.")
+    return pos, NEGATIVE + (f", {p.negative}" if p.negative else "")
 
 
 def suggested_look(preset: str) -> tuple[Look3D, Shadow]:

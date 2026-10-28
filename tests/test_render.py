@@ -57,3 +57,12 @@ def test_guides_can_be_hidden_or_picked():
     assert parse_guides(["mid", "cap"]) == ("cap", "mid")
     with pytest.raises(ValueError):
         parse_guides("baseline,bogus")
+
+
+def test_flat_bevel_has_no_edge_emboss():
+    look = Look3D(bevel=0, bevel_profile="flat", extrude=0, face2=None, gloss=0.8, rim=0.6)
+    p = render_title(Glyphs(text="I", size=160), look, Shadow(on=False), 300, 240)
+    f = p["face"] > 0
+    rgb = p["beauty"][..., :3][f]
+    assert np.ptp(rgb, axis=0).max() < 1e-4  # one flat colour: no rim ring, no edge highlight
+    assert p["highlight"].max() == p["highlight"][f].min() or p["highlight"][f].std() < 1e-6

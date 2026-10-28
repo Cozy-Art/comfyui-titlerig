@@ -1,0 +1,167 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Flux 2 Prompt Schema",
+  "description": "JSON schema for validating Flux 2 image generation prompts produced by this skill. Supports all variants: Pro, Max, Flex, Klein, and Kontext.",
+  "version": "1.0.0",
+  "type": "object",
+  "required": ["prompt", "variant"],
+  "properties": {
+    "prompt": {
+      "type": "string",
+      "minLength": 5,
+      "description": "Natural language or JSON structured prompt. Optimal length 12-25 words for simple scenes, up to 512 tokens for complex JSON prompts. Front-load key concepts in the first 5-10 words. NO negative language."
+    },
+    "variant": {
+      "type": "string",
+      "enum": ["pro", "max", "flex", "klein_9b", "klein_4b", "kontext_pro", "kontext_max"],
+      "description": "Which Flux 2 model variant to use. Pro=production default, Max=highest quality, Flex=typography/control, Klein=speed, Kontext=character consistency.",
+      "default": "pro"
+    },
+    "width": {
+      "type": "integer",
+      "minimum": 64,
+      "maximum": 2048,
+      "multipleOf": 16,
+      "default": 1024,
+      "description": "Output width in pixels. Must be multiple of 16. Max total pixels ~4MP (width × height ≤ ~4,194,304)."
+    },
+    "height": {
+      "type": "integer",
+      "minimum": 64,
+      "maximum": 2048,
+      "multipleOf": 16,
+      "default": 1024,
+      "description": "Output height in pixels. Must be multiple of 16. Max total pixels ~4MP."
+    },
+    "aspect_ratio": {
+      "type": ["string", "null"],
+      "enum": ["1:1", "16:9", "9:16", "4:3", "3:4", "21:9", "match_input_image", null],
+      "default": null,
+      "description": "Alternative to explicit width/height. 'match_input_image' matches the first reference image's ratio."
+    },
+    "seed": {
+      "type": ["integer", "null"],
+      "minimum": 0,
+      "description": "Seed for reproducibility. Same seed + same prompt = same result. Use ±1-5 for subtle variations.",
+      "default": null
+    },
+    "guidance": {
+      "type": ["number", "null"],
+      "minimum": 1.5,
+      "maximum": 10.0,
+      "default": null,
+      "description": "[Flex variant ONLY] Controls prompt adherence. 3-5=creative freedom, 7-10=strict following. Ignored by other variants."
+    },
+    "steps": {
+      "type": ["integer", "null"],
+      "minimum": 1,
+      "maximum": 50,
+      "default": null,
+      "description": "[Flex variant ONLY] Inference steps. 6=fast preview, 20=balanced, 40-50=max quality/typography. Ignored by other variants."
+    },
+    "image_urls": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "format": "uri"
+      },
+      "maxItems": 10,
+      "default": [],
+      "description": "Reference images for multi-reference compositing. Pro/Max/Flex: up to 8-10, Klein: up to 4. Total input must not exceed 9MP."
+    },
+    "image_prompt": {
+      "type": ["string", "null"],
+      "format": "uri",
+      "default": null,
+      "description": "[Kontext variant ONLY] Single reference image for character identity preservation."
+    },
+    "structured_prompt": {
+      "type": ["object", "null"],
+      "description": "Optional JSON structured prompt for complex multi-subject scenes. If provided, this is serialized into the prompt field for API submission. Flux 2 natively understands JSON prompts.",
+      "properties": {
+        "scene": {
+          "type": "string",
+          "description": "Overall scene/environment description"
+        },
+        "subjects": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "description": { "type": "string" },
+              "position": { "type": "string" },
+              "action": { "type": "string" },
+              "color_palette": {
+                "type": "array",
+                "items": { "type": "string" }
+              }
+            },
+            "required": ["description"]
+          }
+        },
+        "style": { "type": "string" },
+        "color_palette": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Global hex colors for the scene"
+        },
+        "lighting": { "type": "string" },
+        "mood": { "type": "string" },
+        "background": { "type": "string" },
+        "composition": { "type": "string" },
+        "camera": {
+          "type": "object",
+          "properties": {
+            "angle": { "type": "string" },
+            "lens": { "type": "string" },
+            "lens_mm": { "type": "integer" },
+            "f_number": { "type": "string" },
+            "depth_of_field": { "type": "string" },
+            "ISO": { "type": "integer" }
+          }
+        }
+      },
+      "default": null
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Pipeline metadata. Not sent to API.",
+      "properties": {
+        "project_id": { "type": "string" },
+        "shot_id": { "type": "string" },
+        "scene_id": { "type": "string" },
+        "character_ids": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "continuity_anchor": {
+          "type": "boolean",
+          "default": false
+        },
+        "skill_version": { "type": "string" },
+        "generation_intent": {
+          "type": "string",
+          "enum": [
+            "concept_art",
+            "character_reference",
+            "location_reference",
+            "storyboard_frame",
+            "production_still",
+            "mood_board",
+            "prop_reference",
+            "wardrobe_reference",
+            "multi_view",
+            "style_test",
+            "typography_comp",
+            "quick_iteration"
+          ]
+        },
+        "variant_rationale": {
+          "type": "string",
+          "description": "Why this variant was selected for this generation task"
+        }
+      }
+    }
+  },
+  "additionalProperties": false
+}
