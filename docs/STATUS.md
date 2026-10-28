@@ -68,6 +68,7 @@ Style Preset, Magnet, SVG Export, Spell-Lock.
 
 ## For a fresh session
 
+- **Install into ComfyUI's Python, not the system one** (README → Install). `opencv-python-headless` is pinned below 4.12, because 4.12+ forces numpy 2 (seen on a Mac where it upgraded the system numpy). The tests pass on numpy 1.26.4 + OpenCV 4.11 (Python 3.12) and on numpy 2.x.
 - **Run tests with `python -m pytest -q`.** The bare `pytest` on PATH may be a uv tool without numpy.
 - **Visual proof:** `python examples/contact_sheet.py`, `preset_sheet.py`, `animate_demo.py`, `audio_demo.py`,
   `magnet_demo.py`, `wrap_demo.py`, `free_transform_demo.py`, `svg_demo.py`, `spell_lock_demo.py`. Output goes to
