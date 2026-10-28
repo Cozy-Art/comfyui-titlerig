@@ -6,8 +6,11 @@ ComfyUI's official templates (video_ltx2_depth_to_video, flux_depth_lora_example
 TitleRig rig in place of the depth estimator. Run: python workflows/build_workflows.py"""
 import json
 import os
+import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, os.path.dirname(HERE))
+from render.presets import build_prompt  # noqa: E402
 
 TEXT = {"text": "TITLERIG", "font": "Anton-Regular", "size": 200, "tracking": 4.0,
         "kerning_json": "{}", "letters_json": "{}"}
@@ -32,6 +35,9 @@ MODELS = {
     "ltx2_depth_iclora": ("ltx-2-19b-ic-lora-depth-control.safetensors", "loras",
                           "https://huggingface.co/Lightricks/LTX-2-19b-IC-LoRA-Depth-Control/resolve/main/"
                           "ltx-2-19b-ic-lora-depth-control.safetensors", "LTX-2 Community License"),
+    "ltx2_canny_iclora": ("ltx-2-19b-ic-lora-canny-control.safetensors", "loras",
+                          "https://huggingface.co/Lightricks/LTX-2-19b-IC-LoRA-Canny-Control/resolve/main/"
+                          "ltx-2-19b-ic-lora-canny-control.safetensors", "LTX-2 Community License"),  # drift fallback
     "ltx2_distilled_lora": ("ltx-2-19b-distilled-lora-384.safetensors", "loras",
                             "https://huggingface.co/Lightricks/LTX-2/resolve/main/ltx-2-19b-distilled-lora-384.safetensors",
                             "LTX-2 Community License"),
@@ -260,6 +266,23 @@ def ltx2_animated():
     return g
 
 
+def cloud_ltx2():
+    """Comfy Cloud fallback (core nodes only, no TitleRig install): the hero's LTX-2 graph, guided by a depth video
+    rendered on your own machine by examples/export_for_cloud.py (which also writes prompt.txt). Spell-Lock runs
+    back home with examples/spell_lock_video.py."""
+    g = {k: v for k, v in ltx2_animated().items() if int(k) >= 30 and int(k) < 80}
+    g["10"] = node("LoadVideo", {"file": "depth.mp4"}, "Rig depth video (export_for_cloud.py)")
+    g["11"] = node("GetVideoComponents", {"video": ["10", 0]})
+    g["30"]["inputs"]["image"] = ["11", 0]
+    g["31"]["inputs"]["image"] = ["11", 0]
+    g["46"] = node("CLIPTextEncode", {"text": build_prompt("Chrome Slam", "TITLERIG", target="ltx23_video")[0],
+                                      "clip": ["44", 0]}, "Prompt (paste prompt.txt)")
+    g["83"] = node("CreateVideo", {"images": ["71", 0], "fps": ["11", 2], "audio": ["11", 1]})
+    g["84"] = node("SaveVideo", {"video": ["83", 0], "filename_prefix": "titlerig/ltx2_cloud", "format": "mp4",
+                                 "format.codec": "h264"}, "LTX result + your track (Spell-Lock it at home)")
+    return g
+
+
 def still_rig(target, preset_name="Chrome Slam", w=1344, h=768):
     return {"1": node("TitleRigText", dict(TEXT)), "4": node("TitleRigLayout", {**LAYOUT, "bend": 0.15}),
             "5": preset(preset_name, target),
@@ -364,7 +387,7 @@ def bonus_recraft_vector():
 
 WORKFLOWS = {"titlerig_rig_only": rig_only, "titlerig_audio_react": audio_react, "titlerig_cutout": cutout,
              "titlerig_ltx2_animated": ltx2_animated, "titlerig_flux_still": flux_still,
-             "titlerig_flux2_still": flux2_still}
+             "titlerig_flux2_still": flux2_still, "titlerig_cloud_ltx2": cloud_ltx2}
 BONUS = {"titlerig_flux3": bonus_flux3, "titlerig_recraft_vector": bonus_recraft_vector}
 RUNNABLE_ON_CPU = ("titlerig_rig_only", "titlerig_audio_react", "titlerig_cutout")  # no models, no API: safe to execute anywhere
 # CPU dry runs of the AI workflows: the AI output node is replaced by the rig beauty pass, model nodes are pruned,

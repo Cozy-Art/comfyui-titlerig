@@ -47,6 +47,7 @@ Drag a `.json` onto ComfyUI. The audio workflows expect `examples/assets/titleri
 | --- | --- | --- | --- |
 | `ltx-2-19b-dev-fp8.safetensors` | `checkpoints/` | LTX-2 Community License | [Hugging Face](https://huggingface.co/Lightricks/LTX-2/resolve/main/ltx-2-19b-dev-fp8.safetensors) |
 | `ltx-2-19b-ic-lora-depth-control.safetensors` | `loras/` | LTX-2 Community License | [Hugging Face](https://huggingface.co/Lightricks/LTX-2-19b-IC-LoRA-Depth-Control/resolve/main/ltx-2-19b-ic-lora-depth-control.safetensors) |
+| `ltx-2-19b-ic-lora-canny-control.safetensors` (optional: swap in for Depth with the rig edges if LTX drifts) | `loras/` | LTX-2 Community License | [Hugging Face](https://huggingface.co/Lightricks/LTX-2-19b-IC-LoRA-Canny-Control/resolve/main/ltx-2-19b-ic-lora-canny-control.safetensors) |
 | `ltx-2-19b-distilled-lora-384.safetensors` | `loras/` | LTX-2 Community License | [Hugging Face](https://huggingface.co/Lightricks/LTX-2/resolve/main/ltx-2-19b-distilled-lora-384.safetensors) |
 | `ltx-2-spatial-upscaler-x2-1.0.safetensors` | `latent_upscale_models/` | LTX-2 Community License | [Hugging Face](https://huggingface.co/Lightricks/LTX-2/resolve/main/ltx-2-spatial-upscaler-x2-1.0.safetensors) |
 | `gemma_3_12B_it_fp4_mixed.safetensors` | `text_encoders/` | Gemma Terms of Use | [Hugging Face](https://huggingface.co/Comfy-Org/ltx-2/resolve/main/split_files/text_encoders/gemma_3_12B_it_fp4_mixed.safetensors) |

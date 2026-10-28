@@ -41,6 +41,13 @@ def rig_pair(preset, text):
     return im
 
 
+def depth_still(text="TITLERIG"):
+    look, shadow = suggested_look("Chrome Slam")
+    p = render_title(Glyphs(text=text, font="Anton", size=150, tracking=4), look, shadow, 640, 360,
+                     Layout(mode="arc", bend=0.15))
+    return Image.fromarray((np.clip(p["depth"], 0, 1) * 255).astype(np.uint8))
+
+
 def card(im, label, name):
     bg = im.getpixel((2, 2))
     sheet = Image.new("RGB", (SIZE, SIZE), bg)
@@ -60,6 +67,7 @@ CARDS = {
     "titlerig_ltx2_animated": (lambda: gif_frame("chrome_slam_flip_in.gif", 0.95), "LTX-2 · DEPTH VIDEO"),
     "titlerig_flux_still": (lambda: rig_pair("Chrome Slam", "TITLE"), "FLUX.1 DEPTH · STILL"),
     "titlerig_flux2_still": (lambda: rig_pair("Holo Foil", "TITLE"), "FLUX.2 DEV · STILL"),
+    "titlerig_cloud_ltx2": (depth_still, "LTX-2 · COMFY CLOUD"),
 }
 
 if __name__ == "__main__":
