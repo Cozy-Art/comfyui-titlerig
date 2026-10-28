@@ -17,8 +17,8 @@ import numpy as np
 from PIL import Image, ImageDraw, ImageFont
 from scipy import ndimage
 
-from .geometry import (ArcPath, Layout, bend_curve, bulge_scale, flag_maps, flag_shading,
-                       tilt_homography)
+from .geometry import (WRAP_MODES, ArcPath, Layout, bend_curve, bulge_scale, flag_maps, flag_shading,
+                       tilt_homography, wrap_maps)
 
 FONT_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "fonts")
 GUIDE_LINES = ("ascender", "cap", "x-height", "mid", "baseline", "descender")
@@ -146,10 +146,41 @@ def _free(d: dict, bbox) -> np.ndarray:
 
 
 def _tf(d: dict, cx: float, cy: float, bbox=None) -> np.ndarray:
-    """Letter / group / word transform: free transform of its box first, then scale, rotate and move."""
+    """Letter / group / word transform: free transform of its box first, then scale, rotate and move,
+    then `stretch` (k along `stretch_angle` deg, 1/k across it) about the moved centre: squash & stretch."""
     s = d.get("scale", 1.0)
-    return _affine(d.get("rot", 0.0), s * d.get("sx", 1.0), s * d.get("sy", 1.0), cx, cy,
-                   d.get("dx", 0.0), d.get("dy", 0.0)) @ _free(d, bbox)
+    M = _affine(d.get("rot", 0.0), s * d.get("sx", 1.0), s * d.get("sy", 1.0), cx, cy,
+                d.get("dx", 0.0), d.get("dy", 0.0)) @ _free(d, bbox)
+    k = d.get("stretch", 1.0)
+    if k and abs(k - 1.0) > 1e-6:
+        a = d.get("stretch_angle", 0.0)
+        mx, my = cx + d.get("dx", 0.0), cy + d.get("dy", 0.0)
+        M = _affine(a, 1, 1, mx, my) @ _affine(0, k, 1.0 / k, mx, my) @ _affine(-a, 1, 1, mx, my) @ M
+    return M
+
+
+def letter_anchors(g: "Glyphs", W: int, H: int, lay: Layout) -> dict[int, tuple[float, float]]:
+    """Rest centre (px) of every visible letter, after the layout's arc: where a magnet's field is sampled."""
+    font, chars, xs, m = layout(g)
+    ox = (W - m["width"]) / 2.0
+    oy = (H - m["ascent"] - m["descent"]) / 2.0
+    mid_y = oy + m["ascent"] - (m["ascent"] - m["cap_top"]) / 2
+    path = None
+    if lay.mode == "arc":
+        path = (ArcPath(np.asarray(lay.curve, np.float64) * np.array([W, H])) if lay.curve is not None
+                else ArcPath(bend_curve(lay.bend, max(m["width"], 1.0), W / 2, mid_y)))
+    out = {}
+    for i, ch in enumerate(chars):
+        if not ch.strip():
+            continue
+        bb = font.getbbox(ch)
+        cx, cy = ox + xs[i] + (bb[0] + bb[2]) / 2, oy + (bb[1] + bb[3]) / 2
+        if path is not None:
+            pt, ang = path.at(lay.align * path.length + (cx - (ox + m["width"] / 2)))
+            off = cy - mid_y
+            cx, cy = pt[0] - math.sin(ang) * off, pt[1] + math.cos(ang) * off
+        out[i] = (float(cx), float(cy))
+    return out
 
 
 def _union(boxes):
@@ -292,6 +323,12 @@ def render_title(g: Glyphs, look: Look3D | None = None, shadow: Shadow | None = 
     lay = lay or Layout()
     W, H = width, height
     face, ids, m, geo, chars = _letter_layers(g, W, H, lay)
+    wrap = None
+    if lay.mode in WRAP_MODES:  # wrap the flat title onto a ticker cylinder, sphere or cube band
+        wx, wy, wshade = wrap_maps(W, H, lay, m["width"], W / 2, geo["mid_y"], 0.6 * g.size)
+        face = cv2.remap(face, wx, wy, cv2.INTER_LINEAR, borderValue=0)
+        ids = cv2.remap(ids.astype(np.float32), wx, wy, cv2.INTER_NEAREST, borderValue=0).astype(np.int32)
+        wrap = (wx, wy, wshade)
     if lay.flag_amp:
         mx, my = flag_maps(W, H, lay)
         face = cv2.remap(face, mx, my, cv2.INTER_LINEAR, borderValue=0)
@@ -335,7 +372,10 @@ def render_title(g: Glyphs, look: Look3D | None = None, shadow: Shadow | None = 
 
     # face lighting
     hgt = _bevel_height(face, look.bevel, look.bevel_profile)
-    n = _normals(hgt)
+    if look.bevel <= 0 or look.bevel_profile == "flat":  # no bevel: a truly flat face (no emboss ring at the edges)
+        n = np.dstack([np.zeros_like(face), np.zeros_like(face), np.ones_like(face)])
+    else:
+        n = _normals(hgt)
     la = math.radians(look.light_angle)
     L = np.array([math.cos(la) * (1 - look.light_height), math.sin(la) * (1 - look.light_height), look.light_height], np.float32)
     L /= np.linalg.norm(L)
@@ -355,6 +395,10 @@ def render_title(g: Glyphs, look: Look3D | None = None, shadow: Shadow | None = 
 
     sc = _rgb(look.side)
     side_rgb = sc[None, None] * (0.55 + 0.45 * side_depth[..., None])
+    if wrap is not None and lay.wrap_shade:
+        ws = wrap[2][y0:y1, x0:x1, None]
+        face_rgb = np.clip(face_rgb * ws, 0, 1)
+        side_rgb = np.clip(side_rgb * np.maximum(ws, 1 - lay.wrap_shade), 0, 1)
     if lay.flag_amp and lay.flag_shade:
         shade = flag_shading(FW, lay)[None, x0:x1, None]
         face_rgb = np.clip(face_rgb * shade, 0, 1)
@@ -398,6 +442,8 @@ def render_title(g: Glyphs, look: Look3D | None = None, shadow: Shadow | None = 
     W, H = FW, FH
     guides = (draw_guides(W, H, geo["ox"], geo["baseline"], m, path=geo["path"], s_centre=geo["s_centre"],
                           mid_y=geo["mid_y"], show=show) if show else np.zeros((H, W, 4), np.float32))
+    if wrap is not None and show:
+        guides = cv2.remap(guides, wrap[0], wrap[1], cv2.INTER_LINEAR, borderValue=0)
     if lay.flag_amp and show:
         guides = cv2.remap(guides, mx, my, cv2.INTER_LINEAR, borderValue=0)
 

@@ -44,9 +44,10 @@ def test_inputs_match_function_signatures(pack):
 
 def test_builder_nodes_with_defaults(pack):
     m = pack.NODE_CLASS_MAPPINGS
-    for name in ("TitleRigText", "TitleRigLook3D", "TitleRigShadow", "TitleRigLayout", "TitleRigAnimate"):
-        (obj,) = getattr(m[name](), m[name].FUNCTION)(**_defaults(m[name]))
-        assert obj is not None
+    for name in ("TitleRigText", "TitleRigLook3D", "TitleRigShadow", "TitleRigLayout", "TitleRigAnimate",
+                 "TitleRigStylePreset", "TitleRigMagnet"):
+        out = getattr(m[name](), m[name].FUNCTION)(**_defaults(m[name]))
+        assert len(out) == len(m[name].RETURN_TYPES) and out[0] is not None
 
 
 def test_animate_chains_and_takes_drive(pack):
@@ -81,3 +82,41 @@ def test_audio_react_node_drives_animate(pack):
     assert n == 48 and prev.shape[0] == 1 and onsets
     (a,) = m["TitleRigAnimate"]().build(**{**_defaults(m["TitleRigAnimate"]), "drive": curve})
     assert a.n_frames(3) == 48 and np.allclose(a.tracks[0].drive, curve["values"])
+
+
+def test_magnet_node_chains_after_animate(pack):
+    m = pack.NODE_CLASS_MAPPINGS
+    (a,) = m["TitleRigAnimate"]().build(**_defaults(m["TitleRigAnimate"]))
+    (b,) = m["TitleRigMagnet"]().build(**{**_defaults(m["TitleRigMagnet"]), "anim": a, "magnet_text": "M"})
+    assert len(b.tracks) == 1 and len(b.magnets) == 1 and b.magnets[0].text == "M"
+
+
+def test_svg_export_node_writes_file(pack, tmp_path, monkeypatch):
+    import types
+    fp = types.ModuleType("folder_paths")
+    fp.get_output_directory = lambda: str(tmp_path)
+
+    def save_path(prefix, out, w, h):
+        d = os.path.join(out, os.path.dirname(prefix))
+        os.makedirs(d, exist_ok=True)
+        return d, os.path.basename(prefix), 1, os.path.dirname(prefix), prefix
+
+    fp.get_save_image_path = save_path
+    monkeypatch.setitem(sys.modules, "folder_paths", fp)
+    m = pack.NODE_CLASS_MAPPINGS
+    (g,) = m["TitleRigText"]().build(text="AB", font="Anton", size=60, tracking=0)
+    res = m["TitleRigSVGExport"]().export(g, 200, 120, "titlerig/t", 1, 3, "")
+    svg, path = res["result"]
+    assert svg.startswith("<svg") and os.path.isfile(path) and open(path).read() == svg
+
+
+def test_spell_lock_node(pack):
+    torch = pytest.importorskip("torch")
+    import numpy as np
+    m = pack.NODE_CLASS_MAPPINGS
+    (g,) = m["TitleRigText"]().build(text="AB", font="Anton", size=60, tracking=0)
+    out = m["TitleRigRender"]().render(g, 200, 120)
+    imgs = out[0].repeat(2, 1, 1, 1)
+    res = m["TitleRigSpellLock"]().lock(imgs, out[1], 1.0, 2, 24, out[3])
+    assert res[0].shape == imgs.shape and res[1].shape == (2, 120, 200) and 0 <= res[2] <= 1
+    assert len(__import__("json").loads(res[3])["drift_after"]) == 2

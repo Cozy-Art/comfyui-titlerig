@@ -5,6 +5,10 @@ import json
 
 import numpy as np
 
+from ..render.presets import AUDIO_MODES as PRESET_AUDIO, FORMATS, PRESET_NAMES, ltx23_settings, TARGETS as PROMPT_TARGETS, build_prompt, flux2_settings, flux3_settings, suggested_look
+from ..render.magnet import PATHS as MAGNET_PATHS, POLARITIES, Magnet
+from ..render.svg import rig_svg
+from ..render.spell_lock import spell_lock_batch
 from ..render.audio import AUDIO_MODES, BANDS, audio_curve, curve_preview
 from ..render.animate import DIRECTIONS, EASINGS, EFFECTS, ORDERS, RESPONSES, RETRIGGERS, TARGETS, Anim, Track, render_frames
 from ..render import LAYOUT_MODES, SHADOW_TEXTURES, Glyphs, Layout, Look3D, Shadow, bundled_fonts, render_title
@@ -124,15 +128,61 @@ class TitleRigLayout:
             "flag_phase": ("FLOAT", {"default": 0.0, "min": -3600, "max": 3600, "step": 1}),
             "flag_shade": ("FLOAT", {"default": 0.5, "min": 0, "max": 1, "step": 0.05}),
         }, "optional": {
+            "wrap_radius": ("FLOAT", {"default": 0.32, "min": 0.02, "max": 3, "step": 0.01,
+                                      "tooltip": "ticker / cube: x canvas width · sphere: x canvas height"}),
+            "wrap_phase": ("FLOAT", {"default": 0.0, "min": -36000, "max": 36000, "step": 1,
+                                     "tooltip": "degrees the wrap is turned (animate with wrap_spin)"}),
+            "wrap_tilt": ("FLOAT", {"default": 15.0, "min": -89, "max": 89, "step": 1, "tooltip": "sphere lean"}),
+            "wrap_repeat": ("BOOLEAN", {"default": True, "tooltip": "repeat the text around the band"}),
+            "wrap_shade": ("FLOAT", {"default": 0.6, "min": 0, "max": 1, "step": 0.05}),
             "curve_json": ("STRING", {"default": "", "tooltip": "arc: custom cubic bezier [[x,y]x4] in 0..1 canvas coords"}),
         }}
 
     def build(self, mode, bend, align, bulge, tilt_x, tilt_y, fov, vanish, vp_x, vp_y,
-              flag_amp, flag_wavelength, flag_phase, flag_shade, curve_json=""):
+              flag_amp, flag_wavelength, flag_phase, flag_shade, wrap_radius=0.32, wrap_phase=0.0, wrap_tilt=15.0,
+              wrap_repeat=True, wrap_shade=0.6, curve_json=""):
         curve = tuple(map(tuple, json.loads(curve_json))) if curve_json.strip() else None
         return (Layout(mode=mode, bend=bend, curve=curve, align=align, bulge=bulge, tilt_x=tilt_x, tilt_y=tilt_y,
                        fov=fov, vanish=vanish, vp_x=vp_x, vp_y=vp_y, flag_amp=flag_amp,
-                       flag_wavelength=flag_wavelength, flag_phase=flag_phase, flag_shade=flag_shade),)
+                       flag_wavelength=flag_wavelength, flag_phase=flag_phase, flag_shade=flag_shade,
+                       wrap_radius=wrap_radius, wrap_phase=wrap_phase, wrap_tilt=wrap_tilt, wrap_repeat=wrap_repeat,
+                       wrap_shade=wrap_shade),)
+
+
+class TitleRigStylePreset:
+    """Bright, ad-ready style: prompts for the AI pass + a matching rig Look and Shadow."""
+    CATEGORY = CAT
+    RETURN_TYPES = ("STRING", "STRING", "TITLERIG_LOOK", "TITLERIG_SHADOW", "STRING")
+    RETURN_NAMES = ("positive", "negative", "look", "shadow", "settings")
+    FUNCTION = "build"
+
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {"required": {
+            "preset": (list(PRESET_NAMES), {"default": "Chrome Slam"}),
+            "target": (list(PROMPT_TARGETS), {"default": "flux2_dev", "tooltip": "flux2_dev: open-weights still "
+                       "(rig render = image 1) · flux3: API bonus, rig beauty = image 1 · ltx23_video: LTX-2.3 with rig depth"}),
+            "colour_words": ("STRING", {"default": "", "tooltip": "optional, e.g. 'teal and hot pink' (replaces the "
+                             "preset's palette words)"}),
+            "text": ("STRING", {"default": "TITLE", "tooltip": "used when no glyphs are connected"}),
+            "format": (list(FORMATS), {"default": "prose", "tooltip": "flux2_dev: prose, or a JSON structured prompt "
+                       "(pasted into the prompt string, per the flux-v2 skill)"}),
+            "audio": (list(PRESET_AUDIO), {"default": "own_track", "tooltip": "ltx23_video: own_track = your music "
+                      "is muxed in (generate_audio false) · generate = LTX writes the sound from the prompt"}),
+        }, "optional": {
+            "glyphs": ("TITLERIG_GLYPHS", {"tooltip": "take the exact text from the rig"}),
+            "frame_count": ("INT", {"default": 121, "min": 1, "max": 2000, "tooltip": "ltx23_video: rig frames "
+                            "(snapped up to 8n+1 in settings)"}),
+        }}
+
+    def build(self, preset, target, colour_words, text, format="prose", audio="own_track", glyphs=None,
+              frame_count=121):
+        word = glyphs.text if glyphs is not None else text
+        pos, neg = build_prompt(preset, word, colour_words, target, format, audio)
+        look, shadow = suggested_look(preset)
+        settings = json.dumps(flux2_settings(word) if target == "flux2_dev" else
+                              flux3_settings() if target == "flux3" else ltx23_settings(frame_count, audio=audio, preset=preset))
+        return (pos, neg, look, shadow, settings)
 
 
 class TitleRigRender:
@@ -254,6 +304,126 @@ class TitleRigAudioReact:
         return (c, prev, len(c["values"]), ", ".join(f"{t:.3f}" for t in c["onsets"]))
 
 
+class TitleRigMagnet:
+    """A moving magnet (optionally a second word) that attracts or repels the title's letters, with springy
+    lag and squash & stretch. Adds to an Animate chain; feed the result to Render Animation."""
+    CATEGORY = CAT
+    RETURN_TYPES = ("TITLERIG_ANIM",)
+    RETURN_NAMES = ("anim",)
+    FUNCTION = "build"
+
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {"required": {
+            "polarity": (list(POLARITIES), {"default": "repel"}),
+            "strength": ("FLOAT", {"default": 90.0, "min": 0, "max": 2000, "step": 1, "tooltip": "px of push"}),
+            "range": ("FLOAT", {"default": 220.0, "min": 1, "max": 4000, "step": 1, "tooltip": "px falloff radius"}),
+            "lag": ("FLOAT", {"default": 0.15, "min": 0, "max": 5, "step": 0.01,
+                              "tooltip": "s: far letters respond this much later"}),
+            "spring": ("FLOAT", {"default": 0.5, "min": 0, "max": 1, "step": 0.01, "tooltip": "0 smooth, 1 bouncy"}),
+            "squash": ("FLOAT", {"default": 0.4, "min": 0, "max": 1, "step": 0.01,
+                                 "tooltip": "squash & stretch along each letter's velocity"}),
+            "path": (list(MAGNET_PATHS), {"default": "sweep"}),
+            "x": ("FLOAT", {"default": -0.15, "min": -2, "max": 3, "step": 0.01}),
+            "y": ("FLOAT", {"default": 0.5, "min": -2, "max": 3, "step": 0.01}),
+            "x_end": ("FLOAT", {"default": 1.15, "min": -2, "max": 3, "step": 0.01}),
+            "y_end": ("FLOAT", {"default": 0.5, "min": -2, "max": 3, "step": 0.01}),
+            "radius": ("FLOAT", {"default": 0.3, "min": 0, "max": 3, "step": 0.01, "tooltip": "orbit, x canvas height"}),
+            "duration": ("FLOAT", {"default": 2.5, "min": 0.05, "max": 600, "step": 0.05}),
+            "start": ("FLOAT", {"default": 0.0, "min": 0, "max": 600, "step": 0.05}),
+            "fps": ("FLOAT", {"default": 24.0, "min": 1, "max": 120, "step": 1}),
+            "hold": ("FLOAT", {"default": 0.8, "min": 0, "max": 60, "step": 0.05}),
+        }, "optional": {
+            "anim": ("TITLERIG_ANIM", {"tooltip": "chain: tracks and magnets from earlier nodes"}),
+            "drive": ("TITLERIG_CURVE", {"tooltip": "per-frame curve (e.g. Audio React) that scales strength"}),
+            "magnet_text": ("STRING", {"default": "", "tooltip": "render this word as the magnet (empty = invisible)"}),
+            "magnet_size": ("INT", {"default": 120, "min": 8, "max": 1024}),
+        }}
+
+    def build(self, polarity, strength, range, lag, spring, squash, path, x, y, x_end, y_end, radius, duration,
+              start, fps, hold, anim=None, drive=None, magnet_text="", magnet_size=120):
+        mg = Magnet(polarity=polarity, strength=strength, range=range, lag=lag, spring=spring, squash=squash,
+                    path=path, x=x, y=y, x_end=x_end, y_end=y_end, radius=radius, duration=duration, start=start,
+                    drive=None if drive is None else drive["values"], text=magnet_text, size=magnet_size)
+        if drive is not None:
+            fps = drive["fps"]
+        if anim is None:
+            return (Anim([], fps=fps, hold=hold, magnets=[mg]),)
+        return (Anim(list(anim.tracks), fps=anim.fps, hold=max(anim.hold, hold), magnets=list(anim.magnets) + [mg]),)
+
+
+class TitleRigSVGExport:
+    """Trace the rig into a layered SVG (shadow shapes, extrusion tones, one path per letter) and save it."""
+    CATEGORY = CAT
+    RETURN_TYPES = ("STRING", "STRING")
+    RETURN_NAMES = ("svg", "path")
+    FUNCTION = "export"
+    OUTPUT_NODE = True
+
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {"required": {
+            "glyphs": ("TITLERIG_GLYPHS",),
+            "width": ("INT", {"default": 1280, "min": 64, "max": 4096, "step": 8}),
+            "height": ("INT", {"default": 720, "min": 64, "max": 4096, "step": 8}),
+            "filename_prefix": ("STRING", {"default": "titlerig/title"}),
+            "supersample": ("INT", {"default": 2, "min": 1, "max": 4, "tooltip": "trace at this multiple for smoother edges"}),
+            "side_tones": ("INT", {"default": 4, "min": 1, "max": 12, "tooltip": "extrusion depth bands"}),
+            "background": ("STRING", {"default": "", "tooltip": "hex fill behind the title (empty = transparent)"}),
+        }, "optional": {
+            "look": ("TITLERIG_LOOK",),
+            "shadow": ("TITLERIG_SHADOW",),
+            "layout": ("TITLERIG_LAYOUT",),
+        }}
+
+    def export(self, glyphs, width, height, filename_prefix, supersample, side_tones, background,
+               look=None, shadow=None, layout=None):
+        import os
+
+        import folder_paths  # ComfyUI
+
+        svg = rig_svg(glyphs, look, shadow, width, height, layout, supersample, side_tones, background or None)
+        full, name, counter, sub, _ = folder_paths.get_save_image_path(filename_prefix, folder_paths.get_output_directory(),
+                                                                         width, height)
+        fname = f"{name}_{counter:05}_.svg"
+        path = os.path.join(full, fname)
+        with open(path, "w", encoding="utf-8") as f:
+            f.write(svg)
+        return {"ui": {"text": [os.path.join(sub, fname)]}, "result": (svg, path)}
+
+
+class TitleRigSpellLock:
+    """Spell-Lock v1: restore AI frames to the rig's exact silhouette (mask-based, no OCR)."""
+    CATEGORY = CAT
+    RETURN_TYPES = ("IMAGE", "MASK", "FLOAT", "STRING")
+    RETURN_NAMES = ("images", "fix_mask", "drift", "report")
+    FUNCTION = "lock"
+
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {"required": {
+            "images": ("IMAGE", {"tooltip": "AI frames (FLUX / LTX output)"}),
+            "alpha": ("MASK", {"tooltip": "TitleRig alpha (one frame or one per frame)"}),
+            "strength": ("FLOAT", {"default": 1.0, "min": 0, "max": 1, "step": 0.05}),
+            "tolerance": ("INT", {"default": 2, "min": 0, "max": 32, "tooltip": "px slack at the rig edge (rig res)"}),
+            "ring": ("INT", {"default": 24, "min": 2, "max": 256, "tooltip": "px band around the title that is checked"}),
+        }, "optional": {
+            "edges": ("IMAGE", {"tooltip": "optional TitleRig edges (accepted; drift is measured on silhouettes)"}),
+            "shadow": ("MASK", {"tooltip": "TitleRig shadow: intended shadow never counts as spill"}),
+        }}
+
+    def lock(self, images, alpha, strength, tolerance, ring, edges=None, shadow=None):
+        import torch
+
+        np_ = lambda t: None if t is None else t.detach().cpu().numpy()  # noqa: E731
+        r = spell_lock_batch(np_(images), np_(alpha), np_(edges), strength, tolerance, ring, np_(shadow))
+        drift = float(np.mean(r["drift_after"])) if r["drift_after"] else -1.0
+        report = json.dumps({"drift_before": [round(x, 4) for x in r["drift_before"]],
+                             "drift_after": [round(x, 4) for x in r["drift_after"]],
+                             "fixed_px": [int(m.sum()) for m in r["fix_masks"]]})
+        return (torch.from_numpy(r["frames"]), torch.from_numpy(r["fix_masks"]), drift, report)
+
+
 class TitleRigRenderAnimation:
     CATEGORY = CAT
     RETURN_TYPES = ("IMAGE", "MASK", "IMAGE", "IMAGE", "IMAGE", "INT", "FLOAT")
@@ -292,6 +462,10 @@ NODE_CLASS_MAPPINGS = {
     "TitleRigAnimate": TitleRigAnimate,
     "TitleRigRenderAnimation": TitleRigRenderAnimation,
     "TitleRigAudioReact": TitleRigAudioReact,
+    "TitleRigStylePreset": TitleRigStylePreset,
+    "TitleRigMagnet": TitleRigMagnet,
+    "TitleRigSVGExport": TitleRigSVGExport,
+    "TitleRigSpellLock": TitleRigSpellLock,
 }
 NODE_DISPLAY_NAME_MAPPINGS = {
     "TitleRigText": "TitleRig Text",
@@ -302,4 +476,8 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "TitleRigAnimate": "TitleRig Animate",
     "TitleRigRenderAnimation": "TitleRig Render Animation",
     "TitleRigAudioReact": "TitleRig Audio React",
+    "TitleRigStylePreset": "TitleRig Style Preset",
+    "TitleRigMagnet": "TitleRig Magnet",
+    "TitleRigSVGExport": "TitleRig SVG Export",
+    "TitleRigSpellLock": "TitleRig Spell-Lock",
 }

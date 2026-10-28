@@ -12,14 +12,15 @@ from dataclasses import dataclass, field, replace
 
 import numpy as np
 
-from .core import Glyphs, Look3D, Shadow, render_title
+from .core import Glyphs, Look3D, Shadow, letter_anchors, render_title
 from .geometry import Layout
+from .magnet import Magnet, simulate, stretch_of
 
 LETTER_EFFECTS = ("flip_x", "spin_y", "roll_z", "pop", "drop", "slide", "squash", "shake",
                   "skew_x", "skew_y", "taper_x", "taper_y", "corner_pin")
 SHADOW_EFFECTS = ("shadow_length", "shadow_angle", "shadow_opacity", "shadow_softness")
 LOOK_EFFECTS = ("extrude", "light")
-LAYOUT_EFFECTS = ("wave", "tilt_x", "tilt_y", "bend")
+LAYOUT_EFFECTS = ("wave", "tilt_x", "tilt_y", "bend", "wrap_spin")
 EFFECTS = LETTER_EFFECTS + LAYOUT_EFFECTS + SHADOW_EFFECTS + LOOK_EFFECTS
 EASINGS = ("linear", "in", "out", "in_out", "sine", "expo", "back", "elastic", "bounce", "spring", "steps")
 RESPONSES = ("follow", "trigger")
@@ -34,7 +35,7 @@ DEFAULT_AMOUNT = {"flip_x": 90.0, "spin_y": 360.0, "roll_z": 180.0, "pop": 100.0
                   "wave": 360.0, "shadow_length": 60.0, "shadow_angle": 45.0, "shadow_opacity": 100.0,
                   "shadow_softness": 12.0, "squash": 35.0, "shake": 12.0, "extrude": 30.0, "light": 90.0,
                   "tilt_x": 30.0, "tilt_y": 30.0, "bend": 50.0, "skew_x": 20.0, "skew_y": 12.0,
-                  "taper_x": 50.0, "taper_y": 40.0, "corner_pin": 100.0}
+                  "taper_x": 50.0, "taper_y": 40.0, "corner_pin": 100.0, "wrap_spin": 360.0}
 # squash: % squash (negative = stretch tall), shake: px jitter, extrude: px depth, light: deg of key-light sweep,
 # tilt_x/tilt_y: deg, bend: % of full arc bend, skew_x/skew_y: deg, taper_x/taper_y: % (negative flares),
 # corner_pin: % of the track's `corners` offsets ([[dx,dy] x4], TL TR BR BL, px)
@@ -118,9 +119,12 @@ class Anim:
     tracks: list[Track] = field(default_factory=list)
     fps: float = 24.0
     hold: float = 0.6                  # s of rest after the last track settles
+    magnets: list[Magnet] = field(default_factory=list)
 
     def n_frames(self, n_letters: int = 1) -> int:
         ends = [0.0]
+        for mg in self.magnets:
+            ends.append(len(mg.drive) / self.fps if mg.drive is not None else mg.end_time() + self.hold)
         for t in self.tracks:
             if t.drive is not None:
                 ends.append(np.shape(t.drive)[-1] / self.fps)
@@ -302,6 +306,8 @@ def _apply(d: dict, effect: str, amount: float, v: float, corners=None) -> None:
         d.tilt_x += amount * v
     elif effect == "tilt_y":
         d.tilt_y += amount * v
+    elif effect == "wrap_spin":
+        d.wrap_phase += amount * v
     elif effect == "bend":
         d.bend = float(np.clip(d.bend + amount / 100.0 * v, -1, 1))
     else:
@@ -315,14 +321,38 @@ def _shake(d: dict, amount: float, v: float, seed: int, frame: int, i: int) -> N
     d["dy"] = d.get("dy", 0.0) + amount * v * jy
 
 
-def pose(anim: Anim, g: Glyphs, lay: Layout, frame: int, shadow: Shadow | None = None, look: Look3D | None = None):
+def _magnet_motion(anim: Anim, mg: Magnet, g: Glyphs, lay: Layout, size: tuple[int, int]) -> dict:
+    """Simulated per-letter motion for one magnet, cached on the magnet per canvas + text + layout."""
+    W, H = size
+    key = (W, H, g.text, g.font, g.size, g.tracking, lay.mode, lay.bend, lay.align, anim.fps)
+    cache = mg.__dict__.setdefault("_sim", {})
+    if key not in cache:
+        n = anim.n_frames(sum(1 for c in g.text if c.strip()))
+        cache[key] = simulate(mg, letter_anchors(g, W, H, lay), n, anim.fps, W, H)
+    return cache[key]
+
+
+def pose(anim: Anim, g: Glyphs, lay: Layout, frame: int, shadow: Shadow | None = None, look: Look3D | None = None,
+         size: tuple[int, int] | None = None):
     """(Glyphs, Layout, Shadow, Look3D) for one frame: animated transforms on top of the user's own settings.
 
     target "word" moves the selected letters as one rigid group (the whole word when letters="all")."""
+    base = g
     g = copy.deepcopy(g)
     lay = replace(lay)
     shadow = replace(shadow or Shadow())
     look = replace(look or Look3D())
+    if anim.magnets and size is not None:  # magnets push letters first; tracks layer on top
+        for mg in anim.magnets:
+            motion = _magnet_motion(anim, mg, base, lay, size)
+            for i, rows in motion.items():
+                dx, dy, vx, vy = rows[min(frame, len(rows) - 1)]
+                d = g.letters.setdefault(i, {})
+                d["dx"] = d.get("dx", 0.0) + float(dx)
+                d["dy"] = d.get("dy", 0.0) + float(dy)
+                k, ang = stretch_of(mg, float(vx), float(vy))
+                if k != 1.0:
+                    d["stretch"], d["stretch_angle"] = d.get("stretch", 1.0) * k, ang
     for tr in anim.tracks:
         amount = tr.amt()
         if tr.effect in LAYOUT_EFFECTS:  # wave ripples the flag phase; tilt / bend move the whole layout
@@ -369,6 +399,24 @@ def pose(anim: Anim, g: Glyphs, lay: Layout, frame: int, shadow: Shadow | None =
 
 
 ANIM_PASSES = ("beauty", "alpha", "depth", "edges")
+MAGNET_LOOK = Look3D(face="#e2e8f0", face2="#94a3b8", side="#334155", extrude=12, bevel=0, bevel_profile="flat")
+
+
+def composite(under: dict, over: dict) -> dict:
+    """Layer one render's passes over another's: beauty alpha-over, masks / depth / edges by max."""
+    out = dict(under)
+    a = over["alpha"][..., None]
+    ub, ob = under["beauty"], over["beauty"]
+    rgb = ob[..., :3] * a + ub[..., :3] * (1 - a)
+    out["beauty"] = np.dstack([rgb, np.maximum(ub[..., 3], ob[..., 3])]).astype(np.float32)
+    for k in under:
+        if k == "beauty":
+            continue
+        if k in ("letter_ids", "normals"):
+            out[k] = np.where(over["alpha"][..., None] > 0, over[k], under[k]).astype(np.float32)
+        else:
+            out[k] = np.maximum(under[k], over[k]).astype(np.float32)
+    return out
 
 
 def render_frames(anim: Anim, g: Glyphs, look: Look3D | None = None, shadow: Shadow | None = None,
@@ -379,8 +427,13 @@ def render_frames(anim: Anim, g: Glyphs, look: Look3D | None = None, shadow: Sha
     n = anim.n_frames(sum(1 for c in g.text if c.strip()))
 
     def one(f):
-        gf, lf, sf, kf = pose(anim, g, lay, f, shadow, look)
+        gf, lf, sf, kf = pose(anim, g, lay, f, shadow, look, size=(width, height))
         p = render_title(gf, kf, sf, width, height, lf, guides="all" if "guides" in passes else "none")
+        for mg in anim.magnets:  # a magnet word is drawn on top, where the magnet is
+            if mg.text.strip():
+                mx, my = mg.position(f / anim.fps, width, height)
+                mw = Glyphs(text=mg.text, font=mg.font, size=mg.size, word={"dx": mx - width / 2, "dy": my - height / 2})
+                p = composite(p, render_title(mw, MAGNET_LOOK, Shadow(on=False), width, height, Layout(), guides="none"))
         return {k: p[k] for k in passes}
 
     with ThreadPoolExecutor(max_workers=max(1, workers)) as ex:
