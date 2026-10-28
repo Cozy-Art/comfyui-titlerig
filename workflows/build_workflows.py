@@ -1,6 +1,6 @@
 """Build the example workflows in ComfyUI API format (workflows/api/*.json, workflows/api/bonus/*.json).
 
-The UI-format files (workflows/*.json, drag-and-drop into ComfyUI) are made from these by workflows/to_ui.js, which
+The UI-format files (example_workflows/*.json, drag-and-drop into ComfyUI) are made from these by workflows/to_ui.js, which
 loads each one into the real ComfyUI frontend and saves the graph it builds. The AI workflows reproduce the wiring of
 ComfyUI's official templates (video_ltx2_depth_to_video, flux_depth_lora_example, image_flux2), flattened, with the
 TitleRig rig in place of the depth estimator. Run: python workflows/build_workflows.py"""

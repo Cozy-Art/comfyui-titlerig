@@ -1,6 +1,6 @@
 # TitleRig workflows
 
-**Open weights** workflows are the contest entry. **API** workflows live in `bonus/`. They call paid partner services and are never part of the open-weights entry.
+**Open weights** workflows are the contest entry. They live in `../example_workflows/`, so ComfyUI lists them under **Templates → Extensions → comfyui-titlerig**; you can also drag a `.json` onto the canvas. **API** workflows live in `workflows/bonus/`, out of the Templates menu. They call paid partner services and are never part of the open-weights entry. This folder (`workflows/`) holds the API-format graphs, the builders and the validators.
 
 | Workflow | Kind | Needs | What it makes |
 | --- | --- | --- | --- |
@@ -96,6 +96,6 @@ Folders and URLs are the ones ComfyUI's own templates use (`comfyui-workflow-tem
 ## Files
 
 - `build_workflows.py`: builds `api/*.json`, `api/bonus/*.json` and `api/dryrun/*.json`. `MODELS` is the one list of model files.
-- `to_ui.js`: rebuilds the drag-and-drop UI files from the API graphs through the real ComfyUI frontend.
+- `to_ui.js`: rebuilds the UI files (`example_workflows/`, `workflows/bonus/`) from the API graphs through the real ComfyUI frontend.
 - `validate.py`, `comfy_validate.py`: the checks above.
 - `run_headless.py`: queues an API workflow on a running server and lists its outputs. Never use it on `bonus/`.

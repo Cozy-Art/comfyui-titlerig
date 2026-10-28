@@ -69,6 +69,8 @@ Style Preset, Magnet, SVG Export, Spell-Lock, Cutout.
 
 - **Cutout:** the output is as long as the animated mask, or as long as the longest source when the mask is a still. Every source is fitted to the mask's size. `example.png` in the example workflow ships with git installs of ComfyUI; pick any image if yours lacks it.
 
+- **Templates:** ComfyUI lists every JSON in a pack's `example_workflows`, `example`, `examples`, `workflow` and `workflows` folders, but serves them only from the *first* of those it finds. TitleRig has `examples/` (scripts), so the UI workflows must live in `example_workflows/` (checked first). Keep top-level `workflows/` free of UI JSON, or the Templates menu shows them and then fails with "Couldn't open the template". Each template can have a `<name>.jpg` thumbnail beside it.
+
 ## For a fresh session
 
 - **Install into ComfyUI's Python, not the system one** (README → Install). `opencv-python-headless` is pinned below 4.12, because 4.12+ forces numpy 2 (seen on a Mac where it upgraded the system numpy). The tests pass on numpy 1.26.4 + OpenCV 4.11 (Python 3.12) and on numpy 2.x.
@@ -79,12 +81,12 @@ Style Preset, Magnet, SVG Export, Spell-Lock, Cutout.
 - **Changing a node's inputs changes the saved workflows' widget order.** After any `INPUT_TYPES` change:
   1. Update `workflows/build_workflows.py` if needed.
   2. Run `python workflows/build_workflows.py`.
-  3. Start ComfyUI, then run `node workflows/to_ui.js <url> --verify`.
+  3. Start ComfyUI, then run `node workflows/to_ui.js <url> --verify` (writes `example_workflows/` and `workflows/bonus/`).
 - **ComfyUI on CPU in the cloud sandbox:**
   - `download.pytorch.org` is blocked, and PyPI's Linux torch needs about 3 GB of CUDA libraries.
   - Use conda-forge instead (steps in `workflows/README.md`): `micromamba create -p /opt/comfyenv -c conda-forge python=3.13 "pytorch=*=cpu*" torchvision ...`
   - Then `pip install` the rest of `ComfyUI/requirements.txt`.
-  - Link this repo into `ComfyUI/custom_nodes/`, copy `examples/assets/titlerig_beat.wav` into `ComfyUI/input/`, and run `main.py --cpu`.
+  - Link this repo into `ComfyUI/custom_nodes/` (a symlink works for the nodes, but ComfyUI won't serve template files through it; use a copy, e.g. `git archive HEAD | tar -x -C ComfyUI/custom_nodes/comfyui-titlerig`, to test the Templates menu), copy `examples/assets/titlerig_beat.wav` into `ComfyUI/input/`, and run `main.py --cpu`.
   - The sandbox resets between sessions, so expect to redo this.
 - **Prompting skills:** the user supplies the super-skills prompting skills (`add_repo` for `Cozy-Art/super-skills` was refused by the session's permission check). Versions applied:
   - flux-2-prompts v1.0.0 (schema vendored in `docs/skills/flux-v2/`)
