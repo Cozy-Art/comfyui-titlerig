@@ -45,6 +45,8 @@ pytest
 
 Download links and exact files: see `workflows/README.md` (coming with the workflows).
 
+Prompts are written with the open-source [super-skills](https://github.com/Cozy-Art/super-skills) prompting skills (FLUX.2, FLUX 3, Recraft V4) — see `docs/MODEL-SKILLS.md`. Optional API workflows (FLUX 3, Recraft vector) are kept separate from the open-weights workflows.
+
 ## Fonts
 
 Only SIL Open Font License fonts are bundled (`fonts/`, licences alongside). Bring your own `.ttf`/`.otf` by path.

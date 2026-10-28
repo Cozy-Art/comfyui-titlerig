@@ -4,7 +4,7 @@ FLUX 3 Image (BFL `/v1/flux-3-image`) is closed/API-only: no `seed`, `negative_p
 `width`/`height` — unknown fields return HTTP 422. It edits/restyles/composites from up to 10 reference images,
 and continuity lives in the images, not seeds. That makes TitleRig's beauty pass the perfect **image 1**.
 
-## Pattern (from Jason's flux-3-image-prompts skill)
+## Pattern (from the [flux-v3 skill](https://github.com/Cozy-Art/super-skills/tree/main/skills/image/flux-v3))
 Describe the finished image in sentences, most important constraint first, say what IS there (never "no X"),
 quote exact text with placement.
 
