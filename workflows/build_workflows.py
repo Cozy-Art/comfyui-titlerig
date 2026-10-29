@@ -381,6 +381,68 @@ def ltx2_duo():
     return g
 
 
+SCENE_PROMPT = ("Realistic shaggy fur letters spelling \"TITLERIG\" stand in the scene, as if they were really there. "
+                "The fur is long and soft, each hair catching the same light as the rest of the picture, and the letters "
+                "cast soft contact shadows on the surface below them. The letters pop into place and bounce to the music "
+                "while the fur ripples with every move. The camera stays locked and everything else in the scene stays "
+                "as it is.")
+
+
+def ltx2_scene():
+    """Your image, with the title rendered into it: the image is LTX-2's first frame, the rig's edges (over the image's
+    own edges) guide the Canny IC-LoRA, the prompt says what the letters are made of. Afterwards the original image is
+    put back everywhere except the letters and the rig's shadow area, so only the title and its shadow are new."""
+    g = ltx2_animated()
+    for k in ("5", "84", "85", "86", "87", "88"):
+        del g[k]
+    g["2"] = node("TitleRigLook3D", {**LOOK, "face": "#d4d4d8", "face_gradient_to": "#a1a1aa", "side": "#52525b"},
+                  "Rig look (only shapes the guide; the prompt sets the material)")
+    g["3"] = node("TitleRigShadow", {**SHADOW, "texture": "solid", "length": 40.0, "softness": 10.0, "opacity": 0.6},
+                  "Shadow area (where the AI may darken your image)")
+    g["15"] = node("LoadImage", {"image": "example.png"}, "Your scene (any image; 16:9 works best)")
+    # the title is absent on frame 0 (so frame 0 is exactly your image), then pops in letter by letter
+    g["19"] = node("TitleRigAnimate", {**ANIM, "effect": "pop", "start": 0.25, "duration": 0.7, "order": "forward"},
+                   "Pop into the scene")
+    g["23"]["inputs"]["anim"] = ["19", 0]
+    g["26"]["inputs"].update(look=["2", 0], shadow=["3", 0])
+    g["26"]["_meta"]["title"] = "Rig: edges + alpha + shadow frames"
+    g["27"] = node("Canny", {"image": ["15", 0], "low_threshold": 0.4, "high_threshold": 0.8}, "Your scene's edges")
+    g["28"] = node("TitleRigCutout", {"inside": ["26", 3], "alpha": ["26", 1], "outside": ["27", 0],
+                                      "mask_from": "faces + extrusion", "fit_inside": "cover", "fit_outside": "cover",
+                                      "timing": "loop", "grow": 0.0, "feather": 0.0, "stroke": 0.0,
+                                      "stroke_color": "#ffffff", "shading": 0.0, "background": "#000000"},
+                   "Guide: rig edges over the scene's edges")
+    g["30"]["inputs"]["image"] = ["28", 0]
+    g["30"]["_meta"]["title"] = "Edge guide at half res (stage 1)"
+    g["31"] = node("ImageScale", {"image": ["15", 0], "upscale_method": "lanczos", "width": 1280, "height": 720,
+                                  "crop": "center"}, "Your scene at 1280x720 (frame 0)")
+    g["41"]["inputs"]["lora_name"] = mfile("ltx2_canny_iclora")
+    g["41"]["_meta"]["title"] = "Canny Control IC-LoRA (strength 1.0)"
+    for k in ("51", "63"):
+        g[k]["inputs"]["bypass"] = False
+    g["51"]["_meta"] = {"title": "Frame 0 = your scene"}
+    g["46"] = node("CLIPTextEncode", {"text": SCENE_PROMPT, "clip": ["44", 0]},
+                   "Prompt: what the letters are made of, in your scene")
+    g["52"]["_meta"]["title"] = "Rig edge guide"
+    g["80"]["inputs"].update(shadow=["26", 8], tolerance=3)
+    g["90"] = node("TitleRigCutout", {"inside": ["80", 0], "alpha": ["26", 1], "outside": ["31", 0],
+                                      "shadow": ["26", 8], "mask_from": "silhouette + shadow", "fit_inside": "cover",
+                                      "fit_outside": "cover", "timing": "loop", "grow": 16.0, "feather": 12.0,
+                                      "stroke": 0.0, "stroke_color": "#ffffff", "shading": 0.0,
+                                      "background": "#000000"},
+                   "Keep your plate: AI only on the letters + shadow area")
+    out = {"82": ("90", "titlerig/scene_final", "Final: title in your scene + your track"),
+           "84": ("80", "titlerig/scene_ai_full", "AI full frame (Spell-Locked, before the plate is restored)"),
+           "86": ("71", "titlerig/scene_ltx_raw", "LTX raw"),
+           "88": ("28", "titlerig/scene_control_edges", "Control: edge guide")}
+    for sid, (src, prefix, title) in out.items():
+        cid = str(int(sid) - 1)
+        g[cid] = node("CreateVideo", {"images": [src, 0], "fps": ["26", 6], "audio": ["20", 0]})
+        g[sid] = node("SaveVideo", {"video": [cid, 0], "filename_prefix": prefix, "format": "mp4",
+                                    "format.codec": "h264"}, title)
+    return g
+
+
 def still_rig(target, preset_name="Chrome Slam", w=1344, h=768):
     return {"1": node("TitleRigText", dict(TEXT)), "4": node("TitleRigLayout", {**LAYOUT, "bend": 0.15}),
             "5": preset(preset_name, target),
@@ -485,13 +547,15 @@ def bonus_recraft_vector():
 
 WORKFLOWS = {"titlerig_rig_only": rig_only, "titlerig_audio_react": audio_react, "titlerig_cutout": cutout,
              "titlerig_ltx2_animated": ltx2_animated, "titlerig_flux_still": flux_still,
-             "titlerig_flux2_still": flux2_still, "titlerig_cloud_ltx2": cloud_ltx2, "titlerig_ltx2_duo": ltx2_duo}
+             "titlerig_flux2_still": flux2_still, "titlerig_cloud_ltx2": cloud_ltx2, "titlerig_ltx2_duo": ltx2_duo,
+             "titlerig_ltx2_scene": ltx2_scene}
 BONUS = {"titlerig_flux3": bonus_flux3, "titlerig_recraft_vector": bonus_recraft_vector}
 RUNNABLE_ON_CPU = ("titlerig_rig_only", "titlerig_audio_react", "titlerig_cutout")  # no models, no API: safe to execute anywhere
 # CPU dry runs of the AI workflows: the AI output node is replaced by the rig beauty pass, model nodes are pruned,
 # so everything TitleRig does around the model (rig, audio, Spell-Lock, cut-out, saves) runs end to end.
 DRYRUN = {"titlerig_ltx2_animated": {"71": ["26", 0]}, "titlerig_flux_still": {"19": ["6", 0]},
-          "titlerig_flux2_still": {"24": ["6", 0]}, "titlerig_ltx2_duo": {"71": ["26", 0], "171": ["126", 0]}}
+          "titlerig_flux2_still": {"24": ["6", 0]}, "titlerig_ltx2_duo": {"71": ["26", 0], "171": ["126", 0]},
+          "titlerig_ltx2_scene": {"71": ["26", 0]}}
 OUTPUT_CLASSES = ("SaveImage", "SaveVideo", "SaveAnimatedWEBP", "PreviewImage", "SaveSVGNode", "TitleRigSVGExport")
 
 

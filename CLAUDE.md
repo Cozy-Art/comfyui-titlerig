@@ -39,6 +39,7 @@ Full PRD: https://claude.ai/artifact/2qzTkJzmj6nwPUjcdNAad4 (summary in docs/PRD
   - [x] Fresh-install test as a judge (README steps only); example inputs auto-seeded; README install check
   - [x] `docs/SUBMIT.md` submission checklist (confirm form fields on the contest page)
   - [x] `example_workflows/titlerig_ltx2_duo.json`: fur title flies in + dances to the beat, cloud line streams under it with a beat-driven Magnet; one LTX-2 pass + prompt per layer, Spell-Lock + Cutout; Shaggy Fur and Cloud Puff presets; `examples/duo_preview.py`
+  - [x] `example_workflows/titlerig_ltx2_scene.json`: the title rendered into your own image (image = frame 0, rig edges over the image's Canny edges, Canny IC-LoRA, your prompt, plate restored outside letters + shadow)
   - [ ] First real GPU run of both AI workflows (by the user on build night); try Spell-Lock on real output
   - [ ] Fill `docs/demo/slots/`, build the video, upload, submit by Oct 30 7am PT (docs/SUBMIT.md)
 - [x] Cutout text node: an `inside` image / video masked to the letters (rig alpha, per frame), an `outside` image / video everywhere else; mask from faces / faces + extrusion / silhouette + shadow; fit cover / contain / stretch; feather; optional outline stroke; optional rig shading on top

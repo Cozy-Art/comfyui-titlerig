@@ -38,7 +38,7 @@ I couldn't reach the contest page (comfy.org) from the build sandbox, so the for
 
 ## 3. Setup detail (for judges who run it)
 
-- [x] Install steps are in the README, and a fresh install was tested: ComfyUI 0.43.0 (latest `main` on Oct 28), CPU, README steps only. All 13 nodes loaded, all 7 templates opened from the Templates menu, and the three model-free workflows ran.
+- [x] Install steps are in the README, and a fresh install was tested: ComfyUI 0.43.0 (latest `main` on Oct 28), CPU, README steps only. All 13 nodes loaded, all 7 templates opened (now 9 with `titlerig_ltx2_duo` and `titlerig_ltx2_scene`; re-check on the 30th) from the Templates menu, and the three model-free workflows ran.
 - [x] Every model file, Hugging Face link, target folder and licence is in `workflows/README.md`. Runpod gets a one-paste setup (`scripts/runpod_setup.sh`), and `docs/BUILD_NIGHT.md` covers Comfy Cloud.
 - [x] Hardware notes: LTX-2 19B needs 48 GB+ for 1280×720 (H100/A100 80 GB recommended), FLUX [dev] fp8 needs 16–24 GB, and the rig itself runs on CPU.
 - [ ] Record the GPU and host actually used tonight (Comfy Cloud or Runpod, card) in `workflows/README.md` → Hardware, with the real run times.
