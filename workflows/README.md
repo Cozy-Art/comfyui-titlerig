@@ -8,6 +8,7 @@
 | `titlerig_audio_react.json` | open · no models | CPU | the hero motion on its own: words react to the track, MP4 with sound |
 | `titlerig_cutout.json` | open · no models | CPU | Cutout text: an image inside the popping letters, a colour outside (swap either for Load Video), MP4 |
 | `titlerig_ltx2_animated.json` | **open weights · hero** | GPU (LTX-2 19B) | audio-reactive rig → depth frames → **LTX-2 + Depth Control IC-LoRA** → Spell-Lock → MP4 with the original track |
+| `titlerig_ltx2_duo.json` | open weights | GPU (LTX-2 19B), two passes | two rig layers → **two LTX-2 passes, one prompt each** (hairy title, cloudy line) → Spell-Lock → Cutout → MP4 with the original track |
 | `titlerig_flux_still.json` | open weights | GPU (FLUX.1 [dev]) | rig depth → **FLUX.1 Depth [dev]** → Spell-Lock → raw, locked and transparent title PNGs |
 | `titlerig_flux2_still.json` | open weights | GPU (FLUX.2 [dev]) | rig beauty as **reference image 1** → FLUX.2 [dev] → Spell-Lock → same PNG set |
 | `bonus/titlerig_flux3.json` | **API (paid)** | BFL partner node | rig beauty as image 1 → FLUX 3 Image (prompt per `docs/FLUX3.md`) → Spell-Lock → PNGs |
@@ -28,6 +29,21 @@ Drag a `.json` onto ComfyUI. The audio workflows expect `examples/assets/titleri
 - **Spell-Lock:** snaps every LTX frame back to the rig alpha.
 - **Audio:** the video is rebuilt with **your original track**. LTX's generated audio is discarded.
 - **Saved outputs:** the Spell-Locked video, the raw LTX video, and the depth and edges control clips. The edges clip is ready for the Canny IC-LoRA (`ltx-2-19b-ic-lora-canny-control`): swap the LoRA and feed edges to `LTXVAddGuide`.
+
+**Two layers, two materials, `titlerig_ltx2_duo.json`:** the hero's LTX-2 chain, run once per layer. Same models, same settings.
+- **Layer 1, the title** ("TITLERIG", Style Preset **Shaggy Fur**):
+  - flies in from behind the camera, huge and spun, one letter after another (pop, slide and roll, back / expo easing);
+  - then pops on the kicks, hops on the hats and throws its shadow on the kicks (the hero's audio motion).
+- **Layer 2, the line underneath** ("ON CLOUD NINE", Style Preset **Cloud Puff**):
+  - streams in from the right at 0.9 s and floats on a slow flag wave;
+  - a TitleRig **Magnet** sweeps along the line from 1.8 s. The kick curve drives its strength, so it repels the letters on every kick and they spring back with squash and stretch.
+- **Two prompts:** LTX pass 1 (nodes 30–71) gets the title's depth and *Prompt 1: hairy*; pass 2 (nodes 130–171) gets the line's depth and *Prompt 2: cloudy*. Each pass only sees its own words, so neither material leaks onto the other. Edit either prompt node, or switch either Style Preset.
+- **Back together:**
+  - Spell-Lock snaps the cloud frames to layer 2's alpha (its soft sky shadow is allowed).
+  - Cutout lays the fur frames over them inside layer 1's alpha, grown 3 px and feathered 3 px so the fur edge stays soft.
+  - The cloud pass supplies the sky, so write the scene into prompt 2.
+- **Saved outputs:** the final MP4, both raw LTX passes, a **rig preview** of both layers (no AI; check the motion before spending GPU time), and both depth guides. All carry your track.
+- **Cost:** two LTX passes, so about twice the hero's GPU time. Preview the rig without AI: `python examples/duo_preview.py` writes `docs/media/ltx2_duo_rig.gif` and `.mp4`.
 - **Two template changes:**
   - The negative prompt drops the template's word "titles", which would fight the title.
   - The first-frame input is bypassed, so LTX isn't forced to start from the rig's flat colours. Feed a FLUX still there and set `bypass` to false to lock the look.

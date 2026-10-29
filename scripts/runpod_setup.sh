@@ -17,13 +17,17 @@ set -uo pipefail
 GROUPS_WANTED="${*:-ltx flux1 flux2}"
 if [ -z "${COMFY_ROOT:-}" ] && [ -d /workspace/runpod-slim/ComfyUI ]; then COMFY_ROOT=/workspace/runpod-slim; fi
 ROOT="${COMFY_ROOT:-/workspace}"
-PY="${PYTHON:-$(command -v python3 || command -v python)}"
 export PIP_BREAK_SYSTEM_PACKAGES=1  # template images install into the system Python (PEP 668)
 FAILED=()
 
 cd "$ROOT"
 [ -d ComfyUI ] || git clone --depth 1 https://github.com/comfyanonymous/ComfyUI
 cd ComfyUI
+# the Python that runs ComfyUI: its own venv when it has one (Runpod's template uses .venv-cu128), else the system one
+if [ -z "${PYTHON:-}" ]; then for p in .venv*/bin/python venv/bin/python; do [ -x "$p" ] && PYTHON="$PWD/$p" && break; done; fi
+PY="${PYTHON:-$(command -v python3 || command -v python)}"
+echo "python: $PY"
+$PY -m pip --version >/dev/null 2>&1 || $PY -m ensurepip -q || FAILED+=("pip for $PY (python -m ensurepip)")  # uv venvs ship without pip
 $PY -m pip install -q -r requirements.txt
 $PY -m pip install -q "huggingface_hub[cli]" hf_transfer
 
@@ -48,7 +52,9 @@ MODELS_DIR="${MODELS_DIR:-models}"
 echo "models -> $MODELS_DIR (about $NEED GB needed)"
 
 export HF_HUB_ENABLE_HF_TRANSFER=1
-if command -v huggingface-cli >/dev/null; then HFCLI=(huggingface-cli download); else HFCLI=(hf download); fi
+BIN="$(dirname "$PY")"
+if [ -x "$BIN/hf" ]; then HFCLI=("$BIN/hf" download); elif [ -x "$BIN/huggingface-cli" ]; then HFCLI=("$BIN/huggingface-cli" download)
+elif command -v hf >/dev/null; then HFCLI=(hf download); else HFCLI=(huggingface-cli download); fi
 mkdir -p "$MODELS_DIR"
 TMP="$MODELS_DIR/.hf_download"
 

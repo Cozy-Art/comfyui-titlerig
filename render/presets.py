@@ -131,12 +131,24 @@ PRESETS: dict[str, Preset] = {p.name: p for p in [
            dict(face="#d4d4d8", face2="#52525b", side="#18181b", gloss=0.9, rim=0.5, light_height=0.4),
            dict(texture="solid", color="#000000", softness=12, opacity=0.7),
            negative="cartoon, flat colours"),
+    Preset("Shaggy Fur", "long shaggy fur with soft individual hairs covering every face, fine macro detail",
+           "warm soft key light with a glowing backlit rim through the hair tips",
+           "a warm tangerine studio sweep", ["#f472b6", "#be185d", "#fdba74"], "hot pink fur on warm tangerine",
+           "the fur ripples and bounces with every move of the letters",
+           dict(face="#f472b6", face2="#db2777", side="#9d174d", gloss=0.05, rim=0.6),
+           dict(texture="noise", color="#7c2d12", softness=4, opacity=0.6)),
+    Preset("Cloud Puff", "soft billowing white cumulus cloud vapour, fluffy and volumetric, wisps curling at the edges",
+           "bright sunlight from above with a golden glow along the cloud tops", "a clear cerulean sky",
+           ["#ffffff", "#cbd5e1", "#38bdf8"], "puffy white cloud on clear sky blue",
+           "wisps of vapour drift and curl off the letters as they move",
+           dict(face="#ffffff", face2="#e2e8f0", side="#94a3b8", gloss=0.1, rim=0.8),
+           dict(texture="solid", color="#0369a1", softness=14, opacity=0.35)),
 ]}
 
 _BACKDROPS = {"Chrome Slam": "#1e3a8a", "Fuzzy Grass": "#bae6fd", "Liquid Glass": "#475569", "Aero Bubble": "#86efac",
               "Ben-Day Pop": "#fde047", "Holo Foil": "#2e1065", "ChromaDepth": "#050505", "Candy Inflatable": "#fbcfe8",
               "Op Art Stripe": "#f5f5f5", "Vapor Sunset": "#3b0764", "Low Poly": "#99f6e4", "Cel Toon": "#7dd3fc",
-              "Trailer Title": "#0c0a09"}
+              "Trailer Title": "#0c0a09", "Shaggy Fur": "#fdba74", "Cloud Puff": "#7dd3fc"}
 for _n, _b in _BACKDROPS.items():
     PRESETS[_n].backdrop = _b
 
@@ -154,6 +166,8 @@ _LEADS = {  # name: (lead, detail, camera)
     "Vapor Sunset": ("Synthwave lacquer", "a pink-to-purple gradient with a chrome top edge", None),
     "Low Poly": ("Low-poly faceted", "flat-shaded triangular facets", None),
     "Cel Toon": ("Cel-shaded cartoon", "two flat tones per face and a thick ink outline", None),
+    "Shaggy Fur": ("Shaggy pink fur", "long soft hairs covering every face", "Shot on Sony A7IV, 90mm macro f/8"),
+    "Cloud Puff": ("Fluffy white cloud", "soft wisps of vapour curling off every edge", "Shot on Sony A7IV, 35mm f/8"),
     "Trailer Title": ("Brushed steel movie-trailer", "glowing ember edges",
                       "Shot on ARRI Alexa 35, 50mm anamorphic, sharp focus on the letters"),
 }
@@ -171,6 +185,8 @@ _SOUNDS = {
     "Low Poly": "Crisp digital blips ring as each facet lights over a chiptune bassline",
     "Cel Toon": "Cartoon boings and a cheerful whistle play over a bouncy ukulele tune",
     "Trailer Title": "A deep cinematic boom hits, embers crackle and a low orchestral drone builds",
+    "Shaggy Fur": "Soft fuzzy thumps land on each beat over a warm, funky bassline",
+    "Cloud Puff": "A soft airy whoosh drifts past over a dreamy ambient pad",
 }
 for _n, _s in _SOUNDS.items():
     PRESETS[_n].sound = _s
@@ -196,6 +212,8 @@ _STRUCTURE = {  # name: (extrude px, extrude_angle deg, shadow overrides or None
     "Low Poly": (14, 40, dict(length=20)),
     "Cel Toon": (12, 45, dict(length=16)),
     "Trailer Title": (6, 70, dict(length=64, softness=16)),            # thin slab, long cinematic shadow
+    "Shaggy Fur": (20, 60, dict(length=26)),
+    "Cloud Puff": (8, 70, dict(length=20)),                            # light, floating: soft sky shadow
 }
 for _n, (_e, _a, _sh) in _STRUCTURE.items():
     PRESETS[_n].look.update(extrude=_e, extrude_angle=float(_a))

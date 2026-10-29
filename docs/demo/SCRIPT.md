@@ -25,7 +25,7 @@ It writes `examples/out/demo/titlerig_demo.mp4`. Fill `docs/demo/slots/` with bu
 | 0:30–0:32 | **Card** | "LTX-2" | "Feed the depth to LTX-2…" | rendered |
 | 0:32–0:42 | **LTX result** | The Spell-Locked LTX-2 clip, Chrome Slam, with the track. Lower third: *LTX-2 19B + Depth Control IC-LoRA (Lightricks), guided by the rig's depth, then TitleRig Spell-Lock.* | "…and the AI paints the material while the rig holds every letter. Spell-Lock snaps each frame back to the rig, so it still spells TITLERIG." | slot `ltx_result` |
 | 0:42–0:46 | **FLUX still** | FLUX.1 Depth still with its transparent cutout. Lower third: *FLUX.1 Depth [dev] (Black Forest Labs) on the rig's depth.* | "Stills too, with a transparent cut-out." | slot `flux_still` |
-| 0:46–0:48 | **Card** | "PRESETS" (Holo Foil) | "Thirteen presets…" | rendered |
+| 0:46–0:48 | **Card** | "PRESETS" (Holo Foil) | "Fifteen presets…" | rendered |
 | 0:48–1:00 | **Three presets** | Three 4-second shots: Ben-Day Pop, a second preset and a third preset. Lower third: *Style Preset: <name>.* | "…from Ben-Day pop art to chrome to candy vinyl. Each one writes the prompt for FLUX and LTX-2, and sets a matching look." | slots `preset_1`–`3` (rig-only fallbacks) |
 | 1:00–1:02 | **Card** | "AUDIO REACT" (Ben-Day Pop) | "And it listens." | rendered |
 | 1:02–1:10 | **Audio react** | POW! pops on the kicks and hops on the hats. Kicks throw the halftone shadow. Lower third: *TitleRig Audio React: kicks pop the letters, hats make them hop, kicks throw the shadow.* | "Kicks punch the letters, hats bounce them, any part of the sound drives any part of the title." | rendered from the bed |

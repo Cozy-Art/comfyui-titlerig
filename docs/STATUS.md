@@ -13,7 +13,7 @@ this file says where things stand and what a fresh session should know before to
 | Animate (P1a) | 24 effects (letters, layout, shadow, look), 11 easings, 5 orders, in / out / loop, letter selection (`word:2`, `0,3-5`), influence, trigger response + retrigger | `render/animate.py` |
 | Audio React (P1b) | numpy onsets (band spectral flux), loudness, spectrum mode, attack / release | `render/audio.py` |
 | Magnet (P2) | attract / repel, strength, range, lag, spring, squash & stretch, sweep / orbit / fixed, magnet word, audio drive | `render/magnet.py` |
-| Style Preset (P2) | 13 PRD presets; prompts for FLUX.2-dev, FLUX 3, LTX-2.3 written to the super-skills; matching Look / Shadow; settings JSON | `render/presets.py`, `docs/skills/` |
+| Style Preset (P2) | 13 PRD presets + Shaggy Fur and Cloud Puff; prompts for FLUX.2-dev, FLUX 3, LTX-2.3 written to the super-skills; matching Look / Shadow; settings JSON | `render/presets.py`, `docs/skills/` |
 | SVG export (P2) | rig traced to layered SVG (shadow cells, extrusion tones, one path per letter) | `render/svg.py` |
 | Spell-Lock v1 (P2) | warp-snap + spill / hole repair against the rig alpha, shadow protection, drift score | `render/spell_lock.py` |
 | Canvas preview (P2) | live preview widget on Render / Render Animation: pass chips, guides, frame scrubber, dark + light palettes | `web/titlerig_preview.js`, `nodes/preview.py` |

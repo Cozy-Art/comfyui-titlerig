@@ -12,7 +12,8 @@ from render.presets import (FLUX3_FIELDS, LTX_LOCAL_NEGATIVE, ltx_negative, flux
                             flux2_structured, suggested_look)
 
 PRD = ["Chrome Slam", "Fuzzy Grass", "Liquid Glass", "Aero Bubble", "Ben-Day Pop", "Holo Foil", "ChromaDepth",
-       "Candy Inflatable", "Op Art Stripe", "Vapor Sunset", "Low Poly", "Cel Toon", "Trailer Title"]
+       "Candy Inflatable", "Op Art Stripe", "Vapor Sunset", "Low Poly", "Cel Toon", "Trailer Title",
+       "Shaggy Fur", "Cloud Puff"]
 NEGATION = re.compile(r"\b(no|not|without|avoid|don't|never)\b", re.I)
 SCHEMA = json.load(open(os.path.join(ROOT, "docs", "skills", "flux-v2", "schema.json")))
 

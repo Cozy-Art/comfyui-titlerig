@@ -283,6 +283,104 @@ def cloud_ltx2():
     return g
 
 
+LINE_Y = 0.5 + 170 / 720  # second line sits 170 px below centre (1280x720)
+
+
+def ltx_pass(g, offset, depth, frames, prompt, title):
+    """A second LTX-2 pass sharing the hero's model loaders (40-45): the hero's nodes 30, 31 and 46-71 copied with
+    ids + offset, guided by `depth`, prompted by `prompt`. Returns the id of its decoded frames."""
+    hero = ltx2_animated()
+    ids = [k for k in hero if k in ("30", "31") or 46 <= int(k) <= 71]
+    mv = {k: str(int(k) + offset) for k in ids}
+    for k in ids:
+        n = json.loads(json.dumps(hero[k]))
+        for name, v in n["inputs"].items():
+            if isinstance(v, list) and len(v) == 2 and v[0] in mv:
+                n["inputs"][name] = [mv[v[0]], v[1]]
+        if "_meta" in n:
+            n["_meta"]["title"] = f"{n['_meta']['title']} · {title}"
+        g[mv[k]] = n
+    g[mv["30"]]["inputs"]["image"] = depth
+    g[mv["31"]]["inputs"]["image"] = frames
+    g[mv["46"]]["inputs"]["text"] = prompt
+    return mv["71"]
+
+
+def ltx2_duo():
+    """Two layers, two materials: TITLERIG flies in and pops / bounces to the music (Shaggy Fur), ON CLOUD NINE
+    streams in underneath while a beat-driven magnet knocks its letters (Cloud Puff). Each layer's depth guides its
+    own LTX-2 pass with its own prompt; Spell-Lock locks the clouds, then the fur title is cut in over them with the
+    rig's alpha, so each material stays on its own words."""
+    g = ltx2_animated()
+    for k in ("80", "81", "82", "83", "84", "85", "86", "87", "88"):
+        del g[k]
+    # layer 1: the title. Flies in from behind the camera (huge, spun, from the right), then audio_drive's
+    # pop on kicks / hop on hats / shadow on kicks
+    g["1"]["inputs"].update(size=180, word_json=json.dumps({"dy": -70}))
+    g["5"] = preset("Shaggy Fur", "ltx23_video")
+    fly = {**ANIM, "duration": 0.7, "order": "forward"}
+    g["17"] = node("TitleRigAnimate", {**fly, "effect": "pop", "amount": -260.0}, "Fly in: from huge")
+    g["18"] = node("TitleRigAnimate", {**fly, "effect": "slide", "amount": -900.0, "easing": "expo",
+                                       "anim": ["17", 0]}, "Fly in: from the right")
+    g["19"] = node("TitleRigAnimate", {**fly, "effect": "roll_z", "amount": -90.0, "anim": ["18", 0]},
+                   "Fly in: spun")
+    g["23"]["inputs"]["anim"] = ["19", 0]
+    g["26"]["_meta"]["title"] = "Layer 1 rig: title (fur)"
+    # layer 2: the line underneath. Streams in, floats on a slow flag wave, a magnet sweeps through and repels
+    # its letters on every kick (the kick curve scales the magnet), and they spring back
+    g["101"] = node("TitleRigText", {**TEXT, "text": "ON CLOUD NINE", "size": 92, "tracking": 6.0,
+                                     "word_json": json.dumps({"dy": 170})}, "Layer 2 text")
+    g["104"] = node("TitleRigLayout", {**LAYOUT, "mode": "flat", "bend": 0.0, "flag_amp": 8.0,
+                                       "flag_wavelength": 380.0}, "Layer 2 layout (gentle flag)")
+    g["105"] = node("TitleRigStylePreset", {**g["5"]["inputs"], "preset": "Cloud Puff", "glyphs": ["101", 0]},
+                    "Style Preset (Cloud Puff)")
+    g["110"] = node("TitleRigAnimate", {**ANIM, "effect": "slide", "amount": -1100.0, "easing": "expo",
+                                        "duration": 1.0, "stagger": 0.07, "order": "reverse", "start": 0.9},
+                    "Stream in under the title")
+    g["111"] = node("TitleRigAnimate", {**ANIM, "effect": "wave", "direction": "loop", "easing": "linear",
+                                        "duration": 2.0, "stagger": 0.0, "amount": 360.0, "anim": ["110", 0]},
+                    "Float (flag wave)")
+    g["112"] = node("TitleRigMagnet", {"polarity": "repel", "strength": 160.0, "range": 230.0, "lag": 0.1,
+                                       "spring": 0.7, "squash": 0.6, "path": "sweep", "x": -0.1, "y": round(LINE_Y, 4),
+                                       "x_end": 1.1, "y_end": round(LINE_Y, 4), "radius": 0.3, "duration": 3.0,
+                                       "start": 1.8, "fps": 24.0, "hold": 0.8, "anim": ["111", 0],
+                                       "drive": ["21", 0], "magnet_text": "", "magnet_size": 120},
+                    "Magnet: repels on every kick, letters spring back")
+    g["126"] = node("TitleRigRenderAnimation", {"glyphs": ["101", 0], "anim": ["112", 0], "width": 1280, "height": 720,
+                                                "look": ["105", 2], "shadow": ["105", 3], "layout": ["104", 0],
+                                                "pad_ltx": True}, "Layer 2 rig: line (clouds)")
+    # pass 1 (nodes 30-71, prompt from node 5) paints the fur title; pass 2 paints the clouds
+    g["46"]["_meta"]["title"] = "Prompt 1: hairy (Style Preset: Shaggy Fur)"
+    clouds = ltx_pass(g, 100, ["126", 2], ["126", 0], ["105", 0], "clouds")
+    g["146"]["_meta"]["title"] = "Prompt 2: cloudy (Style Preset: Cloud Puff)"
+    g["80"] = node("TitleRigSpellLock", {"images": [clouds, 0], "alpha": ["126", 1], "strength": 1.0, "tolerance": 2,
+                                         "ring": 24, "edges": ["126", 3], "shadow": ["126", 8]},
+                   "Spell-Lock the clouds")
+    g["90"] = node("TitleRigCutout", {"inside": ["71", 0], "alpha": ["26", 1], "outside": ["80", 0],
+                                      "mask_from": "faces + extrusion", "fit_inside": "cover", "fit_outside": "cover",
+                                      "timing": "loop", "grow": 3.0, "feather": 3.0, "stroke": 0.0,
+                                      "stroke_color": "#ffffff", "shading": 0.0, "background": "#000000"},
+                   "Fur title over the clouds (layer 1 alpha)")
+    g["91"] = node("TitleRigCutout", {"inside": ["26", 0], "alpha": ["26", 1], "outside": ["126", 0],
+                                      "mask_from": "faces + extrusion", "fit_inside": "cover", "fit_outside": "cover",
+                                      "timing": "loop", "grow": 0.0, "feather": 0.5, "stroke": 0.0,
+                                      "stroke_color": "#ffffff", "shading": 0.0, "background": "#000000"},
+                   "Rig preview: both layers (no AI)")
+    out = {"93": ("90", "titlerig/duo_final", "Final: fur title + cloud line + your track"),
+           "95": ("71", "titlerig/duo_fur_raw", "LTX pass 1 raw (hairy)"),
+           "97": (clouds, "titlerig/duo_clouds_raw", "LTX pass 2 raw (cloudy)"),
+           "99": ("91", "titlerig/duo_rig_preview", "Rig preview (check the motion before the GPU passes)"),
+           "87": ("26:2", "titlerig/duo_control_depth_title", "Control: title depth"),
+           "89": ("126:2", "titlerig/duo_control_depth_line", "Control: line depth")}
+    for sid, (src, prefix, title) in out.items():
+        nid, slot = (src.split(":") + ["0"])[:2]
+        cid = str(int(sid) - 1)
+        g[cid] = node("CreateVideo", {"images": [nid, int(slot)], "fps": ["26", 6], "audio": ["20", 0]})
+        g[sid] = node("SaveVideo", {"video": [cid, 0], "filename_prefix": prefix, "format": "mp4",
+                                    "format.codec": "h264"}, title)
+    return g
+
+
 def still_rig(target, preset_name="Chrome Slam", w=1344, h=768):
     return {"1": node("TitleRigText", dict(TEXT)), "4": node("TitleRigLayout", {**LAYOUT, "bend": 0.15}),
             "5": preset(preset_name, target),
@@ -387,22 +485,23 @@ def bonus_recraft_vector():
 
 WORKFLOWS = {"titlerig_rig_only": rig_only, "titlerig_audio_react": audio_react, "titlerig_cutout": cutout,
              "titlerig_ltx2_animated": ltx2_animated, "titlerig_flux_still": flux_still,
-             "titlerig_flux2_still": flux2_still, "titlerig_cloud_ltx2": cloud_ltx2}
+             "titlerig_flux2_still": flux2_still, "titlerig_cloud_ltx2": cloud_ltx2, "titlerig_ltx2_duo": ltx2_duo}
 BONUS = {"titlerig_flux3": bonus_flux3, "titlerig_recraft_vector": bonus_recraft_vector}
 RUNNABLE_ON_CPU = ("titlerig_rig_only", "titlerig_audio_react", "titlerig_cutout")  # no models, no API: safe to execute anywhere
 # CPU dry runs of the AI workflows: the AI output node is replaced by the rig beauty pass, model nodes are pruned,
 # so everything TitleRig does around the model (rig, audio, Spell-Lock, cut-out, saves) runs end to end.
-DRYRUN = {"titlerig_ltx2_animated": ("71", ["26", 0]), "titlerig_flux_still": ("19", ["6", 0]),
-          "titlerig_flux2_still": ("24", ["6", 0])}
+DRYRUN = {"titlerig_ltx2_animated": {"71": ["26", 0]}, "titlerig_flux_still": {"19": ["6", 0]},
+          "titlerig_flux2_still": {"24": ["6", 0]}, "titlerig_ltx2_duo": {"71": ["26", 0], "171": ["126", 0]}}
 OUTPUT_CLASSES = ("SaveImage", "SaveVideo", "SaveAnimatedWEBP", "PreviewImage", "SaveSVGNode", "TitleRigSVGExport")
 
 
-def dryrun(prompt: dict, ai_node: str, replacement: list) -> dict:
+def dryrun(prompt: dict, swap: dict) -> dict:
+    """swap: {AI output node id: [rig node id, slot]} (each AI node's frames replaced by a rig pass)."""
     g = json.loads(json.dumps(prompt))
     for n in g.values():
         for k, v in n["inputs"].items():
-            if isinstance(v, list) and len(v) == 2 and v[0] == ai_node:
-                n["inputs"][k] = list(replacement)
+            if isinstance(v, list) and len(v) == 2 and v[0] in swap:
+                n["inputs"][k] = list(swap[v[0]])
     keep, stack = set(), [k for k, n in g.items() if n["class_type"] in OUTPUT_CLASSES]
     while stack:  # everything an output still needs
         k = stack.pop()
@@ -427,7 +526,7 @@ if __name__ == "__main__":
                 json.dump(fn(), f, indent=2)
             print("wrote", f"workflows/{sub}/{name}.json")
     os.makedirs(os.path.join(HERE, "api", "dryrun"), exist_ok=True)
-    for name, (ai, repl) in DRYRUN.items():
+    for name, swap in DRYRUN.items():
         with open(os.path.join(HERE, "api", "dryrun", f"{name}.json"), "w") as f:
-            json.dump(dryrun(WORKFLOWS[name](), ai, repl), f, indent=2)
+            json.dump(dryrun(WORKFLOWS[name](), swap), f, indent=2)
         print("wrote", f"workflows/api/dryrun/{name}.json")
