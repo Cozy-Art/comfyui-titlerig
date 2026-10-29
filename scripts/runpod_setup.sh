@@ -27,6 +27,7 @@ cd ComfyUI
 if [ -z "${PYTHON:-}" ]; then for p in .venv*/bin/python venv/bin/python; do [ -x "$p" ] && PYTHON="$PWD/$p" && break; done; fi
 PY="${PYTHON:-$(command -v python3 || command -v python)}"
 echo "python: $PY"
+$PY -m pip --version >/dev/null 2>&1 || $PY -m ensurepip -q || FAILED+=("pip for $PY (python -m ensurepip)")  # uv venvs ship without pip
 $PY -m pip install -q -r requirements.txt
 $PY -m pip install -q "huggingface_hub[cli]" hf_transfer
 
