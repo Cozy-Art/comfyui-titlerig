@@ -13,6 +13,9 @@ except ImportError as e:
         req = os.path.join(os.path.dirname(os.path.abspath(__file__)), "requirements.txt")
         raise ImportError(f"TitleRig: {e}. Install its requirements into the Python that runs ComfyUI: "
                           f"{sys.executable} -m pip install -r {req}") from e
+else:
+    if "folder_paths" in sys.modules:  # inside ComfyUI: one line in the log saying the pack really registered
+        print(f"[TitleRig] {len(NODE_CLASS_MAPPINGS)} nodes loaded from {os.path.dirname(os.path.abspath(__file__))}")
 
 WEB_DIRECTORY = "./web"
 __all__ = ["NODE_CLASS_MAPPINGS", "NODE_DISPLAY_NAME_MAPPINGS", "WEB_DIRECTORY"]
