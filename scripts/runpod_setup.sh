@@ -8,37 +8,62 @@
 #
 # Re-runnable: clones and files already in place are skipped. Gated repos need a Hugging Face token with the licence
 # accepted on the model page: export HF_TOKEN=hf_... before running.
+#
+# Runpod's official ComfyUI template (runpod/comfyui) is detected: TitleRig goes into its ComfyUI at
+# /workspace/runpod-slim/ComfyUI (no second copy). Options (env): COMFY_ROOT=<dir holding ComfyUI>, PYTHON=python3,
+# SKIP_LTXVIDEO=1 (don't install the optional ComfyUI-LTXVideo pack), MODELS_DIR=<dir> (download models there and
+# link them into ComfyUI/models; chosen automatically when ComfyUI's disk is too small).
 set -uo pipefail
 GROUPS_WANTED="${*:-ltx flux1 flux2}"
+if [ -z "${COMFY_ROOT:-}" ] && [ -d /workspace/runpod-slim/ComfyUI ]; then COMFY_ROOT=/workspace/runpod-slim; fi
 ROOT="${COMFY_ROOT:-/workspace}"
-PY="${PYTHON:-python}"
+PY="${PYTHON:-$(command -v python3 || command -v python)}"
+export PIP_BREAK_SYSTEM_PACKAGES=1  # template images install into the system Python (PEP 668)
 FAILED=()
 
 cd "$ROOT"
 [ -d ComfyUI ] || git clone --depth 1 https://github.com/comfyanonymous/ComfyUI
 cd ComfyUI
-$PY -m pip install -q --upgrade pip
 $PY -m pip install -q -r requirements.txt
 $PY -m pip install -q "huggingface_hub[cli]" hf_transfer
 
-[ -d custom_nodes/comfyui-titlerig ] || git clone --depth 1 https://github.com/Cozy-Art/comfyui-titlerig custom_nodes/comfyui-titlerig
+if [ -d custom_nodes/comfyui-titlerig/.git ]; then git -C custom_nodes/comfyui-titlerig pull -q --ff-only || FAILED+=("TitleRig update (git pull)")
+else git clone --depth 1 https://github.com/Cozy-Art/comfyui-titlerig custom_nodes/comfyui-titlerig; fi
 $PY -m pip install -q -r custom_nodes/comfyui-titlerig/requirements.txt
 # ComfyUI-LTXVideo is optional (TitleRig's LTX workflows use ComfyUI's built-in LTX-2 nodes); handy for its extras.
-[ -d custom_nodes/ComfyUI-LTXVideo ] || git clone --depth 1 https://github.com/Lightricks/ComfyUI-LTXVideo custom_nodes/ComfyUI-LTXVideo
-$PY -m pip install -q -r custom_nodes/ComfyUI-LTXVideo/requirements.txt || FAILED+=("ComfyUI-LTXVideo requirements (optional)")
-cp custom_nodes/comfyui-titlerig/examples/assets/titlerig_beat.wav input/
+if [ -z "${SKIP_LTXVIDEO:-}" ]; then
+  [ -d custom_nodes/ComfyUI-LTXVideo ] || git clone --depth 1 https://github.com/Lightricks/ComfyUI-LTXVideo custom_nodes/ComfyUI-LTXVideo
+  $PY -m pip install -q -r custom_nodes/ComfyUI-LTXVideo/requirements.txt || FAILED+=("ComfyUI-LTXVideo requirements (optional)")
+fi
+mkdir -p input && cp custom_nodes/comfyui-titlerig/examples/assets/titlerig_beat.wav input/
+
+# disk: rough GB per group; if ComfyUI's disk can't hold them, keep models on the bigger container disk + link them
+NEED=10; for g in $GROUPS_WANTED; do case "$g" in ltx) NEED=$((NEED + 55));; flux1) NEED=$((NEED + 35));; flux2) NEED=$((NEED + 80));; esac; done
+free_gb() { df -BG --output=avail "$1" 2>/dev/null | tail -1 | tr -dc 0-9; }
+if [ -z "${MODELS_DIR:-}" ] && [ "$(free_gb models)" -lt "$NEED" ] && [ "$(free_gb /)" -gt "$(free_gb models)" ]; then
+  MODELS_DIR=/root/titlerig-models
+  echo "models: ComfyUI's disk has $(free_gb models) GB free, about $NEED GB needed -> $MODELS_DIR (container disk, $(free_gb /) GB free; wiped if the pod is reset), linked into ComfyUI/models"
+fi
+MODELS_DIR="${MODELS_DIR:-models}"
+echo "models -> $MODELS_DIR (about $NEED GB needed)"
 
 export HF_HUB_ENABLE_HF_TRANSFER=1
 if command -v huggingface-cli >/dev/null; then HFCLI=(huggingface-cli download); else HFCLI=(hf download); fi
-TMP="$ROOT/hf_download"
+mkdir -p "$MODELS_DIR"
+TMP="$MODELS_DIR/.hf_download"
 
 get() {  # get <repo> <path in repo> <ComfyUI models folder>
-  local dest="models/$3/$(basename "$2")"
-  if [ -s "$dest" ]; then echo "have  $dest"; return; fi
-  echo "fetch $dest"
-  mkdir -p "models/$3"
-  if "${HFCLI[@]}" "$1" "$2" --local-dir "$TMP" && mv "$TMP/$2" "$dest"; then return; fi
-  FAILED+=("$dest  <- https://huggingface.co/$1 (licence accepted? HF_TOKEN set?)")
+  local name dest link
+  name="$(basename "$2")"; dest="$MODELS_DIR/$3/$name"; link="models/$3/$name"
+  mkdir -p "$MODELS_DIR/$3" "models/$3"
+  if [ -s "$dest" ]; then echo "have  $dest"
+  else
+    echo "fetch $dest"
+    if ! { "${HFCLI[@]}" "$1" "$2" --local-dir "$TMP" && mv "$TMP/$2" "$dest"; }; then
+      FAILED+=("$dest  <- https://huggingface.co/$1 (licence accepted? HF_TOKEN set?)"); return
+    fi
+  fi
+  [ "$MODELS_DIR" = models ] || [ -e "$link" ] || ln -s "$(realpath "$dest")" "$link"
 }
 
 for group in $GROUPS_WANTED; do case "$group" in
@@ -70,5 +95,9 @@ $PY -c "import torch; print('torch', torch.__version__, '| CUDA', torch.cuda.is_
   || echo "WARNING: torch does not import; pick a Runpod PyTorch template (CUDA 12.x)"
 if [ ${#FAILED[@]} -gt 0 ]; then printf '\nNOT DONE:\n'; printf '  %s\n' "${FAILED[@]}"; fi
 echo
-echo "Start ComfyUI:  cd $ROOT/ComfyUI && $PY main.py --listen 0.0.0.0 --port 8188"
+if [ "$ROOT" = /workspace/runpod-slim ]; then
+  echo "Restart ComfyUI so it loads TitleRig: Manager -> Restart in the ComfyUI page (or restart the pod)."
+else
+  echo "Start ComfyUI:  cd $ROOT/ComfyUI && $PY main.py --listen 0.0.0.0 --port 8188"
+fi
 echo "Then open the pod's port 8188 and use Templates -> Extensions -> comfyui-titlerig."
