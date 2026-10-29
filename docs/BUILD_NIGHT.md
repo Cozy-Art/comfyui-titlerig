@@ -10,7 +10,7 @@ workflows.
 
 ## 0. Before you leave (Mac, 15 min)
 
-1. Update the pack. You get 13 nodes and 7 templates.
+1. Update the pack. You get 13 nodes and 8 templates.
    ```bash
    cd ~/Documents/ComfyUI/custom_nodes/comfyui-titlerig && git pull
    ```
@@ -210,6 +210,17 @@ The licences are listed in `workflows/README.md`. The FLUX [dev] models are non-
 Keep the IC-LoRA and guide strengths at 1.0. Lowering them lets LTX invent its own letters.
 
 **Spell-Lock caveat:** it reads the AI frame's colours. Dark letter sides on a dark background (or a dark shadow on dark) measure as drift even when the frame is fine. Judge by eye on dark presets.
+
+### c1b. Two layers, two materials (`titlerig_ltx2_duo`)
+
+The fur title flies in and dances to the beat; the cloud line streams in under it and a magnet knocks its letters on the kicks. Each layer gets its own LTX-2 pass and prompt.
+
+1. Run c1 first. This uses the same models and settings, twice.
+2. Smoke test: set `max_seconds` to **2** in **"Kicks (bass)"** and **"Hats (highs)"**. Both layers follow it, so they stay frame-for-frame.
+3. Check `duo_rig_preview` first: it's ready after about 1 minute of CPU, before LTX starts. If the motion is wrong there, stop the run (no GPU time wasted).
+4. Then `duo_fur_raw` (pass 1, hairy), `duo_clouds_raw` (pass 2, cloudy) and `duo_final`.
+5. Edit **"Prompt 1: hairy"** or **"Prompt 2: cloudy"** directly, or switch either Style Preset. The sky behind everything comes from prompt 2.
+6. If one layer drifts, use the c1 ladder on that pass only. Pass 2's nodes are the same as pass 1's, numbered +100.
 
 ### c2. FLUX.1 Depth still (`titlerig_flux_still`)
 

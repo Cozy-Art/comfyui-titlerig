@@ -20,7 +20,7 @@ TitleRig is an open-source ComfyUI node pack that renders exact, animated 3D tit
 | **TitleRig Animate** | one track; chain several. Effects below, per letter or whole word, stagger + order, easing |
 | **TitleRig Audio React** | AUDIO → beats / loudness / spectrum curve for Animate's `drive` input |
 | **TitleRig Render Animation** | frames → IMAGE batches (beauty, alpha, depth, edges, letter_ids) + frame_count + fps + face / shadow masks |
-| **TitleRig Style Preset** | 13 bright presets → prompts for FLUX.2-dev / FLUX 3 / LTX-2.3 (per the super-skills), a matching Look + Shadow, and settings JSON |
+| **TitleRig Style Preset** | 15 bright presets → prompts for FLUX.2-dev / FLUX 3 / LTX-2.3 (per the super-skills), a matching Look + Shadow, and settings JSON |
 | **TitleRig Magnet** | a moving magnet (or second word) that attracts / repels letters: strength, range, lag, spring, squash & stretch, audio drive |
 | **TitleRig SVG Export** | the rig traced to a layered SVG: shadow shapes, extrusion tones, one path per letter |
 | **TitleRig Cutout** | an image or video **inside** the letters and another **outside**, masked by the rig per frame: mask from faces · faces + extrusion · silhouette + shadow; fit cover / contain / stretch; grow, feather, outline stroke, the rig's shading on top |
@@ -126,6 +126,7 @@ python -m pytest -q
 | `example_workflows/titlerig_audio_react.json` | open, no models (CPU) | an audio-reactive title clip with sound |
 | `example_workflows/titlerig_cutout.json` | open, no models (CPU) | letters pop in with an image inside and a colour outside (swap either for Load Video) |
 | `example_workflows/titlerig_ltx2_animated.json` | **open weights** | Audio React → rig depth frames → LTX-2 + Depth Control IC-LoRA → Spell-Lock → MP4 with your track |
+| `example_workflows/titlerig_ltx2_duo.json` | **open weights** | two layers, two materials: TITLERIG flies in and dances to the beat (fur), ON CLOUD NINE streams in under it while a beat-driven magnet knocks its letters (clouds); one LTX-2 pass per layer, each with its own prompt, cut back together with the rig's alpha |
 | `example_workflows/titlerig_flux_still.json` | **open weights** | rig depth → FLUX.1 Depth [dev] → Spell-Lock → PNG + alpha cutout |
 | `example_workflows/titlerig_flux2_still.json` | **open weights** | rig depth as a reference → FLUX.2-dev → Spell-Lock → PNG + alpha cutout |
 | `workflows/bonus/titlerig_flux3.json` | API (paid) | rig beauty as image 1 → FLUX 3 → Spell-Lock |

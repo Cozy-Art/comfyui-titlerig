@@ -82,7 +82,7 @@ Then do the fresh-install check:
 >
 > The hero workflow feeds the rig's depth to **LTX-2 with the Depth Control IC-LoRA**. LTX paints chrome, fur or glass while the letters stay locked to the rig, and **Spell-Lock** snaps every frame back to the rig's silhouette. **FLUX.1 Depth [dev]** makes stills with a transparent cut-out.
 >
-> **Style Presets** (Chrome Slam, Ben-Day Pop, Holo Foil and 10 more) write model-specific prompts and set a matching look. Also included: **Cutout** (video inside the letters), **SVG export**, and a live preview widget on the canvas.
+> **Style Presets** (Chrome Slam, Ben-Day Pop, Holo Foil and 12 more) write model-specific prompts and set a matching look. Also included: **Cutout** (video inside the letters), **SVG export**, and a live preview widget on the canvas.
 >
 > Everything is open source (MIT) and runs on open-weights models.
 
