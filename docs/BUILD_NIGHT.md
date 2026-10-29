@@ -92,6 +92,15 @@ workflows.
 
 Deploy, then **Connect → Web Terminal** (or the Jupyter terminal).
 
+### b1b. Already running Runpod's official ComfyUI template?
+
+`runpod/comfyui` (for example `runpod/comfyui:1.5.0-comfyuiv0.35.0-cuda12.8`) works as it is:
+- **ComfyUI location:** the script finds it at `/workspace/runpod-slim/ComfyUI` and installs TitleRig there. There's no second ComfyUI and no ComfyUI update.
+- **Compatibility:** every open-weights workflow was validated against ComfyUI **0.35.0** with frontend 1.51.10, the template's versions. ComfyUI's own validator accepted all four AI workflows.
+- **ComfyUI-LTXVideo:** add `SKIP_LTXVIDEO=1`. It isn't needed, and its requirements could change the template's packages.
+- **Disk:** if `/workspace` is too small for the models, the script puts them on the container disk and links them into `ComfyUI/models`. The container disk is wiped if the pod is reset.
+- **After the script:** restart ComfyUI from **Manager → Restart** in the ComfyUI page. The template starts ComfyUI itself.
+
 ### b2. One paste
 
 ```bash
