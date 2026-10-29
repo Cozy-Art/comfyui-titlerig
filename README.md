@@ -126,6 +126,7 @@ python -m pytest -q
 | `example_workflows/titlerig_audio_react.json` | open, no models (CPU) | an audio-reactive title clip with sound |
 | `example_workflows/titlerig_cutout.json` | open, no models (CPU) | letters pop in with an image inside and a colour outside (swap either for Load Video) |
 | `example_workflows/titlerig_ltx2_animated.json` | **open weights** | Audio React → rig depth frames → LTX-2 + Depth Control IC-LoRA → Spell-Lock → MP4 with your track |
+| `example_workflows/titlerig_ltx2_scene.json` | **open weights** | **the title rendered into your own image:** your image is frame 0, the rig's letters pop in and dance to the track, your prompt says what they're made of (fur, grass, ice…), and your image is restored everywhere except the letters and their shadow |
 | `example_workflows/titlerig_ltx2_duo.json` | **open weights** | two layers, two materials: TITLERIG flies in and dances to the beat (fur), ON CLOUD NINE streams in under it while a beat-driven magnet knocks its letters (clouds); one LTX-2 pass per layer, each with its own prompt, cut back together with the rig's alpha |
 | `example_workflows/titlerig_flux_still.json` | **open weights** | rig depth → FLUX.1 Depth [dev] → Spell-Lock → PNG + alpha cutout |
 | `example_workflows/titlerig_flux2_still.json` | **open weights** | rig depth as a reference → FLUX.2-dev → Spell-Lock → PNG + alpha cutout |

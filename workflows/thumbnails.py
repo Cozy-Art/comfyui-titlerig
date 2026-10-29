@@ -69,6 +69,7 @@ CARDS = {
     "titlerig_flux2_still": (lambda: rig_pair("Holo Foil", "TITLE"), "FLUX.2 DEV · STILL"),
     "titlerig_cloud_ltx2": (depth_still, "LTX-2 · COMFY CLOUD"),
     "titlerig_ltx2_duo": (lambda: gif_frame("ltx2_duo_rig.gif", 0.6), "LTX-2 · FUR + CLOUDS"),
+    "titlerig_ltx2_scene": (lambda: gif_frame("ltx2_scene_rig.gif", 0.85), "LTX-2 · INTO YOUR IMAGE"),
 }
 
 if __name__ == "__main__":

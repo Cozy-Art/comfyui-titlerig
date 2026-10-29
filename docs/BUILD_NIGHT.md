@@ -10,7 +10,7 @@ workflows.
 
 ## 0. Before you leave (Mac, 15 min)
 
-1. Update the pack. You get 13 nodes and 8 templates.
+1. Update the pack. You get 13 nodes and 9 templates.
    ```bash
    cd ~/Documents/ComfyUI/custom_nodes/comfyui-titlerig && git pull
    ```
@@ -210,6 +210,17 @@ The licences are listed in `workflows/README.md`. The FLUX [dev] models are non-
 Keep the IC-LoRA and guide strengths at 1.0. Lowering them lets LTX invent its own letters.
 
 **Spell-Lock caveat:** it reads the AI frame's colours. Dark letter sides on a dark background (or a dark shadow on dark) measure as drift even when the frame is fine. Judge by eye on dark presets.
+
+### c1a. The title in your scene (`titlerig_ltx2_scene`)
+
+Your image becomes the first frame; the letters pop into it and dance to the track; your prompt says what they're made of.
+
+1. Upload your image in **"Your scene"** (16:9 works best).
+2. Edit **"Prompt: what the letters are made of, in your scene"**. Say the material, that it's lit like the scene, and that it casts contact shadows. Keep the text in quotes and matching the Text node.
+3. Smoke test: set `max_seconds` to **2** in **"Kicks (bass)"** and **"Hats (highs)"**.
+4. Check `scene_control_edges` (your scene's outlines + the letters), then `scene_final`. `scene_ai_full` is the AI's whole frame, if you prefer it to the restored plate.
+5. If the scene changes too much: the plate restore already hides it outside the letters; to keep the AI further from the scene, shorten the **Shadow** length (smaller area). If the letters look pasted on, make the Shadow longer and softer (bigger area for the AI's light and shadow).
+6. If the letters drift: the c1 ladder applies (calm the motion first). Canny is already the tighter guide.
 
 ### c1b. Two layers, two materials (`titlerig_ltx2_duo`)
 

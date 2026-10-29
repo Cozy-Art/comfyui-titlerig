@@ -8,6 +8,7 @@
 | `titlerig_audio_react.json` | open · no models | CPU | the hero motion on its own: words react to the track, MP4 with sound |
 | `titlerig_cutout.json` | open · no models | CPU | Cutout text: an image inside the popping letters, a colour outside (swap either for Load Video), MP4 |
 | `titlerig_ltx2_animated.json` | **open weights · hero** | GPU (LTX-2 19B) | audio-reactive rig → depth frames → **LTX-2 + Depth Control IC-LoRA** → Spell-Lock → MP4 with the original track |
+| `titlerig_ltx2_scene.json` | open weights | GPU (LTX-2 19B) | **your image** as frame 0 + rig edges over the image's edges → **LTX-2 + Canny IC-LoRA** + your prompt → Spell-Lock → your image restored outside the letters and shadow → MP4 with the track |
 | `titlerig_ltx2_duo.json` | open weights | GPU (LTX-2 19B), two passes | two rig layers → **two LTX-2 passes, one prompt each** (hairy title, cloudy line) → Spell-Lock → Cutout → MP4 with the original track |
 | `titlerig_flux_still.json` | open weights | GPU (FLUX.1 [dev]) | rig depth → **FLUX.1 Depth [dev]** → Spell-Lock → raw, locked and transparent title PNGs |
 | `titlerig_flux2_still.json` | open weights | GPU (FLUX.2 [dev]) | rig beauty as **reference image 1** → FLUX.2 [dev] → Spell-Lock → same PNG set |
@@ -29,6 +30,15 @@ Drag a `.json` onto ComfyUI. The audio workflows expect `examples/assets/titleri
 - **Spell-Lock:** snaps every LTX frame back to the rig alpha.
 - **Audio:** the video is rebuilt with **your original track**. LTX's generated audio is discarded.
 - **Saved outputs:** the Spell-Locked video, the raw LTX video, and the depth and edges control clips. The edges clip is ready for the Canny IC-LoRA (`ltx-2-19b-ic-lora-canny-control`): swap the LoRA and feed edges to `LTXVAddGuide`.
+
+**The title in your scene, `titlerig_ltx2_scene.json`:** the hero's LTX-2 chain, turned into image-to-video.
+- **Your scene:** load any image in **"Your scene"** (16:9 works best; it's centre-cropped to 1280×720). It becomes LTX's frame 0 on both stages (`LTXVImgToVideoInplace`, not bypassed).
+- **Motion:** the title is absent on frame 0, pops in letter by letter from 0.25 s, then pops on the kicks, hops on the hats and throws its shadow on the kicks.
+- **Guide:** the rig's **edges**, laid over the **Canny edges of your image** (TitleRig Cutout, per frame), drive the **Canny Control IC-LoRA** at strength 1.0. LTX gets the outline of your whole scene plus the exact letters, so it keeps the scene and builds the title into it.
+- **Prompt:** one plain prompt node, *"Prompt: what the letters are made of, in your scene"*. Describe the material and how it sits in the scene (fur, grass, ice, chrome; lit like the photo; contact shadows). Keep the exact text in quotes.
+- **Keep your plate:** after Spell-Lock, TitleRig Cutout puts your original image back everywhere except the letters and the rig's **shadow area** (grown 16 px, feathered 12 px), so the light and shadows the AI adds around the letters stay and the rest is your exact pixels. The **Shadow** node sets that area: longer or softer shadow, bigger area.
+- **Saved outputs:** the final MP4, the AI full frame (before the plate is restored, for when you'd rather keep the AI's whole frame), the LTX raw and the edge guide. All carry your track.
+- **Models:** same as the hero, with the Canny IC-LoRA (`ltx-2-19b-ic-lora-canny-control`) in place of the depth one. `runpod_setup.sh ltx` already downloads it.
 
 **Two layers, two materials, `titlerig_ltx2_duo.json`:** the hero's LTX-2 chain, run once per layer. Same models, same settings.
 - **Layer 1, the title** ("TITLERIG", Style Preset **Shaggy Fur**):
